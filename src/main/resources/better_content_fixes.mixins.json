@@ -60,6 +60,7 @@
     "sophisticatedbackpacks.JukeboxUpgradeWrapperMixin",
     "sophisticatedbackpacks.UpgradeWrapperBaseMixin",
     "sophisticatedstorage.StorageBlockEntityMixin",
+    "thefleshthathates.FleshBlockSpreadMixin",
     "thirst.AddLootTableModifierMixin"
   ],
   "client": [
@@ -90,7 +91,6 @@
     "parcool.ClingToCliffPlayerRotationMixin",
     "sodiumdynamiclights.SodiumDynamicLightsMixin",
     "thefleshthathates.BiomeMusicMixin",
-    "thefleshthathates.FleshBlockSpreadMixin",
     "untamedwilds.ComplexMobMixin",
     "tconstruct.PartBuilderPatternSlotBackgroundMixin",
     "tconstruct.PartBuilderPatternSlotRenderMixin",
