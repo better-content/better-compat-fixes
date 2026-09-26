@@ -92,6 +92,8 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             "com.bettercontent.bettercontentfixes.mixin.tacz.";
     private static final String FLESH_MIXIN_PREFIX =
             "com.bettercontent.bettercontentfixes.mixin.thefleshthathates.";
+    private static final String CATACLYSM_MIXIN_PREFIX =
+            "com.bettercontent.bettercontentfixes.mixin.cataclysm.";
     private static final String UNTAMED_MIXIN_PREFIX =
             "com.bettercontent.bettercontentfixes.mixin.untamedwilds.";
 
@@ -109,6 +111,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         final LoadingModList mods = FMLLoader.getLoadingModList();
         if (mixinClassName.startsWith(FLESH_MIXIN_PREFIX)) {
             return hasVersion(mods, "the_flesh_that_hates", "0.4");
+        }
+        if (mixinClassName.startsWith(CATACLYSM_MIXIN_PREFIX)) {
+            return hasVersion(mods, "cataclysm", "3.31");
         }
         if (mixinClassName.startsWith(UNTAMED_MIXIN_PREFIX)) {
             return hasVersion(mods, "untamedwilds", "4.0.4");

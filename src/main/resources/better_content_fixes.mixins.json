@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "bettercaves.AbstractCarverMixin",
+    "cataclysm.CursedPyramidPieceMixin",
     "create.HandCrankBlockMixin",
     "create.WaterWheelBlockEntityMixin",
     "createsifter.BrassSifterConfigMixin",
