@@ -90,6 +90,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             "com.bettercontent.bettercontentfixes.mixin.sleepingoverhaul.";
     private static final String TACZ_MIXIN_PREFIX =
             "com.bettercontent.bettercontentfixes.mixin.tacz.";
+    private static final String FLESH_MIXIN_PREFIX =
+            "com.bettercontent.bettercontentfixes.mixin.thefleshthathates.";
+    private static final String UNTAMED_MIXIN_PREFIX =
+            "com.bettercontent.bettercontentfixes.mixin.untamedwilds.";
 
     @Override
     public void onLoad(final String mixinPackage) {
@@ -103,6 +107,12 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.startsWith(FLESH_MIXIN_PREFIX)) {
+            return hasVersion(mods, "the_flesh_that_hates", "0.4");
+        }
+        if (mixinClassName.startsWith(UNTAMED_MIXIN_PREFIX)) {
+            return hasVersion(mods, "untamedwilds", "4.0.4");
+        }
                         if (mixinClassName.startsWith(PNEUMATICCRAFT_TCON_HEAD_MIXIN_PREFIX)) {
             return hasMods(mods, "pneumaticcraft", "tconstruct");
         }

@@ -90,6 +90,8 @@
     "parcool.ClingToCliffPlayerRotationMixin",
     "sodiumdynamiclights.SodiumDynamicLightsMixin",
     "thefleshthathates.BiomeMusicMixin",
+    "thefleshthathates.FleshBlockSpreadMixin",
+    "untamedwilds.ComplexMobMixin",
     "tconstruct.PartBuilderPatternSlotBackgroundMixin",
     "tconstruct.PartBuilderPatternSlotRenderMixin",
     "weather2.FogAdjusterMixin",
