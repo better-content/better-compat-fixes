@@ -113,6 +113,7 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:structure-generation-improver-1473087:8102460"))
     compileOnly(fg.deobf("curse.maven:yungs-better-caves-340583:8686226"))
     compileOnly(fg.deobf("curse.maven:fallout-wastelands-431248:7127023"))
+    compileOnly(fg.deobf("curse.maven:untamed-wilds-au-naturel-1399279:7441092"))
     compileOnly(fg.deobf("curse.maven:the-twilight-forest-227639:5468648"))
     compileOnly(fg.deobf("curse.maven:explosion-overhaul-a-new-level-of-destruction-1296203:7659431"))
     compileOnly(fg.deobf("curse.maven:valkyrien-skies-258371:7906689"))
