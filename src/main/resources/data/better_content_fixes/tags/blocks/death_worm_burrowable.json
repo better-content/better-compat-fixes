@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:sand",
+    "#minecraft:dirt",
+    "#minecraft:base_stone_overworld",
+    "#minecraft:base_stone_nether",
+    "#minecraft:terracotta",
+    "#minecraft:mineable/pickaxe",
+    "#minecraft:mineable/shovel",
+    "minecraft:gravel",
+    "minecraft:clay",
+    "minecraft:end_stone",
+    "minecraft:netherrack"
+  ]
+}
