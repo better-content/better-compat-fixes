@@ -80,11 +80,8 @@ public final class StyleCatalogue {
         if (capability == null) return false;
         if (capability instanceof WeaponCapability || capability instanceof TridentCapability) return true;
         // Epic Fight: Tinkers Integration wraps melee tools in its own CapabilityItem subclass.
-        // Check the hierarchy by name so the integration remains optional at runtime.
-        for (Class<?> type = capability.getClass(); type != null; type = type.getSuperclass()) {
-            if (type.getName().equals(TINKERS_MELEE_CAPABILITY)) return true;
-        }
-        return false;
+        // Match the concrete wrapper by name so the integration remains optional at runtime.
+        return capability.getClass().getName().equals(TINKERS_MELEE_CAPABILITY);
     }
 
     private static void scan(PlayerPatch<?> patch) {
