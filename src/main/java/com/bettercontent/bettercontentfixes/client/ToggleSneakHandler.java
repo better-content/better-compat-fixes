@@ -26,9 +26,16 @@ public final class ToggleSneakHandler {
 
     @SubscribeEvent
     public static void onClientTick(final TickEvent.ClientTickEvent event) {
+        final Minecraft minecraft = Minecraft.getInstance();
+        if (event.phase == TickEvent.Phase.START) {
+            if (toggled && minecraft.player != null && minecraft.screen == null && minecraft.options.keyJump.isDown()) {
+                toggled = false;
+                minecraft.options.keyShift.setDown(false);
+            }
+            return;
+        }
         if (event.phase != TickEvent.Phase.END) return;
 
-        final Minecraft minecraft = Minecraft.getInstance();
         final boolean survival = minecraft.player != null && minecraft.gameMode != null
                 && minecraft.gameMode.getPlayerMode() == GameType.SURVIVAL;
         if (!survival) {
@@ -66,7 +73,7 @@ public final class ToggleSneakHandler {
         physicalKeyWasDown = physicalKeyDown;
 
         // Do not keep crouch active while another system owns mounted movement.
-        if (minecraft.player.isPassenger()) {
+        if (minecraft.player.isPassenger() || minecraft.options.keyJump.isDown()) {
             toggled = false;
         }
         sneak.setDown(toggled);
