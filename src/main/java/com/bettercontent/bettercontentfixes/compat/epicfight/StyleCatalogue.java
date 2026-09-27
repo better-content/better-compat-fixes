@@ -1,5 +1,6 @@
 package com.bettercontent.bettercontentfixes.compat.epicfight;
 
+import com.bettercontent.bettercontentfixes.mixin.epicfight.WeaponCapabilityAccessor;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +20,7 @@ import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
-import yesman.epicfight.world.capabilities.item.RangedWeaponCapability;
+import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.TridentCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
@@ -74,7 +76,12 @@ public final class StyleCatalogue {
             var stack = new ItemStack(item);
             try {
                 var capability = EpicFightCapabilities.getItemStackCapability(stack);
-                if (melee(capability)) add(capability, patch, id);
+                if (!melee(capability)) continue;
+                add(capability, patch, id);
+                if (capability instanceof WeaponCapability weapon) {
+                    var variants = ((WeaponCapabilityAccessor) weapon).betterContentFixes$autoAttackMotions();
+                    variants.forEach((style, motions) -> addMotion(capability, id, motions, style));
+                }
             } catch (RuntimeException ignored) {
                 // Some capabilities require an initialized tool stack; actual use is observed later.
             }
@@ -88,9 +95,14 @@ public final class StyleCatalogue {
         } catch (RuntimeException ignored) {
             return null;
         }
-        if (nativeMotion == null || nativeMotion.size() < 3) return null;
-        var animations = new ArrayList<ResourceLocation>(nativeMotion.size());
-        for (var animation : nativeMotion) {
+        return addMotion(capability, source, nativeMotion, null);
+    }
+
+    private static Entry addMotion(CapabilityItem capability, ResourceLocation source,
+            List<AnimationAccessor<? extends AttackAnimation>> motions, Style style) {
+        if (motions == null || motions.size() < 3) return null;
+        var animations = new ArrayList<ResourceLocation>(motions.size());
+        for (var animation : motions) {
             if (animation == null || animation.registryName() == null) return null;
             animations.add(animation.registryName());
         }
@@ -104,6 +116,9 @@ public final class StyleCatalogue {
         WeaponCategory category = capability.getWeaponCategory();
         String name = category == null ? source.getPath().replace('_', ' ')
                 : WeaponCategory.ENUM_MANAGER.toTranslated(category);
+        if (style != null && style != CapabilityItem.Styles.COMMON) {
+            name += " · " + style.toString().toLowerCase(Locale.ROOT).replace('_', ' ');
+        }
         var created = new Entry(id, name, List.copyOf(animations), Set.of(source));
         ENTRIES.put(id, created);
         return created;

@@ -29,6 +29,7 @@
     "epicfight.PlayerPatchMixin",
     "epicfight.BasicAttackMixin",
     "epicfight.AttackPhaseMixin",
+    "epicfight.WeaponCapabilityAccessor",
     "epicfight.ServerPlayerPatchMixin",
     "epicfightvs.ColliderMixin",
     "epicfightvs.MultiColliderMixin",
