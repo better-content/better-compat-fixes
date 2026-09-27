@@ -78,6 +78,8 @@ repositories {
 
 dependencies {
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
+    compileOnly(files(betterContentJar("better-content-notifications", "better-content-notifications-1.0.0.jar")))
+    runtimeOnly(files(betterContentJar("better-content-notifications", "better-content-notifications-1.0.0.jar")))
     compileOnly(files(betterContentJar("dynamic-survival-hud", "dynamic-survival-hud-1.0.0.jar")))
     compileOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
@@ -107,6 +109,7 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:polymorph-388800:6450982"))
     compileOnly(fg.deobf("curse.maven:architectury-api-419699:5137938"))
     compileOnly(fg.deobf("curse.maven:epic-fight-mod-405076:8049910"))
+    runtimeOnly(fg.deobf("curse.maven:epic-fight-mod-405076:8049910"))
     compileOnly(fg.deobf("curse.maven:parcool-482378:7760589"))
     compileOnly(fg.deobf("curse.maven:sleeping-overhaul-2-887716:6471182"))
     compileOnly(fg.deobf("curse.maven:distant-horizons-508933:7375280"))
@@ -550,5 +553,3 @@ tasks.jacocoTestReport {
         html.required.set(true)
     }
 }
-
-

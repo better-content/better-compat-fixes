@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
-import yesman.epicfight.world.entity.eventlistener.AnimationBeginEvent;
 
 import java.util.UUID;
 
@@ -25,16 +24,12 @@ public abstract class ServerPlayerPatchMixin {
         final ServerPlayerPatch patch = (ServerPlayerPatch) (Object) this;
         final PlayerEventListener listener = patch.getEventListener();
         final UUID listenerId = UUID.fromString(BETTER_CONTENT_STYLE_DISCOVERY_LISTENER_ID);
-        listener.removeListener(PlayerEventListener.EventType.ANIMATION_BEGIN_EVENT,
+        listener.removeListener(PlayerEventListener.EventType.BASIC_ATTACK_EVENT,
                 listenerId);
-        listener.addEventListener(PlayerEventListener.EventType.ANIMATION_BEGIN_EVENT,
+        listener.addEventListener(PlayerEventListener.EventType.BASIC_ATTACK_EVENT,
                 listenerId,
-                animation -> {
-                    if (animation.getAnimation() instanceof yesman.epicfight.api.animation.types.AttackAnimation) {
-                        StyleDiscovery.observeAttackStart(
-                                (ServerPlayerPatch) animation.getPlayerPatch());
-                    }
-                });
+                attack -> StyleDiscovery.observeAttackStart(
+                        (ServerPlayerPatch) attack.getPlayerPatch()));
     }
 
     @Inject(method = "toVanillaMode", at = @At("HEAD"), cancellable = true, require = 1)

@@ -9,21 +9,20 @@ import org.junit.jupiter.api.Test;
 
 final class StyleDiscoverySourceTest {
     @Test
-    void discoveryUsesAttackStartCapabilityAndPlayerWorldPersistence() throws IOException {
+    void basicAttackDiscoversNativeComboAndPublishesSharedNotice() throws IOException {
         final Path root = Path.of("src/main/java/com/bettercontent/bettercontentfixes");
         final String mixin = Files.readString(root.resolve("mixin/epicfight/ServerPlayerPatchMixin.java"));
         final String discovery = Files.readString(root.resolve("compat/epicfight/StyleDiscovery.java"));
         final String mixins = Files.readString(Path.of("src/main/resources/better_content_fixes.mixins.json"));
 
-        assertTrue(mixin.contains("EventType.ANIMATION_BEGIN_EVENT"));
-        assertTrue(mixin.contains("instanceof yesman.epicfight.api.animation.types.AttackAnimation"));
+        assertTrue(mixin.contains("EventType.BASIC_ATTACK_EVENT"));
         assertTrue(mixin.contains("StyleDiscovery.observeAttackStart("));
         assertTrue(discovery.contains("patch.getHoldingItemCapability"));
         assertTrue(discovery.contains("patch.getAttackingHand()"));
         assertTrue(discovery.contains("player.getItemInHand(hand).copy()"));
-        assertTrue(discovery.contains("capability.getStyle(patch)"));
-        assertTrue(discovery.contains("player.getPersistentData()"));
-        assertTrue(discovery.contains("displayClientMessage") && discovery.contains("attack with this weapon"));
+        assertTrue(discovery.contains("StyleCatalogue.observe(patch, held, capability)"));
+        assertTrue(discovery.contains("GameplayNotices.send"));
+        assertTrue(!discovery.contains("displayClientMessage"));
         assertTrue(mixins.contains("\"epicfight.ServerPlayerPatchMixin\""));
     }
 }

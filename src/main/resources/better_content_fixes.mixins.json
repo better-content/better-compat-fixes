@@ -27,6 +27,8 @@
     "dynamictrees.BranchHardnessMixin",
     "dtaether.TagEntryMixin",
     "epicfight.PlayerPatchMixin",
+    "epicfight.BasicAttackMixin",
+    "epicfight.AttackPhaseMixin",
     "epicfight.ServerPlayerPatchMixin",
     "epicfightvs.ColliderMixin",
     "epicfightvs.MultiColliderMixin",

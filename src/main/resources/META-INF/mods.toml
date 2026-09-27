@@ -10,6 +10,13 @@ authors="gerald"
 description='''Isolated, config-toggleable compatibility fixes for the Better Content modpack.'''
 
 [[dependencies.${mod_id}]]
+    modId="better_content_notifications"
+    mandatory=true
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="forge"
     mandatory=true
     versionRange="[${forge_version},)"
