@@ -24,6 +24,7 @@ public final class StyleScreen extends Screen {
 
     private EditBox search;
     private Button equip;
+    private Button useDefault;
     private String focused = "";
     private int scroll;
     private int left;
@@ -57,7 +58,7 @@ public final class StyleScreen extends Screen {
                     if (!focused.isEmpty()) StyleNetwork.select(focused);
                 }).bounds(left + listWidth + 17, top + panelHeight - 31,
                 panelWidth - listWidth - 29, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.better_content_fixes.default"),
+        useDefault = addRenderableWidget(Button.builder(Component.translatable("screen.better_content_fixes.default"),
                 button -> StyleNetwork.select(""))
                 .bounds(left + 10, top + panelHeight - 31, listWidth - 4, 20).build());
         addRenderableWidget(Button.builder(Component.literal("×"), button -> onClose())
@@ -95,6 +96,15 @@ public final class StyleScreen extends Screen {
         scroll = Math.max(0, Math.min(scroll, Math.max(0, rows.size() - VISIBLE_ROWS)));
         int listY = top + 69;
         int listX = left + 10;
+        if (rows.size() > VISIBLE_ROWS) {
+            String range = (scroll + 1) + "-" + Math.min(rows.size(), scroll + VISIBLE_ROWS)
+                    + "/" + rows.size() + (scroll == 0 ? " ↓" : scroll + VISIBLE_ROWS >= rows.size() ? " ↑" : " ↕");
+            graphics.drawString(font, range, listX + listWidth - 4 - font.width(range),
+                    top + 54, MUTED, false);
+        }
+        if (rows.isEmpty()) graphics.drawString(font,
+                Component.translatable("screen.better_content_fixes.no_matches"),
+                listX + 7, listY + 6, MUTED, false);
         for (int index = scroll; index < Math.min(rows.size(), scroll + VISIBLE_ROWS); index++) {
             var row = rows.get(index);
             int y = listY + (index - scroll) * ROW_HEIGHT;
@@ -111,6 +121,7 @@ public final class StyleScreen extends Screen {
         graphics.fill(detailX, top + 30, detailX + detailW, top + panelHeight - 38, 0xD0120E10);
         var selected = StyleClientState.snapshot().rows().stream()
                 .filter(row -> row.id().equals(focused)).findFirst().orElse(null);
+        useDefault.active = !StyleClientState.snapshot().selected().isEmpty();
         equip.active = selected != null && selected.learned()
                 && !focused.equals(StyleClientState.snapshot().selected());
         if (selected == null) {
@@ -128,10 +139,17 @@ public final class StyleScreen extends Screen {
             graphics.drawString(font, Component.translatable("screen.better_content_fixes.learned_from"),
                     detailX + 8, top + 82, MUTED, false);
             int sourceY = top + 97;
-            for (var source : selected.sources()) {
+            int sourceSlots = Math.max(1, (panelHeight - 150) / 13 + 1);
+            for (int index = 0; index < Math.min(selected.sources().size(), sourceSlots); index++) {
+                if (index == sourceSlots - 1 && selected.sources().size() > sourceSlots) {
+                    graphics.drawString(font, Component.translatable("screen.better_content_fixes.more_weapons",
+                            selected.sources().size() - index), detailX + 8, sourceY, MUTED, false);
+                    break;
+                }
+                var source = selected.sources().get(index);
                 var item = ForgeRegistries.ITEMS.getValue(source);
-                if (item == null || sourceY > top + panelHeight - 53) break;
-                graphics.drawString(font, font.plainSubstrByWidth(item.getDescription().getString(), detailW - 16),
+                if (item != null) graphics.drawString(font,
+                        font.plainSubstrByWidth(item.getDescription().getString(), detailW - 16),
                         detailX + 8, sourceY, WHITE, false);
                 sourceY += 13;
             }

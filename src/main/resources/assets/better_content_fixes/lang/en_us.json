@@ -7,9 +7,11 @@
   "screen.better_content_fixes.equip": "Equip style",
   "screen.better_content_fixes.default": "Use weapon default",
   "screen.better_content_fixes.choose": "Choose a fighting style",
+  "screen.better_content_fixes.no_matches": "No matching styles",
   "screen.better_content_fixes.locked": "Discover this in combat",
   "screen.better_content_fixes.active": "ACTIVE",
-  "screen.better_content_fixes.learned_from": "Learned from",
+  "screen.better_content_fixes.learned_from": "Weapons with this style",
+  "screen.better_content_fixes.more_weapons": "+%s more weapons",
   "message.better_content_fixes.style_discovered": "Moveset discovered: %s",
   "message.better_content_fixes.style_hint": "Inventory · Fighting Styles"
 }
