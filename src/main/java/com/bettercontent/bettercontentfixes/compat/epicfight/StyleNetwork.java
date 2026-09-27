@@ -53,6 +53,7 @@ public final class StyleNetwork {
 
     public static void sync(ServerPlayer player, ServerPlayerPatch patch) {
         var learned = StyleState.learned(player, patch);
+        StyleState.restoreEntries(player, patch);
         var rows = new ArrayList<Row>();
         for (var entry : StyleCatalogue.entries(patch)) {
             rows.add(new Row(entry.id(), entry.name(), List.copyOf(entry.sources()),

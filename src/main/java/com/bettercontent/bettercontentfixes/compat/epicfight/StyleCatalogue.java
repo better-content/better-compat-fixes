@@ -27,6 +27,8 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 /** Loaded weapon forms, keyed by the exact ordered native basic-attack animations. */
 public final class StyleCatalogue {
+    private static final String TINKERS_MELEE_CAPABILITY =
+            "com.minhhjjj.epicfighttinkercompat.tool.capabilities.TCWeaponCapability";
     public record Entry(String id, String name, List<ResourceLocation> animations, Set<ResourceLocation> sources) {
         Entry withSource(ResourceLocation source) {
             var merged = new LinkedHashSet<>(sources);
@@ -55,6 +57,17 @@ public final class StyleCatalogue {
         return ENTRIES.get(id);
     }
 
+    public static synchronized void restore(PlayerPatch<?> patch, Entry entry) {
+        scan(patch);
+        var existing = ENTRIES.get(entry.id());
+        if (existing == null) {
+            ENTRIES.put(entry.id(), entry);
+        } else {
+            for (var source : entry.sources()) existing = existing.withSource(source);
+            ENTRIES.put(entry.id(), existing);
+        }
+    }
+
     public static synchronized Entry observe(PlayerPatch<?> patch, ItemStack stack, CapabilityItem capability) {
         scan(patch);
         if (!melee(capability)) return null;
@@ -64,7 +77,14 @@ public final class StyleCatalogue {
     }
 
     public static boolean melee(CapabilityItem capability) {
-        return capability instanceof WeaponCapability || capability instanceof TridentCapability;
+        if (capability == null) return false;
+        if (capability instanceof WeaponCapability || capability instanceof TridentCapability) return true;
+        // Epic Fight: Tinkers Integration wraps melee tools in its own CapabilityItem subclass.
+        // Check the hierarchy by name so the integration remains optional at runtime.
+        for (Class<?> type = capability.getClass(); type != null; type = type.getSuperclass()) {
+            if (type.getName().equals(TINKERS_MELEE_CAPABILITY)) return true;
+        }
+        return false;
     }
 
     private static void scan(PlayerPatch<?> patch) {

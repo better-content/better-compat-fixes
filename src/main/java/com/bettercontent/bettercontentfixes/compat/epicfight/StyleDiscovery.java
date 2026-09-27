@@ -23,7 +23,7 @@ public final class StyleDiscovery {
         var capability = patch.getHoldingItemCapability(hand);
         if (capability == null || capability.isEmpty()) return;
         var entry = StyleCatalogue.observe(patch, held, capability);
-        if (entry == null || !StyleState.learn(player, patch, entry.id())) return;
+        if (entry == null || !StyleState.learn(player, patch, entry)) return;
 
         GameplayNotices.send(player, new GameplayNotice("style:" + entry.id(), NoticeTheme.COMBAT,
                 Component.translatable("message.better_content_fixes.style_discovered", entry.name()),

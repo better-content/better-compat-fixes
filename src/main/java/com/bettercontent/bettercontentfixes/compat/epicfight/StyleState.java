@@ -18,6 +18,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 public final class StyleState {
     private static final String LEARNED = "better_content_fixes.epicfight_learned_movesets";
     private static final String SELECTED = "better_content_fixes.epicfight_selected_moveset";
+    private static final String KNOWN_ENTRIES = "better_content_fixes.epicfight_known_moveset_entries";
     private static final String LEGACY = "better_content_fixes.epicfight_style_discoveries";
     private static final String MIGRATED = "better_content_fixes.epicfight_movesets_migrated";
 
@@ -42,19 +43,70 @@ public final class StyleState {
     public static String selected(ServerPlayer player, ServerPlayerPatch patch) {
         migrate(player, patch);
         String id = persisted(player).getString(SELECTED);
-        return id.isEmpty() || !learned(player, patch).contains(id)
-                || StyleCatalogue.get(patch, id) == null ? "" : id;
+        if (id.isEmpty() || !learned(player, patch).contains(id)) return "";
+        if (StyleCatalogue.get(patch, id) == null) restoreEntries(player, patch);
+        return StyleCatalogue.get(patch, id) == null ? "" : id;
     }
 
-    public static boolean learn(ServerPlayer player, ServerPlayerPatch patch, String id) {
+    public static boolean learn(ServerPlayer player, ServerPlayerPatch patch, StyleCatalogue.Entry entry) {
         var known = learned(player, patch);
-        if (!known.add(id)) return false;
+        saveEntry(player, entry);
+        if (!known.add(entry.id())) return false;
         writeLearned(player, known);
         return true;
     }
 
+    private static void saveEntry(ServerPlayer player, StyleCatalogue.Entry entry) {
+        var data = persisted(player);
+        var entries = data.getCompound(KNOWN_ENTRIES);
+        entries.put(entry.id(), encodeEntry(entry));
+        data.put(KNOWN_ENTRIES, entries);
+        save(player, data);
+    }
+
+    static void restoreEntries(ServerPlayer player, ServerPlayerPatch patch) {
+        var entries = persisted(player).getCompound(KNOWN_ENTRIES);
+        for (var id : entries.getAllKeys()) {
+            var entry = decodeEntry(id, entries.getCompound(id));
+            if (entry != null) StyleCatalogue.restore(patch, entry);
+        }
+    }
+
+    static CompoundTag encodeEntry(StyleCatalogue.Entry entry) {
+        var data = new CompoundTag();
+        data.putString("name", entry.name());
+        var motions = new ListTag();
+        for (var animation : entry.animations()) motions.add(StringTag.valueOf(animation.toString()));
+        data.put("animations", motions);
+        var sources = new ListTag();
+        for (var source : entry.sources()) sources.add(StringTag.valueOf(source.toString()));
+        data.put("sources", sources);
+        return data;
+    }
+
+    static StyleCatalogue.Entry decodeEntry(String id, CompoundTag data) {
+        var motions = data.getList("animations", Tag.TAG_STRING);
+        if (motions.size() < 3 || motions.size() > 32) return null;
+        var animations = new java.util.ArrayList<ResourceLocation>(motions.size());
+        for (int index = 0; index < motions.size(); index++) {
+            var key = ResourceLocation.tryParse(motions.getString(index));
+            if (key == null) return null;
+            animations.add(key);
+        }
+        if (!StyleCatalogue.idFor(animations).equals(id)) return null;
+        var sources = new LinkedHashSet<ResourceLocation>();
+        var storedSources = data.getList("sources", Tag.TAG_STRING);
+        for (int index = 0; index < storedSources.size(); index++) {
+            var source = ResourceLocation.tryParse(storedSources.getString(index));
+            if (source != null) sources.add(source);
+        }
+        return new StyleCatalogue.Entry(id, data.getString("name"),
+                java.util.List.copyOf(animations), java.util.Collections.unmodifiableSet(sources));
+    }
+
     public static boolean select(ServerPlayer player, ServerPlayerPatch patch, String id) {
         if (id == null || id.length() > 64) return false;
+        if (!id.isEmpty() && StyleCatalogue.get(patch, id) == null) restoreEntries(player, patch);
         if (!id.isEmpty() && (!learned(player, patch).contains(id)
                 || StyleCatalogue.get(patch, id) == null)) return false;
         var data = persisted(player);
