@@ -126,7 +126,7 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             return hasVersion(mods, "trashslot", "15.1.5");
         }
         if (mixinClassName.startsWith(ICE_AND_FIRE_MIXIN_PREFIX)) {
-            return hasVersion(mods, "iceandfire", "2.1.13-1.20.1-beta-5");
+            return hasVersion(mods, "iceandfire", "2.1.13-1.20.1");
         }
                         if (mixinClassName.startsWith(PNEUMATICCRAFT_TCON_HEAD_MIXIN_PREFIX)) {
             return hasMods(mods, "pneumaticcraft", "tconstruct");
