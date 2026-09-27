@@ -97,7 +97,8 @@
     "tconstruct.PartBuilderPatternSlotRenderMixin",
     "weather2.FogAdjusterMixin",
     "tacz.ClientIndexManagerMixin",
-    "tacz.ClientAssetsManagerAccessor"
+    "tacz.ClientAssetsManagerAccessor",
+    "trashslot.TrashSlotSaveStateMixin"
   ],
   "injectors": {
     "defaultRequire": 0

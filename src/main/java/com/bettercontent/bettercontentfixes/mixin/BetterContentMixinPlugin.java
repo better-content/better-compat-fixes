@@ -96,6 +96,8 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             "com.bettercontent.bettercontentfixes.mixin.cataclysm.";
     private static final String UNTAMED_MIXIN_PREFIX =
             "com.bettercontent.bettercontentfixes.mixin.untamedwilds.";
+    private static final String TRASH_SLOT_MIXIN_PREFIX =
+            "com.bettercontent.bettercontentfixes.mixin.trashslot.";
 
     @Override
     public void onLoad(final String mixinPackage) {
@@ -117,6 +119,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         }
         if (mixinClassName.startsWith(UNTAMED_MIXIN_PREFIX)) {
             return hasVersion(mods, "untamedwilds", "4.0.4");
+        }
+        if (mixinClassName.startsWith(TRASH_SLOT_MIXIN_PREFIX)) {
+            return hasVersion(mods, "trashslot", "15.1.5");
         }
                         if (mixinClassName.startsWith(PNEUMATICCRAFT_TCON_HEAD_MIXIN_PREFIX)) {
             return hasMods(mods, "pneumaticcraft", "tconstruct");
