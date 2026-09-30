@@ -49,6 +49,7 @@ public final class StyleScreen extends Screen {
         search = new EditBox(font, left + 10, top + 30, listWidth - 4, 18,
                 Component.translatable("screen.better_content_fixes.search"));
         search.setHint(Component.translatable("screen.better_content_fixes.search"));
+        search.setBordered(false);
         search.setTextColor(0xFF254637);
         search.setTextColorUneditable(0xFF58654B);
         search.setMaxLength(60);
@@ -90,6 +91,8 @@ public final class StyleScreen extends Screen {
         graphics.fill(left + 3, top + 3, left + panelWidth - 3, top + panelHeight - 3, PANEL);
         graphics.fill(left + 8, top + 7, left + 11, top + panelHeight - 7, RED);
         graphics.drawString(font, title, left + 18, top + 12, WHITE, false);
+        graphics.fill(left + 10, top + 30, left + listWidth + 6, top + 48, 0xFFF9EFD7);
+        graphics.fill(left + 10, top + 30, left + listWidth + 6, top + 31, BG);
         graphics.drawString(font, Component.translatable("screen.better_content_fixes.progress",
                 StyleClientState.snapshot().rows().stream().filter(StyleNetwork.Row::learned).count(),
                 StyleClientState.snapshot().rows().size()), left + 10, top + 54, MUTED, false);
