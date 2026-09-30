@@ -14,11 +14,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 /** Inventory sub-screen for one global basic-combo selection. */
 public final class StyleScreen extends Screen {
-    private static final int BG = 0xF00D0B0D;
-    private static final int PANEL = 0xEE1D1719;
-    private static final int RED = 0xFFC94A4E;
-    private static final int WHITE = 0xFFF0E8E4;
-    private static final int MUTED = 0xFFAA9698;
+    private static final int BG = 0xFFA48657;
+    private static final int PANEL = 0xFFEFE3C4;
+    private static final int RED = 0xFF496951;
+    private static final int WHITE = 0xFF254637;
+    private static final int MUTED = 0xFF58654B;
     private static final int ROW_HEIGHT = 23;
     private static final int VISIBLE_ROWS = 5;
 
@@ -49,6 +49,8 @@ public final class StyleScreen extends Screen {
         search = new EditBox(font, left + 10, top + 30, listWidth - 4, 18,
                 Component.translatable("screen.better_content_fixes.search"));
         search.setHint(Component.translatable("screen.better_content_fixes.search"));
+        search.setTextColor(0xFF254637);
+        search.setTextColorUneditable(0xFF58654B);
         search.setMaxLength(60);
         search.setResponder(text -> scroll = 0);
         addRenderableWidget(search);
@@ -83,7 +85,7 @@ public final class StyleScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
+        graphics.fill(0, 0, width, height, 0x66364838);
         graphics.fill(left, top, left + panelWidth, top + panelHeight, BG);
         graphics.fill(left + 3, top + 3, left + panelWidth - 3, top + panelHeight - 3, PANEL);
         graphics.fill(left + 8, top + 7, left + 11, top + panelHeight - 7, RED);
@@ -110,15 +112,15 @@ public final class StyleScreen extends Screen {
             int y = listY + (index - scroll) * ROW_HEIGHT;
             boolean selected = row.id().equals(focused);
             graphics.fill(listX, y, listX + listWidth - 4, y + ROW_HEIGHT - 2,
-                    selected ? 0xFF49282C : 0xE01A1517);
-            graphics.fill(listX, y, listX + 2, y + ROW_HEIGHT - 2, selected ? RED : 0xFF513438);
+                    selected ? 0xFFD9C79F : 0xFFF9EFD7);
+            graphics.fill(listX, y, listX + 2, y + ROW_HEIGHT - 2, selected ? RED : BG);
             String label = row.learned() ? row.name() : "◇  Undiscovered";
             graphics.drawString(font, font.plainSubstrByWidth(label, listWidth - 17),
                     listX + 7, y + 6, row.learned() ? WHITE : MUTED, false);
         }
         int detailX = left + listWidth + 15;
         int detailW = panelWidth - listWidth - 26;
-        graphics.fill(detailX, top + 30, detailX + detailW, top + panelHeight - 38, 0xD0120E10);
+        graphics.fill(detailX, top + 30, detailX + detailW, top + panelHeight - 38, 0xFFF9EFD7);
         var selected = StyleClientState.snapshot().rows().stream()
                 .filter(row -> row.id().equals(focused)).findFirst().orElse(null);
         useDefault.active = !StyleClientState.snapshot().selected().isEmpty();
@@ -155,6 +157,12 @@ public final class StyleScreen extends Screen {
             }
         }
         super.render(graphics, mouseX, mouseY, partialTick);
+        for (var child : children()) if (child instanceof Button button && button.visible) {
+            int x = button.getX(), y = button.getY(), w = button.getWidth(), h = button.getHeight();
+            graphics.fill(x, y, x + w, y + h, button.isHoveredOrFocused() ? 0xFF59755C : 0xFF405D49);
+            graphics.fill(x, y, x + w, y + 2, BG);
+            graphics.drawCenteredString(font, button.getMessage(), x + w / 2, y + (h - font.lineHeight) / 2, 0xFFF9EFD7);
+        }
     }
 
     @Override
