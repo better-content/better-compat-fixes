@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repository contains the Better Content-owned Forge mod **Better Content Fixes**.
+This repository contains the Better Content-owned Forge mod **Better Compat Fixes**.
 
 - Canonical mod ID: `better_compat_fixes`
 - Canonical artifact: `better-compat-fixes-<version>.jar`
