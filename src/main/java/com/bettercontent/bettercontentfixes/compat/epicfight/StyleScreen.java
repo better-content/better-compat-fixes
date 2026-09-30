@@ -162,7 +162,8 @@ public final class StyleScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         for (var child : children()) if (child instanceof Button button && button.visible) {
             int x = button.getX(), y = button.getY(), w = button.getWidth(), h = button.getHeight();
-            graphics.fill(x, y, x + w, y + h, button.isHoveredOrFocused() ? 0xFF59755C : 0xFF405D49);
+            graphics.fill(x, y, x + w, y + h, !button.active ? 0xFF849382
+                    : button.isHoveredOrFocused() ? 0xFF59755C : 0xFF405D49);
             graphics.fill(x, y, x + w, y + 2, BG);
             graphics.drawCenteredString(font, button.getMessage(), x + w / 2, y + (h - font.lineHeight) / 2, 0xFFF9EFD7);
         }
