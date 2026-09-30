@@ -78,9 +78,9 @@ repositories {
 
 dependencies {
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
-    compileOnly(files(betterContentJar("better-content-notifications", "better-content-notifications-1.0.0.jar")))
-    runtimeOnly(files(betterContentJar("better-content-notifications", "better-content-notifications-1.0.0.jar")))
-    compileOnly(files(betterContentJar("dynamic-survival-hud", "dynamic-survival-hud-1.0.0.jar")))
+    compileOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
+    runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
+    compileOnly(files(betterContentJar("better-survival-hud", "better-survival-hud-1.0.0.jar")))
     compileOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pollution-of-the-realms-269973:8554528"))
@@ -227,7 +227,7 @@ tasks.processResources {
 }
 
 mixin {
-    config("better_content_fixes.mixins.json")
+    config("better_compat_fixes.mixins.json")
 }
 
 val verifyRuntimeDispenserAlias by tasks.registering {
@@ -237,7 +237,7 @@ val verifyRuntimeDispenserAlias by tasks.registering {
     doLast {
         val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
         ZipFile(runtimeJar).use { zip ->
-            val mixin = zip.getEntry("com/bettercontent/bettercontentfixes/mixin/minecraft/DispenserBlockMixin.class")
+            val mixin = zip.getEntry("com/bettercontent/bettercompatfixes/mixin/minecraft/DispenserBlockMixin.class")
                 ?: throw GradleException("Runtime JAR is missing DispenserBlockMixin: $runtimeJar")
             val bytecode = zip.getInputStream(mixin).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
             check(bytecode.contains("f_52661_")) {
@@ -255,7 +255,7 @@ val verifyRuntimeSprintBridge by tasks.registering {
         val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
         ZipFile(runtimeJar).use { zip ->
             check(zip.getEntry(
-                "com/bettercontent/bettercontentfixes/mixin/minecraft/LocalPlayerSprintMixin.class") == null) {
+                "com/bettercontent/bettercompatfixes/mixin/minecraft/LocalPlayerSprintMixin.class") == null) {
                 "Runtime JAR still contains the obsolete LocalPlayer sprint injector: $runtimeJar"
             }
             for (obsolete in listOf(
@@ -263,16 +263,16 @@ val verifyRuntimeSprintBridge by tasks.registering {
                 "client/DirectionalDoubleTapTracker.class",
                 "client/VanillaDoubleTapSprintSuppressor.class"
             )) {
-                check(zip.getEntry("com/bettercontent/bettercontentfixes/$obsolete") == null) {
+                check(zip.getEntry("com/bettercontent/bettercompatfixes/$obsolete") == null) {
                     "Runtime JAR still contains obsolete directional double-tap code $obsolete: $runtimeJar"
                 }
             }
             check(zip.getEntry(
-                "com/bettercontent/bettercontentfixes/mixin/parcool/DodgeMixin.class") != null) {
+                "com/bettercontent/bettercompatfixes/mixin/parcool/DodgeMixin.class") != null) {
                 "Runtime JAR is missing the ParCool native double-tap suppression mixin: $runtimeJar"
             }
 
-            val mixinConfig = zip.getEntry("better_content_fixes.mixins.json")
+            val mixinConfig = zip.getEntry("better_compat_fixes.mixins.json")
                 ?: throw GradleException("Runtime JAR is missing its mixin configuration: $runtimeJar")
             val mixins = zip.getInputStream(mixinConfig).use { it.readBytes() }.toString(Charsets.UTF_8)
             check(!mixins.contains("LocalPlayerSprintMixin")) {
@@ -295,13 +295,13 @@ val verifyRuntimeBetterCavesBounds by tasks.registering {
             }
 
             val bounds = classBytes(
-                "com/bettercontent/bettercontentfixes/compat/BetterCavesCarvingBounds.class")
+                "com/bettercontent/bettercompatfixes/compat/BetterCavesCarvingBounds.class")
             check(bounds.contains("m_151570_")) {
                 "Runtime Better Caves bounds guard does not use the reobfuscated build-height predicate: $runtimeJar"
             }
 
             val mixin = classBytes(
-                "com/bettercontent/bettercontentfixes/mixin/bettercaves/AbstractCarverMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/bettercaves/AbstractCarverMixin.class")
             check(mixin.contains("com.yungnickyoung.minecraft.bettercaves.worldgen.carver.AbstractCarver")
                     && mixin.contains("carveBlock")
                     && mixin.contains("BetterCavesCarvingBounds")) {
@@ -327,7 +327,7 @@ val verifyRuntimeLostCitiesSerialization by tasks.registering {
             }
 
             val serialization = classBytes(
-                "com/bettercontent/bettercontentfixes/compat/LostCitiesC2meDhSerialization.class")
+                "com/bettercontent/bettercompatfixes/compat/LostCitiesC2meDhSerialization.class")
             check(serialization.contains("lostcities")
                     && serialization.contains("lostcity")
                     && serialization.contains("c2me")
@@ -339,20 +339,20 @@ val verifyRuntimeLostCitiesSerialization by tasks.registering {
             }
 
             val config = classBytes(
-                "com/bettercontent/bettercontentfixes/config/BcFixesConfig.class")
+                "com/bettercontent/bettercompatfixes/config/BcFixesConfig.class")
             check(config.contains("LostCitiesC2meDhSerialization")
                     && config.contains("dependenciesAvailable")) {
                 "Runtime Lost Cities config gate is not linked to the corrected dependency policy: $runtimeJar"
             }
 
             val chunkGenerator = classBytes(
-                "com/bettercontent/bettercontentfixes/mixin/lostcities/ChunkGeneratorMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/lostcities/ChunkGeneratorMixin.class")
             val lostCityFeature = classBytes(
-                "com/bettercontent/bettercontentfixes/mixin/lostcities/LostCityFeatureMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/lostcities/LostCityFeatureMixin.class")
             val sectionBounds = classBytes(
-                "com/bettercontent/bettercontentfixes/compat/LostCitiesSectionBounds.class")
+                "com/bettercontent/bettercompatfixes/compat/LostCitiesSectionBounds.class")
             val chunkDriver = classBytes(
-                "com/bettercontent/bettercontentfixes/mixin/lostcities/ChunkDriverMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/lostcities/ChunkDriverMixin.class")
             check(chunkGenerator.contains("shouldSerialize")
                     && chunkGenerator.contains("runSerialized")
                     && lostCityFeature.contains("shouldSerialize")
@@ -367,7 +367,7 @@ val verifyRuntimeLostCitiesSerialization by tasks.registering {
                 "Runtime Lost Cities section-cache boundary hook did not survive reobfuscation: $runtimeJar"
             }
 
-            val mixinConfig = zip.getEntry("better_content_fixes.mixins.json")
+            val mixinConfig = zip.getEntry("better_compat_fixes.mixins.json")
                 ?: throw GradleException("Runtime JAR is missing its mixin configuration: $runtimeJar")
             val mixins = zip.getInputStream(mixinConfig).use { it.readBytes() }.toString(Charsets.UTF_8)
             check(mixins.contains("lostcities.ChunkGeneratorMixin")
@@ -392,7 +392,7 @@ val verifyRuntimeFalloutStructureBounds by tasks.registering {
             }
 
             val bounds = classBytes(
-                "com/bettercontent/bettercontentfixes/compat/FalloutStructurePlacementBounds.class")
+                "com/bettercontent/bettercompatfixes/compat/FalloutStructurePlacementBounds.class")
             check(bounds.contains("WRITABLE_ENVELOPE_BLOCKS")
                     && bounds.contains("EDGE_UPDATE_MARGIN_BLOCKS")
                     && bounds.contains("PLACEABLE_TEMPLATE_BLOCKS")
@@ -403,7 +403,7 @@ val verifyRuntimeFalloutStructureBounds by tasks.registering {
             }
 
             val mixin = classBytes(
-                "com/bettercontent/bettercontentfixes/mixin/falloutwastelands/StructureFeatureMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/falloutwastelands/StructureFeatureMixin.class")
             check(mixin.contains("net.mcreator.falloutwastelands.world.features.StructureFeature")
                     && mixin.contains("m_142674_")
                     && mixin.contains("m_230328_")
@@ -411,7 +411,7 @@ val verifyRuntimeFalloutStructureBounds by tasks.registering {
                 "Runtime Fallout mixin lacks its exact reobfuscated target or placement redirect: $runtimeJar"
             }
 
-            val mixinConfig = zip.getEntry("better_content_fixes.mixins.json")
+            val mixinConfig = zip.getEntry("better_compat_fixes.mixins.json")
                 ?: throw GradleException("Runtime JAR is missing its mixin configuration: $runtimeJar")
             val mixins = zip.getInputStream(mixinConfig).use { it.readBytes() }.toString(Charsets.UTF_8)
             check(mixins.contains("falloutwastelands.StructureFeatureMixin")) {
@@ -434,7 +434,7 @@ val verifyRuntimeTwilightForestMazeSerialization by tasks.registering {
             }
 
             val helper = classBytes(
-                "com/bettercontent/bettercontentfixes/compat/TwilightForestMazeSerialization.class")
+                "com/bettercontent/bettercompatfixes/compat/TwilightForestMazeSerialization.class")
             check(helper.contains("twilightforest")
                     && helper.contains("c2me")
                     && helper.contains("runSerialized")) {
@@ -442,7 +442,7 @@ val verifyRuntimeTwilightForestMazeSerialization by tasks.registering {
             }
 
             val mixin = classBytes(
-                "com/bettercontent/bettercontentfixes/mixin/twilightforest/TFMazeMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/twilightforest/TFMazeMixin.class")
             check(mixin.contains("twilightforest.world.components.structures.TFMaze")
                     && mixin.contains("copyToStructure")
                     && mixin.contains("runSerialized")
@@ -451,7 +451,7 @@ val verifyRuntimeTwilightForestMazeSerialization by tasks.registering {
             }
 
             val strongholdMixin = classBytes(
-                "com/bettercontent/bettercontentfixes/mixin/twilightforest/ConquerableStructureMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/twilightforest/ConquerableStructureMixin.class")
             check(strongholdMixin.contains("twilightforest.world.components.structures.util.ConquerableStructure")
                     && strongholdMixin.contains("KnightStrongholdStructure")
                     && strongholdMixin.contains("generateCustom")
@@ -459,7 +459,7 @@ val verifyRuntimeTwilightForestMazeSerialization by tasks.registering {
                 "Runtime Twilight Forest mixin lacks full Knight Stronghold generation serialization: $runtimeJar"
             }
 
-            val mixinConfig = zip.getEntry("better_content_fixes.mixins.json")
+            val mixinConfig = zip.getEntry("better_compat_fixes.mixins.json")
                 ?: throw GradleException("Runtime JAR is missing its mixin configuration: $runtimeJar")
             val mixins = zip.getInputStream(mixinConfig).use { it.readBytes() }.toString(Charsets.UTF_8)
             check(mixins.contains("twilightforest.TFMazeMixin")) {
@@ -480,7 +480,7 @@ val verifyRuntimeMonsterRoomSpawnerRecovery by tasks.registering {
         val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
         ZipFile(runtimeJar).use { zip ->
             val entry = zip.getEntry(
-                "com/bettercontent/bettercontentfixes/mixin/minecraft/MonsterRoomFeatureMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/minecraft/MonsterRoomFeatureMixin.class")
                 ?: throw GradleException("Runtime JAR is missing MonsterRoomFeatureMixin: $runtimeJar")
             val bytecode = zip.getInputStream(entry).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
             check(bytecode.contains("MonsterRoomFeature")
@@ -493,7 +493,7 @@ val verifyRuntimeMonsterRoomSpawnerRecovery by tasks.registering {
                 "Runtime dungeon correction lacks the exact failed-placement return path: $runtimeJar"
             }
 
-            val config = zip.getEntry("better_content_fixes.mixins.json")
+            val config = zip.getEntry("better_compat_fixes.mixins.json")
                 ?: throw GradleException("Runtime JAR is missing its mixin configuration: $runtimeJar")
             val mixins = zip.getInputStream(config).use { it.readBytes() }.toString(Charsets.UTF_8)
             check(mixins.contains("minecraft.MonsterRoomFeatureMixin")) {
@@ -511,7 +511,7 @@ val verifyRuntimeCreativeSearchTabMixin by tasks.registering {
         val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
         ZipFile(runtimeJar).use { zip ->
             val entry = zip.getEntry(
-                "com/bettercontent/bettercontentfixes/mixin/minecraft/CreativeModeInventoryScreenMixin.class")
+                "com/bettercontent/bettercompatfixes/mixin/minecraft/CreativeModeInventoryScreenMixin.class")
                 ?: throw GradleException("Runtime JAR is missing CreativeModeInventoryScreenMixin: $runtimeJar")
             val bytecode = zip.getInputStream(entry).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
             check(bytecode.contains("init")
@@ -521,7 +521,7 @@ val verifyRuntimeCreativeSearchTabMixin by tasks.registering {
                     && !bytecode.contains("CreativeModeTabs;tabs")) {
                 "Runtime Creative tab redirect lacks its dual mapped selectors or Forge page source: $runtimeJar"
             }
-            val config = zip.getEntry("better_content_fixes.mixins.json")
+            val config = zip.getEntry("better_compat_fixes.mixins.json")
                 ?: throw GradleException("Runtime JAR is missing its mixin configuration: $runtimeJar")
             val configText = zip.getInputStream(config).use { it.readBytes() }.toString(Charsets.UTF_8)
             check(!configText.contains("\"refmap\"")) {

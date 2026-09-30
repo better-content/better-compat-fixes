@@ -9,9 +9,9 @@ from pathlib import Path
 
 MOD_ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE_ROOT = MOD_ROOT.parent.parent.parent
-RESOURCE_PATH = MOD_ROOT / "src/main/resources/data/better_content_fixes/burnt_grass_replacements.json"
-ASSETS_ROOT = MOD_ROOT / "src/main/resources/assets/better_content_fixes"
-DATA_ROOT = MOD_ROOT / "src/main/resources/data/better_content_fixes"
+RESOURCE_PATH = MOD_ROOT / "src/main/resources/data/better_compat_fixes/burnt_grass_replacements.json"
+ASSETS_ROOT = MOD_ROOT / "src/main/resources/assets/better_compat_fixes"
+DATA_ROOT = MOD_ROOT / "src/main/resources/data/better_compat_fixes"
 MOD_CACHE = WORKSPACE_ROOT / "generated/cache/packwiz-downloads/mods"
 
 
@@ -176,24 +176,24 @@ def main():
         side_texture_path = ASSETS_ROOT / "textures/block" / f"{target_path}_side.png"
         bottom_texture_path = ASSETS_ROOT / "textures/block" / f"{target_path}_bottom.png"
 
-        write_json(blockstate_path, {"variants": {"": {"model": f"better_content_fixes:block/{target_path}"}}})
+        write_json(blockstate_path, {"variants": {"": {"model": f"better_compat_fixes:block/{target_path}"}}})
         write_json(
             block_model_path,
             {
                 "parent": "block/cube",
                 "textures": {
-                    "down": f"better_content_fixes:block/{target_path}_bottom",
+                    "down": f"better_compat_fixes:block/{target_path}_bottom",
                     "up": "burnt:block/burnt_grass",
-                    "north": f"better_content_fixes:block/{target_path}_side",
-                    "east": f"better_content_fixes:block/{target_path}_side",
-                    "south": f"better_content_fixes:block/{target_path}_side",
-                    "west": f"better_content_fixes:block/{target_path}_side",
-                    "particle": f"better_content_fixes:block/{target_path}_bottom",
+                    "north": f"better_compat_fixes:block/{target_path}_side",
+                    "east": f"better_compat_fixes:block/{target_path}_side",
+                    "south": f"better_compat_fixes:block/{target_path}_side",
+                    "west": f"better_compat_fixes:block/{target_path}_side",
+                    "particle": f"better_compat_fixes:block/{target_path}_bottom",
                 },
                 "render_type": "solid",
             },
         )
-        write_json(item_model_path, {"parent": f"better_content_fixes:block/{target_path}"})
+        write_json(item_model_path, {"parent": f"better_compat_fixes:block/{target_path}"})
         write_json(
             loot_path,
             {
@@ -201,7 +201,7 @@ def main():
                 "pools": [
                     {
                         "rolls": 1,
-                        "entries": [{"type": "minecraft:item", "name": f"better_content_fixes:{target_path}"}],
+                        "entries": [{"type": "minecraft:item", "name": f"better_compat_fixes:{target_path}"}],
                         "conditions": [{"condition": "minecraft:survives_explosion"}],
                     }
                 ],

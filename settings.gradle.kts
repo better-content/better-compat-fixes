@@ -18,4 +18,4 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "better-content-fixes"
+rootProject.name = "better-compat-fixes"

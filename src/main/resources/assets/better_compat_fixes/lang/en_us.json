@@ -1,0 +1,17 @@
+{
+  "key.categories.better_compat_fixes": "Better Content",
+  "options.better_compat_fixes.mod_settings": "Mod Settings",
+  "screen.better_compat_fixes.fighting_styles": "Fighting Styles",
+  "screen.better_compat_fixes.search": "Search styles or weapons",
+  "screen.better_compat_fixes.progress": "%s / %s discovered",
+  "screen.better_compat_fixes.equip": "Equip style",
+  "screen.better_compat_fixes.default": "Use weapon default",
+  "screen.better_compat_fixes.choose": "Choose a fighting style",
+  "screen.better_compat_fixes.no_matches": "No matching styles",
+  "screen.better_compat_fixes.locked": "Discover this in combat",
+  "screen.better_compat_fixes.active": "ACTIVE",
+  "screen.better_compat_fixes.learned_from": "Weapons with this style",
+  "screen.better_compat_fixes.more_weapons": "+%s more weapons",
+  "message.better_compat_fixes.style_discovered": "Moveset discovered: %s",
+  "message.better_compat_fixes.style_hint": "Inventory · Fighting Styles"
+}

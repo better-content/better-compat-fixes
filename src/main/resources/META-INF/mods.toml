@@ -10,7 +10,7 @@ authors="gerald"
 description='''Isolated, config-toggleable compatibility fixes for the Better Content modpack.'''
 
 [[dependencies.${mod_id}]]
-    modId="better_content_notifications"
+    modId="better_gameplay_notices"
     mandatory=true
     versionRange="[1.0.0,)"
     ordering="AFTER"
@@ -66,7 +66,7 @@ description='''Isolated, config-toggleable compatibility fixes for the Better Co
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    modId="dynamic_survival_hud"
+    modId="better_survival_hud"
     mandatory=false
     versionRange="[1.0.0,1.1)"
     ordering="AFTER"
@@ -94,7 +94,7 @@ description='''Isolated, config-toggleable compatibility fixes for the Better Co
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    modId="world_lifecycle_manager"
+    modId="better_world_management"
     mandatory=false
 versionRange="[0.1.0,)"
     ordering="AFTER"

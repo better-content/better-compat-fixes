@@ -1,4 +1,4 @@
-# Better Content Fixes
+# Better Compat Fixes
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
@@ -86,7 +86,7 @@ and ReHooked Intro Hooks. Their registries, assets, config, and commands live in
 
 Deploy the reobfuscated jar from:
 
-- `build/libs/better-content-fixes-<version>.jar`
+- `build/libs/better-compat-fixes-<version>.jar`
 
 The pack currently tracks the canonical release jar in `mods/`, not source outputs or IDE runtime state.
 
@@ -96,9 +96,9 @@ For modpack and mod discussion, playtest feedback, and bug reports, join the [Be
 
 ## Canonical identity
 
-- Repository and Gradle project: `better-content-fixes`
-- Mod ID and resource namespace: `better_content_fixes`
+- Repository and Gradle project: `better-compat-fixes`
+- Mod ID and resource namespace: `better_compat_fixes`
 - Maven group: `com.bettercontent`
-- Runtime artifact: `build/libs/better-content-fixes-<version>.jar`
+- Runtime artifact: `build/libs/better-compat-fixes-<version>.jar`
 
 The canonical identity is a clean break. Legacy mod IDs, resource namespaces, configuration paths, commands, network channels, and saved-data keys are not migrated or aliased.
