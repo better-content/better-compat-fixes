@@ -5,6 +5,8 @@
   "plugin": "com.bettercontent.bettercompatfixes.mixin.BetterContentMixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "curios.CurioInventoryWrapperMixin",
+    "curios.CurioStacksHandlerMixin",
     "bettercaves.AbstractCarverMixin",
     "cataclysm.CursedPyramidPieceMixin",
     "create.HandCrankBlockMixin",

@@ -3,6 +3,7 @@ package com.bettercontent.bettercompatfixes;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.bettercontent.bettercompatfixes.compat.AmbientSurfaceSpawnControl;
 import com.bettercontent.bettercompatfixes.compat.ButcherKnifeDurability;
+import com.bettercontent.bettercompatfixes.compat.CuriosSlotPolicy;
 import com.bettercontent.bettercompatfixes.compat.FarmlandTrampleProtection;
 import com.bettercontent.bettercompatfixes.compat.ExtendedItemPickup;
 import com.bettercontent.bettercompatfixes.compat.FluidMixBlocker;
@@ -73,6 +74,9 @@ public final class BetterContentFixes {
             MinecraftForge.EVENT_BUS.register(DynamicTreesSupportSweepCommand.class);
         }
         MinecraftForge.EVENT_BUS.register(ButcherKnifeDurability.class);
+        if (ModList.get().isLoaded("curios") && ModList.get().isLoaded("sophisticatedbackpacks")) {
+            MinecraftForge.EVENT_BUS.register(CuriosSlotPolicy.class);
+        }
         if (ModList.get().isLoaded("parcool")) {
             MinecraftForge.EVENT_BUS.register(ParCoolControlLearning.class);
         }

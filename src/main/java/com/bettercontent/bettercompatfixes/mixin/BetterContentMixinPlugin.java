@@ -100,6 +100,8 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             "com.bettercontent.bettercompatfixes.mixin.trashslot.";
     private static final String ICE_AND_FIRE_MIXIN_PREFIX =
             "com.bettercontent.bettercompatfixes.mixin.iceandfire.";
+    private static final String CURIOS_MIXIN_PREFIX =
+            "com.bettercontent.bettercompatfixes.mixin.curios.";
 
     @Override
     public void onLoad(final String mixinPackage) {
@@ -113,6 +115,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.startsWith(CURIOS_MIXIN_PREFIX)) {
+            return hasMods(mods, "curios");
+        }
         if (mixinClassName.startsWith(FLESH_MIXIN_PREFIX)) {
             return hasVersion(mods, "the_flesh_that_hates", "0.4");
         }
