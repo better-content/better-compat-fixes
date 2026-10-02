@@ -1,5 +1,6 @@
 package com.bettercontent.bettercompatfixes.compat.epicfight;
 
+import com.bettercontent.gameplaynotices.BetterUiTheme;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -14,11 +15,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 /** Inventory sub-screen for one global basic-combo selection. */
 public final class StyleScreen extends Screen {
-    private static final int BG = 0xFFA48657;
-    private static final int PANEL = 0xFFEFE3C4;
-    private static final int RED = 0xFF496951;
-    private static final int WHITE = 0xFF254637;
-    private static final int MUTED = 0xFF58654B;
+    private static int BG = 0xFFA48657;
+    private static int PANEL = 0xFFEFE3C4;
+    private static int RED = 0xFF496951;
+    private static int WHITE = 0xFF254637;
+    private static int MUTED = 0xFF58654B;
     private static final int ROW_HEIGHT = 23;
     private static final int VISIBLE_ROWS = 5;
 
@@ -32,9 +33,15 @@ public final class StyleScreen extends Screen {
     private int panelWidth;
     private int panelHeight;
     private int listWidth;
+    private final Screen returnTo;
 
     public StyleScreen() {
+        this(null);
+    }
+
+    public StyleScreen(Screen returnTo) {
         super(Component.translatable("screen.better_compat_fixes.fighting_styles"));
+        this.returnTo = returnTo;
     }
 
     @Override
@@ -86,12 +93,19 @@ public final class StyleScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.fill(0, 0, width, height, 0x66364838);
+        BG = BetterUiTheme.color(0xFFA48657, 0xFF987750);
+        PANEL = BetterUiTheme.color(0xFFEFE3C4, 0xFF182B26);
+        RED = BetterUiTheme.color(0xFF496951, 0xFF547B61);
+        WHITE = BetterUiTheme.color(0xFF254637, 0xFFF4E6C7);
+        MUTED = BetterUiTheme.color(0xFF58654B, 0xFFC4B99E);
+        search.setTextColor(WHITE);
+        search.setTextColorUneditable(MUTED);
+        graphics.fill(0, 0, width, height, BetterUiTheme.color(0x66364838, 0x9907110B));
         graphics.fill(left, top, left + panelWidth, top + panelHeight, BG);
         graphics.fill(left + 3, top + 3, left + panelWidth - 3, top + panelHeight - 3, PANEL);
         graphics.fill(left + 8, top + 7, left + 11, top + panelHeight - 7, RED);
         graphics.drawString(font, title, left + 18, top + 12, WHITE, false);
-        graphics.fill(left + 10, top + 30, left + listWidth + 6, top + 48, 0xFFF9EFD7);
+        graphics.fill(left + 10, top + 30, left + listWidth + 6, top + 48, BetterUiTheme.color(0xFFF9EFD7, 0xFF263A30));
         graphics.fill(left + 10, top + 30, left + listWidth + 6, top + 31, BG);
         graphics.drawString(font, Component.translatable("screen.better_compat_fixes.progress",
                 StyleClientState.snapshot().rows().stream().filter(StyleNetwork.Row::learned).count(),
@@ -115,7 +129,7 @@ public final class StyleScreen extends Screen {
             int y = listY + (index - scroll) * ROW_HEIGHT;
             boolean selected = row.id().equals(focused);
             graphics.fill(listX, y, listX + listWidth - 4, y + ROW_HEIGHT - 2,
-                    selected ? 0xFFD9C79F : 0xFFF9EFD7);
+                    selected ? BetterUiTheme.color(0xFFD9C79F, 0xFF405E4A) : BetterUiTheme.color(0xFFF9EFD7, 0xFF263A30));
             graphics.fill(listX, y, listX + 2, y + ROW_HEIGHT - 2, selected ? RED : BG);
             String label = row.learned() ? row.name() : "◇  Undiscovered";
             graphics.drawString(font, font.plainSubstrByWidth(label, listWidth - 17),
@@ -123,7 +137,7 @@ public final class StyleScreen extends Screen {
         }
         int detailX = left + listWidth + 15;
         int detailW = panelWidth - listWidth - 26;
-        graphics.fill(detailX, top + 30, detailX + detailW, top + panelHeight - 38, 0xFFF9EFD7);
+        graphics.fill(detailX, top + 30, detailX + detailW, top + panelHeight - 38, BetterUiTheme.color(0xFFF9EFD7, 0xFF263A30));
         var selected = StyleClientState.snapshot().rows().stream()
                 .filter(row -> row.id().equals(focused)).findFirst().orElse(null);
         useDefault.active = !StyleClientState.snapshot().selected().isEmpty();
@@ -162,10 +176,12 @@ public final class StyleScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         for (var child : children()) if (child instanceof Button button && button.visible) {
             int x = button.getX(), y = button.getY(), w = button.getWidth(), h = button.getHeight();
-            graphics.fill(x, y, x + w, y + h, !button.active ? 0xFF849382
-                    : button.isHoveredOrFocused() ? 0xFF59755C : 0xFF405D49);
+            graphics.fill(x, y, x + w, y + h, !button.active ? BetterUiTheme.color(0xFF849382, 0xFF4B5E50)
+                    : button.isHoveredOrFocused() ? BetterUiTheme.color(0xFF59755C, 0xFF547B61)
+                    : BetterUiTheme.color(0xFF405D49, 0xFF314F3E));
             graphics.fill(x, y, x + w, y + 2, BG);
-            graphics.drawCenteredString(font, button.getMessage(), x + w / 2, y + (h - font.lineHeight) / 2, 0xFFF9EFD7);
+            graphics.drawString(font, button.getMessage(), x + (w - font.width(button.getMessage())) / 2,
+                y + (h - font.lineHeight) / 2, 0xFFF9EFD7, false);
         }
     }
 
@@ -195,6 +211,7 @@ public final class StyleScreen extends Screen {
     @Override
     public void onClose() {
         var minecraft = Minecraft.getInstance();
+        if (returnTo != null) { minecraft.setScreen(returnTo); return; }
         if (minecraft.player != null) minecraft.setScreen(new InventoryScreen(minecraft.player));
         else minecraft.setScreen(null);
     }
