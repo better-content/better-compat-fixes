@@ -50,7 +50,7 @@ public final class CuriosSlotPolicy {
         }
     }
 
-    static boolean valid(String slot, ItemStack stack) {
+    public static boolean valid(String slot, ItemStack stack) {
         if (stack.isEmpty()) return false;
         if (stack.getItem() instanceof BackpackItem) return slot.equals("better_backpack");
         if (slot.equals("better_backpack")) return false;
