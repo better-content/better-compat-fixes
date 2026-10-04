@@ -46,7 +46,11 @@ public final class OptionalIntegrationGameTests {
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void thirstLootModifierCodecIsRegisteredWhenPresent(final GameTestHelper helper) {
-        if (ModList.get().isLoaded("thirst") && !ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.get().containsKey(
+        if (!ModList.get().isLoaded("thirst")) {
+            helper.fail("Required Thirst fixture is missing");
+            return;
+        }
+        if (!ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.get().containsKey(
                 ResourceLocation.fromNamespaceAndPath("thirst", "add_loot_table"))) {
             helper.fail("Thirst add_loot_table codec was not registered");
             return;
@@ -57,7 +61,7 @@ public final class OptionalIntegrationGameTests {
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void thirstNestedChestLootDoesNotReenterGlobalModifiers(final GameTestHelper helper) {
         if (!ModList.get().isLoaded("thirst")) {
-            helper.succeed();
+            helper.fail("Required Thirst fixture is missing");
             return;
         }
         final LootTable table = helper.getLevel().getServer().getLootData().getLootTable(
@@ -71,10 +75,14 @@ public final class OptionalIntegrationGameTests {
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void realisticBlockPhysicsTargetsOnlyUsableStates(final GameTestHelper helper) {
-        if (ModList.get().isLoaded("rbp") && (
+        if (!ModList.get().isLoaded("rbp")) {
+            helper.fail("Required Realistic Block Physics fixture is missing");
+            return;
+        }
+        if (
                 !RealisticBlockPhysicsDefinitions.isSupportedState(Blocks.STONE.defaultBlockState())
                         || RealisticBlockPhysicsDefinitions.isSupportedState(Blocks.WATER.defaultBlockState())
-                        || RealisticBlockPhysicsDefinitions.isSupportedState(Blocks.DANDELION.defaultBlockState()))) {
+                        || RealisticBlockPhysicsDefinitions.isSupportedState(Blocks.DANDELION.defaultBlockState())) {
             helper.fail("Realistic Block Physics compatibility accepted an unsupported block state");
             return;
         }

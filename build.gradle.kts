@@ -127,6 +127,8 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:patchouli-306770:7731017"))
     compileOnly("org.valkyrienskies.core:api:1.1.0+cf208d8b56")
     runtimeOnly(fg.deobf("curse.maven:thirst-was-taken-679270:6660408"))
+    runtimeOnly(fg.deobf("curse.maven:realistic-block-physics-375616:6393411"))
+    runtimeOnly(fg.deobf("curse.maven:realistic-physics-1030082:6026115"))
     runtimeOnly(fg.deobf("curse.maven:curios-api-309927:6418456"))
     runtimeOnly(fg.deobf("curse.maven:architectury-api-419699:5137938"))
     runtimeOnly(fg.deobf("curse.maven:mantle-74924:7563777"))
