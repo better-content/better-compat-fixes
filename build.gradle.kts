@@ -84,6 +84,7 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pollution-of-the-realms-269973:8554528"))
+    compileOnly(fg.deobf("curse.maven:forgeendertech-244844:8554308"))
     runtimeOnly(fg.deobf("curse.maven:forgeendertech-244844:8554308"))
     implementation(fg.deobf("com.simibubi.create:create-${property("minecraft_version")}:6.0.8-291:slim"))
     implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${property("minecraft_version")}:1.0.92"))
@@ -552,6 +553,12 @@ val verifyRuntimeWeather2ResidentQueries by tasks.registering {
             check(storm.contains("Level;getBiome(") && storm.contains("Level;m_204166_(")) {
                 "Weather2 native biome wrapper lacks development/production selectors"
             }
+            val endertech = bytecode("com/bettercontent/bettercompatfixes/mixin/forgeendertech/WorldDataChunkReadinessMixin.class")
+            check(endertech.contains("ChunkSource;hasChunk(II)Z") && endertech.contains("ChunkSource;m_5563_(II)Z")
+                    && endertech.contains("ServerLevel;getChunk(II)") && endertech.contains("ServerLevel;m_6325_(II)")
+                    && endertech.contains("m_7131_")) {
+                "ForgeEndertech notification adapter lacks native entrypoints/production resident-chunk lookup"
+            }
             val seasonal = bytecode("com/bettercontent/bettercompatfixes/mixin/weather2/CoroUtilCompatibilityMixin.class")
             check(seasonal.contains("getAdjustedTemperature") && seasonal.contains("Level;getBiome(") && seasonal.contains("Level;m_204166_(")) {
                 "CoroUtil seasonal biome wrapper lacks native entrypoint/development/production selectors"
@@ -562,7 +569,9 @@ val verifyRuntimeWeather2ResidentQueries by tasks.registering {
             }
             val config = bytecode("better_compat_fixes.mixins.json")
             check(config.contains("weather2.WeatherUtilBlockMixin") && config.contains("weather2.StormObjectMixin")
-                    && config.contains("weather2.CoroUtilCompatibilityMixin"))
+                    && config.contains("weather2.CoroUtilCompatibilityMixin")
+                    && config.contains("forgeendertech.WorldDataChunkReadinessMixin")
+                    && config.contains("forgeendertech.WorldDataAccessor"))
         }
     }
 }

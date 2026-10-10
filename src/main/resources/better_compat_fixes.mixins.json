@@ -39,6 +39,8 @@
     "twilightforest.TFMazeMixin",
     "twilightforest.ConquerableStructureMixin",
     "forge.VanillaInventoryCodeHooksMixin",
+    "forgeendertech.WorldDataChunkReadinessMixin",
+    "forgeendertech.WorldDataAccessor",
     "hyle.BiomeInjectorMixin",
     "hyle.RoughNoiseSamplerMixin",
     "hyle.StoneReplacerMixin",

@@ -21,6 +21,7 @@ import com.bettercontent.bettercompatfixes.config.BcFixesClientConfig;
 import com.bettercontent.bettercompatfixes.gametest.AmbientSurfaceSpawnGameTests;
 import com.bettercontent.bettercompatfixes.gametest.DaylightProtectionGameTests;
 import com.bettercontent.bettercompatfixes.gametest.Weather2LoadedChunkGameTests;
+import com.bettercontent.bettercompatfixes.gametest.ForgeEndertechChunkReadyGameTests;
 import com.bettercontent.bettercompatfixes.gametest.DecorativeVegetationTrampleGameTests;
 import com.bettercontent.bettercompatfixes.gametest.DynamicTreesUnsupportedTreeGameTests;
 import com.bettercontent.bettercompatfixes.gametest.FarmlandTrampleProtectionGameTests;
@@ -90,6 +91,7 @@ public final class BetterContentFixes {
         event.register(AmbientSurfaceSpawnGameTests.class);
         event.register(DaylightProtectionGameTests.class);
         event.register(Weather2LoadedChunkGameTests.class);
+        event.register(ForgeEndertechChunkReadyGameTests.class);
         event.register(DecorativeVegetationTrampleGameTests.class);
         event.register(ExtendedItemPickupGameTests.class);
         event.register(FarmlandTrampleProtectionGameTests.class);
