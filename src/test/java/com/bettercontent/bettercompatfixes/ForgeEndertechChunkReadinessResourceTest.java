@@ -23,7 +23,8 @@ class ForgeEndertechChunkReadinessResourceTest {
         String config = Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"));
         assertTrue(config.contains("forgeendertech.WorldDataChunkReadinessMixin") && config.contains("forgeendertech.WorldDataAccessor"));
         String entry = Files.readString(MAIN.resolve("BetterContentFixes.java"));
-        assertTrue(entry.contains("event.register(ForgeEndertechChunkReadyGameTests.class)"));
+        assertTrue(entry.contains("if (ModList.get().isLoaded(\"forgeendertech\")) {\n            event.register(ForgeEndertechChunkReadyGameTests.class);\n        }"),
+                "consumer test classpaths without ForgeEndertech must not resolve its native event regression");
         String tests = Files.readString(MAIN.resolve("gametest/ForgeEndertechChunkReadyGameTests.java"));
         assertTrue(tests.contains("GameWorld.WorldData.onLevelTick(tick)"));
         assertTrue(tests.contains("delivered.get() == 1"));
