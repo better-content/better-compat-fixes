@@ -8,7 +8,8 @@ class Weather2LoadedChunkResourceTest {
     private static final Path MAIN = Path.of("src/main/java/com/bettercontent/bettercompatfixes");
     @Test void loadedAndUnloadedNativeChecksAreActuallyRegistered() throws Exception {
         String entry = Files.readString(MAIN.resolve("BetterContentFixes.java"));
-        assertTrue(entry.contains("event.register(Weather2LoadedChunkGameTests.class)"));
+        assertTrue(entry.contains("if (ModList.get().isLoaded(\"weather2\")) {\n            event.register(Weather2LoadedChunkGameTests.class);\n        }"),
+                "Native Weather2 tests must not be linked by consumers without the optional provider");
         String tests = Files.readString(MAIN.resolve("gametest/Weather2LoadedChunkGameTests.java"));
         assertTrue(tests.contains("loadedNativeHeightAndBiomeAreUnchanged"));
         assertTrue(tests.contains("unloadedPositiveAndNegativeColumnsNeverCreateChunks"));

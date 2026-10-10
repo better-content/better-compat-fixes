@@ -90,7 +90,9 @@ public final class BetterContentFixes {
     private void onRegisterGameTests(final RegisterGameTestsEvent event) {
         event.register(AmbientSurfaceSpawnGameTests.class);
         event.register(DaylightProtectionGameTests.class);
-        event.register(Weather2LoadedChunkGameTests.class);
+        if (ModList.get().isLoaded("weather2")) {
+            event.register(Weather2LoadedChunkGameTests.class);
+        }
         if (ModList.get().isLoaded("forgeendertech")) {
             event.register(ForgeEndertechChunkReadyGameTests.class);
         }
