@@ -6,6 +6,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Weather2LoadedChunkResourceTest {
     private static final Path MAIN = Path.of("src/main/java/com/bettercontent/bettercompatfixes");
+    @Test void loadedAndUnloadedNativeChecksAreActuallyRegistered() throws Exception {
+        String entry = Files.readString(MAIN.resolve("BetterContentFixes.java"));
+        assertTrue(entry.contains("event.register(Weather2LoadedChunkGameTests.class)"));
+        String tests = Files.readString(MAIN.resolve("gametest/Weather2LoadedChunkGameTests.java"));
+        assertTrue(tests.contains("loadedNativeHeightAndBiomeAreUnchanged"));
+        assertTrue(tests.contains("unloadedPositiveAndNegativeColumnsNeverCreateChunks"));
+    }
     @Test void readsUseOnlyResidentChunksAndNativeNoiseFallback() throws Exception {
         String source = Files.readString(MAIN.resolve("compat/Weather2LoadedChunkQueries.java"));
         assertTrue(source.contains("getChunkNow"));
