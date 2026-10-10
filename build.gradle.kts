@@ -533,7 +533,31 @@ val verifyRuntimeCreativeSearchTabMixin by tasks.registering {
     }
 }
 
+val verifyRuntimeWeather2ResidentQueries by tasks.registering {
+    group = "verification"
+    description = "Requires scoped non-loading Weather2 observations and both no-refmap biome selectors."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
+        ZipFile(runtimeJar).use { zip ->
+            fun bytecode(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
+            val storm = bytecode("com/bettercontent/bettercompatfixes/mixin/weather2/StormObjectMixin.class")
+            check(storm.contains("Level;getBiome(") && storm.contains("Level;m_204166_(")) {
+                "Weather2 native biome wrapper lacks development/production selectors"
+            }
+            val queries = bytecode("com/bettercontent/bettercompatfixes/compat/Weather2LoadedChunkQueries.class")
+            check(queries.contains("m_7131_") && queries.contains("m_203675_")) {
+                "Weather2 observations must retain native resident-chunk and uncached-noise calls"
+            }
+            val config = bytecode("better_compat_fixes.mixins.json")
+            check(config.contains("weather2.WeatherUtilBlockMixin") && config.contains("weather2.StormObjectMixin"))
+        }
+    }
+}
+
 tasks.named("verifyFast") {
+    dependsOn(verifyRuntimeWeather2ResidentQueries)
     dependsOn(verifyRuntimeDispenserAlias)
     dependsOn(verifyRuntimeSprintBridge)
     dependsOn(verifyRuntimeBetterCavesBounds)

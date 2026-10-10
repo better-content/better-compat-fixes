@@ -32,6 +32,15 @@ chunks of that maze concurrently under C2ME. Better Content Fixes synchronizes o
 `TFMaze.copyToStructure` calls that share that random source. Other structures, dimensions, and C2ME
 work remain parallel.
 
+Weather2 `1.20.1-2.8.3` server precipitation-height observations read only resident FULL chunks.
+Loaded columns retain native heightmaps and the vanilla +1 surface convention; unavailable columns
+retain Weather2's -255 sentinel. Initial storm biome sampling keeps vanilla biome zoom/seed and
+resident native biomes, falling back to native uncached noise instead of awaiting terrain generation.
+This avoids synchronous chunk waits during Weather2 ticks without disabling storms, changing their
+spawn decisions, adding tickets, or suppressing watchdog/log failures. Client behavior is unchanged.
+Local GameTests cover loaded height/biome fidelity and positive/negative absent columns; the staged
+artifact gate checks both development/production biome selectors in this no-refmap repository.
+
 Runtime behavior includes pack-owned compatibility fixes, including permanent Epic Fight Battle mode,
 disabled ParCool directional double-tap dodge, recommended control migration, first-person player-limb hiding
 that preserves Epic Fight held-item animations, automatic affirmative Explosion Overhaul scan decisions,

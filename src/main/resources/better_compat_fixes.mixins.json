@@ -74,7 +74,9 @@
     "sophisticatedbackpacks.UpgradeWrapperBaseMixin",
     "sophisticatedstorage.StorageBlockEntityMixin",
     "thefleshthathates.FleshBlockSpreadMixin",
-    "thirst.AddLootTableModifierMixin"
+    "thirst.AddLootTableModifierMixin",
+    "weather2.WeatherUtilBlockMixin",
+    "weather2.StormObjectMixin"
   ],
   "client": [
     "minecraft.CreativeModeInventoryScreenMixin",
