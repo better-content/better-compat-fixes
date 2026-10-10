@@ -48,6 +48,49 @@ public final class Weather2LoadedChunkGameTests {
     }
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "daylight_platform", timeoutTicks = 40)
+    public static void nativeStormProgressionDoesNotGenerateMissingTerrain(GameTestHelper helper) {
+        helper.runAfterDelay(2, () -> {
+            var level = helper.getLevel();
+            var manager = weather2.ServerTickHandler.getWeatherManagerFor(level.dimension());
+            helper.assertTrue(manager != null, "Native Weather2 server manager must be initialized");
+            int priorDelay = weather2.config.ConfigStorm.Storm_AllTypes_TickRateDelay;
+            double priorRate = weather2.config.ConfigStorm.Storm_TemperatureAdjustRate;
+            long priorLastStorm = manager.lastStormFormed;
+            try {
+                weather2.config.ConfigStorm.Storm_AllTypes_TickRateDelay = 1;
+                weather2.config.ConfigStorm.Storm_TemperatureAdjustRate = 0.1;
+                assertNativeStormProgression(helper, helper.absolutePos(new BlockPos(2, 1, 2)));
+                for (int coordinate : new int[]{25_000_003, -25_000_003}) {
+                    var missing = new BlockPos(coordinate, 128, coordinate);
+                    helper.assertTrue(level.getChunkSource().getChunkNow(coordinate >> 4, coordinate >> 4) == null,
+                            "Storm regression must start outside resident terrain");
+                    assertNativeStormProgression(helper, missing);
+                    helper.assertTrue(level.getChunkSource().getChunkNow(coordinate >> 4, coordinate >> 4) == null,
+                            "Native creation and progression must not request missing terrain");
+                }
+                helper.succeed();
+            } finally {
+                weather2.config.ConfigStorm.Storm_AllTypes_TickRateDelay = priorDelay;
+                weather2.config.ConfigStorm.Storm_TemperatureAdjustRate = priorRate;
+                manager.lastStormFormed = priorLastStorm;
+            }
+        });
+    }
+
+    private static void assertNativeStormProgression(GameTestHelper helper, BlockPos pos) {
+        var manager = weather2.ServerTickHandler.getWeatherManagerFor(helper.getLevel().dimension());
+        var storm = new weather2.weathersystem.storm.StormObject(manager);
+        storm.pos = net.minecraft.world.phys.Vec3.atCenterOf(pos);
+        storm.weatherMachineControlled = true;
+        storm.canBeDeadly = false;
+        storm.initFirstTime();
+        storm.levelTemperature = 1000.0F;
+        storm.tickProgression();
+        helper.assertTrue(Math.abs(storm.levelTemperature - 999.9F) < 0.001F,
+                "Native progression must still perform its temperature adjustment");
+    }
+
+    @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "daylight_platform", timeoutTicks = 40)
     public static void unloadedPositiveAndNegativeColumnsNeverCreateChunks(GameTestHelper helper) {
         var level = helper.getLevel();
         for (int coordinate : new int[]{20_000_003, -20_000_003}) {

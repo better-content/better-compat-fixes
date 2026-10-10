@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Pseudo
 @Mixin(targets = "weather2.weathersystem.storm.StormObject", remap = false)
 public abstract class StormObjectMixin {
-    @WrapOperation(method = "initFirstTime", remap = false, require = 1,
+    @WrapOperation(method = {"initFirstTime", "tickProgression"}, remap = false, require = 2,
             // This repository deliberately has no refmap. Resolve exactly one
             // development or production call; never silently miss the server hook.
             at = {
@@ -25,5 +25,17 @@ public abstract class StormObjectMixin {
     private Holder<Biome> better_compat_fixes$observeBiomeWithoutChunkWait(Level level, BlockPos pos,
             Operation<Holder<Biome>> original) {
         return level instanceof ServerLevel server ? Weather2LoadedChunkQueries.biome(server, pos) : original.call(level, pos);
+    }
+
+    @WrapOperation(method = "tickProgression", remap = false, require = 1,
+            at = {
+                @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isLoaded(Lnet/minecraft/core/BlockPos;)Z", remap = false),
+                @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;m_46749_(Lnet/minecraft/core/BlockPos;)Z", remap = false)
+            })
+    private boolean better_compat_fixes$observeWaterOnlyInResidentTerrain(Level level, BlockPos pos,
+            Operation<Boolean> original) {
+        return level instanceof ServerLevel server
+                ? server.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4) != null
+                : original.call(level, pos);
     }
 }

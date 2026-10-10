@@ -550,8 +550,11 @@ val verifyRuntimeWeather2ResidentQueries by tasks.registering {
             fun bytecode(path: String) = zip.getInputStream(zip.getEntry(path)
                 ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
             val storm = bytecode("com/bettercontent/bettercompatfixes/mixin/weather2/StormObjectMixin.class")
-            check(storm.contains("Level;getBiome(") && storm.contains("Level;m_204166_(")) {
-                "Weather2 native biome wrapper lacks development/production selectors"
+            check(storm.contains("Level;getBiome(") && storm.contains("Level;m_204166_(")
+                    && storm.contains("initFirstTime") && storm.contains("tickProgression")
+                    && storm.contains("Level;isLoaded(") && storm.contains("Level;m_46749_(")
+                    && storm.contains("m_7131_")) {
+                "Weather2 native creation/progression wrappers lack development/production selectors or resident FULL lookup"
             }
             val endertech = bytecode("com/bettercontent/bettercompatfixes/mixin/forgeendertech/WorldDataChunkReadinessMixin.class")
             check(endertech.contains("ChunkSource;hasChunk(II)Z") && endertech.contains("ChunkSource;m_5563_(II)Z")

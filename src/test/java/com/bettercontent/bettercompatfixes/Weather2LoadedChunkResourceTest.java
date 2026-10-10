@@ -15,6 +15,9 @@ class Weather2LoadedChunkResourceTest {
         assertTrue(tests.contains("seasonalCoroUtilTemperatureUsesNativeBiomeWithoutLoadingTerrain"));
         assertTrue(tests.contains("CoroUtilCompatibility.getAdjustedTemperature"));
         assertTrue(tests.contains("SeasonHooks.getBiomeTemperature"));
+        assertTrue(tests.contains("nativeStormProgressionDoesNotGenerateMissingTerrain"));
+        assertTrue(tests.contains("storm.initFirstTime()") && tests.contains("storm.tickProgression()"));
+        assertTrue(tests.contains("priorDelay") && tests.contains("priorRate") && tests.contains("priorLastStorm"));
     }
     @Test void readsUseOnlyResidentChunksAndNativeNoiseFallback() throws Exception {
         String source = Files.readString(MAIN.resolve("compat/Weather2LoadedChunkQueries.java"));
@@ -33,7 +36,10 @@ class Weather2LoadedChunkResourceTest {
         assertTrue(height.contains("world instanceof ServerLevel"));
         assertTrue(height.contains("Heightmap$Types;"));
         assertTrue(storm.contains("original.call(level, pos)"));
-        assertTrue(storm.contains("require = 1"));
+        assertTrue(storm.contains("{\"initFirstTime\", \"tickProgression\"}") && storm.contains("require = 2"));
+        assertTrue(storm.contains("Level;isLoaded(") && storm.contains("Level;m_46749_("));
+        assertTrue(storm.contains("getChunkNow(pos.getX() >> 4, pos.getZ() >> 4)"));
+        assertFalse(storm.contains("getChunk("));
         assertTrue(storm.contains("Level;getBiome("));
         assertTrue(storm.contains("Level;m_204166_("));
         assertFalse(storm.contains("remap = true"));
