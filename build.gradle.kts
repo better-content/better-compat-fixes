@@ -97,6 +97,12 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:pollution-of-the-realms-269973:8554528"))
     compileOnly(fg.deobf("curse.maven:little-logistics-570050:4799459"))
     compileOnly(fg.deobf("curse.maven:weather-storms-tornadoes-237746:5244118"))
+    runtimeOnly(fg.deobf("curse.maven:weather-storms-tornadoes-237746:5244118"))
+    compileOnly(fg.deobf("curse.maven:coroutil-237749:5096038"))
+    runtimeOnly(fg.deobf("curse.maven:coroutil-237749:5096038"))
+    compileOnly(fg.deobf("curse.maven:serene-seasons-291874:6398227"))
+    runtimeOnly(fg.deobf("curse.maven:serene-seasons-291874:6398227"))
+    runtimeOnly(fg.deobf("curse.maven:glitchcore-955399:5787839"))
     compileOnly(fg.deobf("curse.maven:creativecore-257814:7649757"))
     compileOnly(fg.deobf("curse.maven:ambientsounds-254284:7550220"))
     compileOnly(fg.deobf("curse.maven:oculus-581495:6020952"))
@@ -546,12 +552,17 @@ val verifyRuntimeWeather2ResidentQueries by tasks.registering {
             check(storm.contains("Level;getBiome(") && storm.contains("Level;m_204166_(")) {
                 "Weather2 native biome wrapper lacks development/production selectors"
             }
+            val seasonal = bytecode("com/bettercontent/bettercompatfixes/mixin/weather2/CoroUtilCompatibilityMixin.class")
+            check(seasonal.contains("getAdjustedTemperature") && seasonal.contains("Level;getBiome(") && seasonal.contains("Level;m_204166_(")) {
+                "CoroUtil seasonal biome wrapper lacks native entrypoint/development/production selectors"
+            }
             val queries = bytecode("com/bettercontent/bettercompatfixes/compat/Weather2LoadedChunkQueries.class")
             check(queries.contains("m_7131_") && queries.contains("m_203675_")) {
                 "Weather2 observations must retain native resident-chunk and uncached-noise calls"
             }
             val config = bytecode("better_compat_fixes.mixins.json")
-            check(config.contains("weather2.WeatherUtilBlockMixin") && config.contains("weather2.StormObjectMixin"))
+            check(config.contains("weather2.WeatherUtilBlockMixin") && config.contains("weather2.StormObjectMixin")
+                    && config.contains("weather2.CoroUtilCompatibilityMixin"))
         }
     }
 }

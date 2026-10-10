@@ -76,7 +76,8 @@
     "thefleshthathates.FleshBlockSpreadMixin",
     "thirst.AddLootTableModifierMixin",
     "weather2.WeatherUtilBlockMixin",
-    "weather2.StormObjectMixin"
+    "weather2.StormObjectMixin",
+    "weather2.CoroUtilCompatibilityMixin"
   ],
   "client": [
     "minecraft.CreativeModeInventoryScreenMixin",

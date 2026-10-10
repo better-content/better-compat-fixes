@@ -12,6 +12,9 @@ class Weather2LoadedChunkResourceTest {
         String tests = Files.readString(MAIN.resolve("gametest/Weather2LoadedChunkGameTests.java"));
         assertTrue(tests.contains("loadedNativeHeightAndBiomeAreUnchanged"));
         assertTrue(tests.contains("unloadedPositiveAndNegativeColumnsNeverCreateChunks"));
+        assertTrue(tests.contains("seasonalCoroUtilTemperatureUsesNativeBiomeWithoutLoadingTerrain"));
+        assertTrue(tests.contains("CoroUtilCompatibility.getAdjustedTemperature"));
+        assertTrue(tests.contains("SeasonHooks.getBiomeTemperature"));
     }
     @Test void readsUseOnlyResidentChunksAndNativeNoiseFallback() throws Exception {
         String source = Files.readString(MAIN.resolve("compat/Weather2LoadedChunkQueries.java"));
@@ -39,5 +42,12 @@ class Weather2LoadedChunkResourceTest {
         assertTrue(config.contains("weather2.StormObjectMixin"));
         assertFalse(storm.contains("cancel"));
         assertFalse(storm.contains("trySpawnStorm"));
+        String seasonal = Files.readString(MAIN.resolve("mixin/weather2/CoroUtilCompatibilityMixin.java"));
+        assertTrue(seasonal.contains("getAdjustedTemperature") && seasonal.contains("require = 1"));
+        assertTrue(seasonal.contains("Level;getBiome(") && seasonal.contains("Level;m_204166_("));
+        assertTrue(seasonal.contains("original.call(level, pos)") && seasonal.contains("Weather2LoadedChunkQueries.biome(server, pos)"));
+        assertTrue(plugin.contains("hasVersion(mods, \"coroutil\", \"1.20.1-1.3.7\")"));
+        assertTrue(config.contains("weather2.CoroUtilCompatibilityMixin"));
+        assertFalse(seasonal.contains("cancel"));
     }
 }

@@ -21,6 +21,33 @@ public final class Weather2LoadedChunkGameTests {
         helper.succeed();
     }
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "daylight_platform", timeoutTicks = 40)
+    public static void seasonalCoroUtilTemperatureUsesNativeBiomeWithoutLoadingTerrain(GameTestHelper helper) {
+        var level = helper.getLevel();
+        helper.assertTrue(com.corosus.coroutil.util.CoroUtilCompatibility.isSereneSeasonsInstalled(),
+                "the actual seasonal CoroUtil branch must be active in this regression");
+        var loaded = helper.absolutePos(new BlockPos(2, 1, 2));
+        var loadedBiome = level.getBiome(loaded);
+        float expected = sereneseasons.season.SeasonHooks.getBiomeTemperature(level, loadedBiome, loaded);
+        float actual = com.corosus.coroutil.util.CoroUtilCompatibility.getAdjustedTemperature(level, loadedBiome.value(), loaded);
+        helper.assertTrue(Float.compare(expected, actual) == 0, "loaded native seasonal temperature must remain unchanged");
+        for (int coordinate : new int[]{20_000_003, -20_000_003}) {
+            var pos = new BlockPos(coordinate, 64, coordinate);
+            helper.assertTrue(level.getChunkSource().getChunkNow(coordinate >> 4, coordinate >> 4) == null,
+                    "far seasonal query fixture must begin absent");
+            var biome = Weather2LoadedChunkQueries.biome(level, pos);
+            expected = sereneseasons.season.SeasonHooks.getBiomeTemperature(level, biome, pos);
+            actual = com.corosus.coroutil.util.CoroUtilCompatibility.getAdjustedTemperature(level, biome.value(), pos);
+            helper.assertTrue(Float.compare(expected, actual) == 0 && Float.isFinite(actual),
+                    "unloaded query must preserve native seasons and noise-biome temperature");
+            helper.assertTrue(level.getChunkSource().getChunkNow(coordinate >> 4, coordinate >> 4) == null,
+                    "CoroUtil's actual seasonal path must not create/load terrain");
+        }
+        helper.assertTrue(com.corosus.coroutil.util.CoroUtilCompatibility.isSereneSeasonsInstalled(),
+                "the seasonal bridge must not silently fall back after an error");
+        helper.succeed();
+    }
+
+    @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "daylight_platform", timeoutTicks = 40)
     public static void unloadedPositiveAndNegativeColumnsNeverCreateChunks(GameTestHelper helper) {
         var level = helper.getLevel();
         for (int coordinate : new int[]{20_000_003, -20_000_003}) {

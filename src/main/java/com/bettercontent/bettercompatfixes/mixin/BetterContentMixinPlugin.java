@@ -115,6 +115,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.weather2.CoroUtilCompatibilityMixin")) {
+            return hasVersion(mods, "weather2", "1.20.1-2.8.3")
+                    && hasVersion(mods, "coroutil", "1.20.1-1.3.7");
+        }
         if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.weather2.WeatherUtilBlockMixin")
                 || mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.weather2.StormObjectMixin")) {
             return hasVersion(mods, "weather2", "1.20.1-2.8.3");
