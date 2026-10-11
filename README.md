@@ -1,5 +1,11 @@
 # Better Compat Fixes
 
+## Scope and authority
+
+This repository owns its mod-specific behavior and authoring inputs. Read [local instructions](AGENTS.md)
+and the [shared documentation/policy index](../../better-content-modpack/docs/README.md).
+
+
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
 The Better Caves compatibility hook clips only block-carve attempts outside a chunk's legal vertical

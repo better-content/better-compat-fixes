@@ -1,21 +1,17 @@
-# AGENTS.md
+# Better Compat Fixes
 
-## Scope
+Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
 
-This repository contains the Better Content-owned Forge mod **Better Compat Fixes**.
+## Local verification
 
-- Canonical mod ID: `better_compat_fixes`
-- Canonical artifact: `better-compat-fixes-<version>.jar`
-- Maven group: `com.bettercontent`
-- Java runtime: 17
-- Minecraft/Forge baseline: 1.20.1 / 47.4.13
+- Deterministic CI-equivalent lane: `./gradlew verifyFast`.
+- Runtime/GameTest changes: `./gradlew verifyFull`.
+- Stage: `./gradlew stageRuntimeJar`, `build/libs/better-compat-fixes-<version>.jar`.
+- Inventory compatibility changes also read [native parity](../../better-content-modpack/docs/inventory-parity.md).
 
-## Commit discipline
+## Shared authority
 
-Commit after each coherent completed change. Run the documented validation before committing and push the current branch; do not leave completed work uncommitted or unpushed unless the user explicitly asks.
-
-## Validation
-
-Run `./gradlew verifyFast` for the deterministic CI-equivalent lane. Use `./gradlew verifyFull` when a change affects Forge runtime or GameTest behavior and the task defines that lane.
-
-Do not commit build outputs, runtime worlds, logs, IDE state, downloaded dependency JARs, or generated caches.
+Read [workspace policy](../../better-content-modpack/docs/policies/workspace.md),
+[testing](../../better-content-modpack/docs/testing.md) and
+[disposal](../../better-content-modpack/docs/policies/generated-data.md).
+Docs-only changes use the shared documentation check and `git diff --check`.
