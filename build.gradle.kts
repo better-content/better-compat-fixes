@@ -92,6 +92,9 @@ dependencies {
     runtimeOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-${property("minecraft_version")}:1.0.5"))
     implementation(fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
     runtimeOnly(fg.deobf("maven.modrinth:create-sifting:1.20.1-1.8.6-6.0.6"))
+    compileOnly(fg.deobf("curse.maven:the-deep-void-982999:8507128"))
+    runtimeOnly(fg.deobf("curse.maven:the-deep-void-982999:8507128"))
+    testImplementation(fg.deobf("curse.maven:the-deep-void-982999:8507128"))
     compileOnly(fg.deobf("curse.maven:hyle-609850:7736352"))
     compileOnly(fg.deobf("curse.maven:thirst-was-taken-679270:6660408"))
     compileOnly(fg.deobf("curse.maven:cold-sweat-506194:7893262"))
@@ -219,6 +222,22 @@ val syncGameTestStructures = tasks.register<Sync>("syncGameTestStructures") {
 tasks.matching { it.name.startsWith("prepareRunGameTestServer") }.configureEach {
     dependsOn(resetGameTestMods)
     dependsOn(syncGameTestStructures)
+}
+
+// The optional hook must remain safe for consumers without Deep Void, but this owner's full
+// gate must actually execute its pinned native regression rather than silently skip registration.
+tasks.matching { it.name == "runGameTestServer" }.configureEach {
+    doFirst {
+        check(configurations.runtimeClasspath.get().files.any { file ->
+            file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
+                zip.getEntry("net/mcreator/thedeepvoid/procedures/IfPlayerFallsInVoidProcedure.class") != null &&
+                    zip.getEntry("META-INF/mods.toml")?.let { entry ->
+                        zip.getInputStream(entry).use { it.readBytes() }.toString(Charsets.UTF_8)
+                            .contains("version=\"1.98.1\"")
+                    } == true
+            }
+        }) { "Required pinned Deep Void 1.98.1 native GameTest fixture is missing" }
+    }
 }
 
 tasks.processResources {
@@ -579,7 +598,31 @@ val verifyRuntimeWeather2ResidentQueries by tasks.registering {
     }
 }
 
+val verifyRuntimeDeepVoidFallBoundary by tasks.registering {
+    group = "verification"
+    description = "Requires actual-dimension fall entry to survive production reobfuscation."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
+        ZipFile(runtimeJar).use { zip ->
+            fun bytecode(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
+            val mixin = bytecode("com/bettercontent/bettercompatfixes/mixin/deepvoid/IfPlayerFallsInVoidProcedureMixin.class")
+            check(mixin.contains("IfPlayerFallsInVoidProcedure") && mixin.contains("Double;doubleValue()D")
+                    && mixin.contains("DeepVoidFallBoundary") && mixin.contains("m_9236_")
+                    && mixin.contains("m_141937_") && mixin.contains("require") && mixin.contains("allow")) {
+                "Deep Void fall expression lacks its native selector or production entity/height accessors"
+            }
+            check(bytecode("better_compat_fixes.mixins.json").contains("deepvoid.IfPlayerFallsInVoidProcedureMixin")) {
+                "Runtime mixin configuration is missing actual-bottom Deep Void fall entry"
+            }
+            bytecode("com/bettercontent/bettercompatfixes/compat/DeepVoidFallBoundary.class")
+        }
+    }
+}
+
 tasks.named("verifyFast") {
+    dependsOn(verifyRuntimeDeepVoidFallBoundary)
     dependsOn(verifyRuntimeWeather2ResidentQueries)
     dependsOn(verifyRuntimeDispenserAlias)
     dependsOn(verifyRuntimeSprintBridge)

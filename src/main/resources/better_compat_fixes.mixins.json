@@ -8,6 +8,7 @@
     "curios.CurioInventoryWrapperMixin",
     "curios.CurioStacksHandlerMixin",
     "bettercaves.AbstractCarverMixin",
+    "deepvoid.IfPlayerFallsInVoidProcedureMixin",
     "cataclysm.CursedPyramidPieceMixin",
     "create.HandCrankBlockMixin",
     "create.WaterWheelBlockEntityMixin",

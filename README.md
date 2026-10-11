@@ -8,6 +8,14 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+The Deep Void `1.98.1` fall entry uses each source dimension's actual minimum build height minus
+six blocks instead of its obsolete absolute `TeleportHeight`. All three native comparisons (normal,
+any-dimension, and End entry) are patched; native enable switches, dimension eligibility, comparison
+operators, capability updates and teleport operations remain unchanged. Native Overworld defaults
+still trigger below -70; a -128 floor triggers below -134, and a zero-based floor uses -6. The pack's
+six-block margin deliberately supersedes the native absolute-height setting. Tests inspect the pinned
+native procedure, exercise the transformed native entry branches and check the staged production JAR.
+
 The Better Caves compatibility hook clips only block-carve attempts outside a chunk's legal vertical
 range. This preserves Better Caves and C2ME generation at valid heights while preventing Better Caves
 `2.0.6` from writing negative `CarvingMask` indices in zero-minimum dimensions such as

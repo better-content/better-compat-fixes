@@ -88,6 +88,10 @@ public final class BetterContentFixes {
     }
 
     private void onRegisterGameTests(final RegisterGameTestsEvent event) {
+        if (ModList.get().getModContainerById("the_deep_void")
+                .filter(mod -> mod.getModInfo().getVersion().toString().equals("1.98.1")).isPresent()) {
+            event.register(com.bettercontent.bettercompatfixes.gametest.DeepVoidFallBoundaryGameTests.class);
+        }
         event.register(AmbientSurfaceSpawnGameTests.class);
         event.register(DaylightProtectionGameTests.class);
         if (ModList.get().isLoaded("weather2")) {
