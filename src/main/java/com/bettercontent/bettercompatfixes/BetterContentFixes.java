@@ -88,6 +88,9 @@ public final class BetterContentFixes {
     }
 
     private void onRegisterGameTests(final RegisterGameTestsEvent event) {
+        if (ModList.get().isLoaded("prettypipes") && ModList.get().isLoaded("pneumaticcraft")) {
+            event.register(com.bettercontent.bettercompatfixes.gametest.PrettyPipesPneumaticGameTests.class);
+        }
         if (ModList.get().getModContainerById("the_deep_void")
                 .filter(mod -> mod.getModInfo().getVersion().toString().equals("1.98.1")).isPresent()) {
             event.register(com.bettercontent.bettercompatfixes.gametest.DeepVoidFallBoundaryGameTests.class);

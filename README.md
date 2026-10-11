@@ -55,6 +55,32 @@ spawn decisions, adding tickets, or suppressing watchdog/log failures. Client be
 Local GameTests cover loaded height/biome fidelity and positive/negative absent columns; the staged
 artifact gate checks both development/production biome selectors in this no-refmap repository.
 
+With Pretty Pipes 1.15.0 and PneumaticCraft installed, the native Pipe Pressurizer
+uses PNCR's tier-one machine air handler rather than Forge Energy. Its 1,000 mL
+chamber accepts standard pressure tubes on all faces; acceleration costs 10 mL
+per item and must leave at least 2 bar afterward. Payment and simulation are
+server-authoritative and whole-stack atomic. There is no idle drain or FE
+fallback. PNCR owns equalization and basic-machine overpressure behavior (5-bar
+danger, 7-bar critical); ordinary Pretty Pipes routing continues without air.
+
+The existing pressurizer screen/menu retains its player slots and uses PNCR's
+actual `PressureGaugeRenderer2D` machine-screen gauge, including its native
+working-pressure/danger coloring and needle. PNCR's `WidgetTooltipArea` displays
+the native air handler's manometer pressure text. The two 16-bit menu data slots
+preserve the complete signed air quantity; every screen has its own native
+pneumatic display handler. No gauge artwork or needle renderer is duplicated.
+The electrical bar and tooltip are removed, with localized operating text beside
+the gauge. Dedicated servers do not load the client mixin.
+
+Pneumatic state is saved separately under `better_compat_fixes:pressurizer_air`.
+Existing electrically charged pressurizers become empty pneumatic machines;
+legacy FE is discarded, not converted. Item/block/menu identities and pipe
+networks are unchanged. Pack recipes and hover teaching are owned by
+`kubejs/server_scripts/progression/20_logistics_roots.js` and
+`kubejs/config/hover_annotations.json` in the modpack. Local tests are not real
+GUI acceptance; paired in-game visual and human-pointer review is separately
+required under the shared GUI policy.
+
 Runtime behavior includes pack-owned compatibility fixes, including permanent Epic Fight Battle mode,
 disabled ParCool directional double-tap dodge, recommended control migration, first-person player-limb hiding
 that preserves Epic Fight held-item animations, automatic affirmative Explosion Overhaul scan decisions,

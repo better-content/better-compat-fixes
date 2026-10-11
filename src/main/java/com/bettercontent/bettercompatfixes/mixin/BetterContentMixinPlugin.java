@@ -115,6 +115,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.prettypipes.")) {
+            return hasVersion(mods, "prettypipes", "1.15.0") && hasMods(mods, "pneumaticcraft");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.forgeendertech.")) {
             return hasVersion(mods, "forgeendertech", "11.1.10.2");
         }

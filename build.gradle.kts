@@ -1,4 +1,5 @@
 import java.util.zip.ZipFile
+import java.security.MessageDigest
 
 plugins {
     idea
@@ -76,7 +77,11 @@ repositories {
     mavenCentral()
 }
 
+val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTransitive = false }
+
 dependencies {
+    add(pneumaticNativePins.name, "curse.maven:pretty-pipes-376737:4769646")
+    add(pneumaticNativePins.name, "curse.maven:pneumaticcraft-repressurized-281849:7307654")
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
     compileOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
     runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
@@ -160,6 +165,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("com.google.code.gson:gson:2.10.1")
     testImplementation(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
+    // Pretty Pipes embeds this exact graph API via JarJar; compile-only avoids a second runtime copy.
+    compileOnly("org.jgrapht:jgrapht-core:1.5.2")
+    compileOnly(fg.deobf("curse.maven:pretty-pipes-376737:4769646"))
+    runtimeOnly(fg.deobf("curse.maven:pretty-pipes-376737:4769646"))
+    testImplementation(fg.deobf("curse.maven:pretty-pipes-376737:4769646"))
 }
 
 tasks.named<Jar>("jar") {
@@ -621,7 +631,60 @@ val verifyRuntimeDeepVoidFallBoundary by tasks.registering {
     }
 }
 
+val verifyPneumaticNativePins by tasks.registering {
+    group = "verification"
+    description = "Reproducibly fetch and hash-verify Pretty Pipes and PNCR native fixtures."
+    doLast {
+        val pins = mapOf("4769646" to "8e69a3719b89e67b0d26792d7ce0d77fbfaf02e4",
+                "7307654" to "cbe2d3c5df7c2770ac59eb6f02489d8917627c03")
+        val files = pneumaticNativePins.resolve()
+        check(files.size == pins.size)
+        pins.forEach { (id, expected) ->
+            val native = files.single { it.name.contains(id) }
+            val digest = MessageDigest.getInstance("SHA-1")
+                .digest(native.readBytes()).joinToString("") { "%02x".format(it) }
+            check(digest == expected) { "Native pneumatic fixture $id does not match committed pack pin" }
+        }
+    }
+}
+tasks.test { dependsOn(verifyPneumaticNativePins) }
+tasks.matching { it.name == "runGameTestServer" }.configureEach { dependsOn(verifyPneumaticNativePins) }
+
+val verifyRuntimePneumaticPressurizer by tasks.registering {
+    group = "verification"
+    description = "Requires native PNCR air/gauge integration and production selectors in the staged JAR."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
+        ZipFile(runtimeJar).use { zip ->
+            fun bytecode(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
+            val root = "com/bettercontent/bettercompatfixes/"
+            val be = bytecode(root + "mixin/prettypipes/PressurizerBlockEntityMixin.class")
+            check(be.contains("pressurizeItem") && be.contains("getCapability") && be.contains("createTierOneAirHandler")
+                    && be.contains("m_183515_") && be.contains("m_142466_") && be.contains("m_7131_")
+                    && be.contains("AIR_HANDLER_MACHINE_CAPABILITY") && be.contains("ENERGY")
+                    && be.contains("better_compat_fixes:pressurizer_air")) {
+                "Pressurizer air replacement lacks its production persistence/capability/resident-chunk targets"
+            }
+            val gui = bytecode(root + "mixin/prettypipes/PressurizerGuiMixin.class")
+            check(gui.contains("PressureGaugeRenderer2D") && gui.contains("drawPressureGauge")
+                    && gui.contains("WidgetTooltipArea") && gui.contains("printManometerMessage")
+                    && gui.contains("m_88315_") && gui.contains("m_7286_") && gui.contains("m_280003_")) {
+                "Pressurizer GUI must directly host PNCR's actual component on production screen selectors"
+            }
+            check(!gui.contains("info.prettypipes.energy") && !gui.contains("getEnergyPercentage"))
+            check(bytecode(root + "mixin/prettypipes/PressurizerContainerMixin.class").contains("PressurizerMenuAir"))
+            val config = bytecode("better_compat_fixes.mixins.json")
+            check(config.contains("prettypipes.PressurizerBlockEntityMixin")
+                    && config.contains("prettypipes.PressurizerContainerMixin")
+                    && config.contains("prettypipes.PressurizerGuiMixin"))
+        }
+    }
+}
+
 tasks.named("verifyFast") {
+    dependsOn(verifyRuntimePneumaticPressurizer)
     dependsOn(verifyRuntimeDeepVoidFallBoundary)
     dependsOn(verifyRuntimeWeather2ResidentQueries)
     dependsOn(verifyRuntimeDispenserAlias)

@@ -1,4 +1,6 @@
 {
+  "gui.better_compat_fixes.pressurizer.minimum": "Minimum 2 bar",
+  "gui.better_compat_fixes.pressurizer.consumption": "10 mL/item",
   "key.categories.better_compat_fixes": "Better Content",
   "options.better_compat_fixes.mod_settings": "Mod Settings",
   "screen.better_compat_fixes.fighting_styles": "Fighting Styles",
