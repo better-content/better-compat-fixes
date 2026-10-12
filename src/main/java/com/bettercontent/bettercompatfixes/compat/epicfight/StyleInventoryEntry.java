@@ -4,6 +4,7 @@ import com.bettercontent.bettercompatfixes.BetterContentFixes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -17,12 +18,13 @@ public final class StyleInventoryEntry {
 
     @SubscribeEvent
     public static void addButton(ScreenEvent.Init.Post event) {
-        if (!(event.getScreen() instanceof InventoryScreen screen)
-                || !ModList.get().isLoaded("epicfight")) return;
-        int left = (screen.width - 176) / 2;
-        int top = (screen.height - 166) / 2;
+        if (!(event.getScreen() instanceof AbstractContainerScreen<?> screen)
+                || !StyleInventoryPolicy.accepts(screen instanceof InventoryScreen,
+                    screen.getClass().getName(), ModList.get().isLoaded("epicfight"))) return;
+        int left = screen.getGuiLeft();
+        int top = screen.getGuiTop();
         event.addListener(Button.builder(Component.translatable("screen.better_compat_fixes.fighting_styles"),
                 button -> Minecraft.getInstance().setScreen(new StyleScreen()))
-                .bounds(left + 48, Math.max(2, top - 20), 83, 18).build());
+                .bounds(StyleInventoryPolicy.buttonX(left), StyleInventoryPolicy.buttonY(top), 83, 18).build());
     }
 }

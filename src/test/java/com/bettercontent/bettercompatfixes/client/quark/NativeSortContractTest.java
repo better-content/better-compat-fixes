@@ -51,6 +51,11 @@ class NativeSortContractTest {
             assertFalse(calls(mouse, "org/violetmoon/zeta/client/event/play/ZScreen$MouseButtonPressed$Pre", "isCanceled"),
                     "Pinned native dispatcher does not stop after canceling one provider");
             assertTrue(text(method(handler, "initGui"), "CuriosScreen"));
+            var config = type(zip, "org/violetmoon/quark/base/config/QuarkGeneralConfig");
+            assertTrue(text(method(config, "<clinit>"), "top.theillusivec4.curios.client.gui.CuriosScreen"));
+            assertFalse(text(method(config, "<clinit>"), "top.theillusivec4.curios.client.gui.CuriosScreenV2"));
+            assertTrue(calls(method(config, "isScreenAllowed"), "java/util/List", "contains"));
+            assertTrue(calls(method(handler, "initGui"), config.name, "isScreenAllowed"));
             assertFalse(text(method(handler, "forGui"), "CuriosScreen"), "Pinned keyboard/mouse discovery misses Curios");
             var holder = type(zip, HANDLER + "$ButtonProviderHolder");
             for (String field : new String[]{"keybind", "pressed", "module", "enableCond"})
@@ -96,7 +101,7 @@ class NativeSortContractTest {
     }
     @Test void clientOnlyHookSuppressesOriginalWithoutCancelingUnsortedEvents() throws Exception {
         var json = JsonParser.parseString(Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"))).getAsJsonObject();
-        for (String name : new String[]{"quark.SortProviderAccessor", "quark.InventoryButtonHandlerMixin"}) {
+        for (String name : new String[]{"quark.SortProviderAccessor", "quark.InventoryButtonHandlerMixin", "quark.QuarkGeneralConfigMixin"}) {
             assertTrue(json.getAsJsonArray("client").asList().stream().anyMatch(value -> value.getAsString().equals(name)));
             assertFalse(json.getAsJsonArray("mixins").asList().stream().anyMatch(value -> value.getAsString().equals(name)));
         }
@@ -118,7 +123,15 @@ class NativeSortContractTest {
         assertTrue(routing.contains("provider.bc$pressed().accept(screen);\n            event.setCanceled(true);\n            return;"));
         assertFalse(routing.contains("sendToServer"));
         assertFalse(routing.contains("new SortInventoryMessage"));
+        String admission = Files.readString(Path.of(ROOT + "mixin/quark/QuarkGeneralConfigMixin.java"));
+        assertTrue(admission.contains("getClass().getName().equals(\"top.theillusivec4.curios.client.gui.CuriosScreenV2\")"));
+        assertTrue(admission.contains("cir.setReturnValue(true)"));
+        assertTrue(admission.contains("method = \"isScreenAllowed\""));
+        assertTrue(admission.contains("require = 1, allow = 1"));
+        assertFalse(admission.contains("startsWith("));
+        assertTrue(routing.contains("QuarkGeneralConfig.isScreenAllowed(raw)"));
         String plugin = Files.readString(Path.of(ROOT + "mixin/BetterContentMixinPlugin.java"));
+        assertTrue(plugin.contains("mixinClassName.startsWith(\"com.bettercontent.bettercompatfixes.mixin.quark.\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"quark\", \"4.0-462\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"zeta\", \"1.0-31\")"));
     }
