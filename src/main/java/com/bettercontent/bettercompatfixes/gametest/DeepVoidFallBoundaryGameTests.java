@@ -24,6 +24,16 @@ public final class DeepVoidFallBoundaryGameTests {
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void nativeFallRoutesUseActualBottomAndPreserveSwitches(final GameTestHelper helper) {
+        // ConfigValue.set on Forge's autosaving file config races its reload watcher:
+        // a previous switch write can reload between a later set and the native read.
+        // Keep real ConfigValues/procedure semantics, but bind this synchronous test
+        // to an in-memory copy; never write its temporary switches to the fixture file.
+        final var spec = DeepVoidConfigConfiguration.SPEC;
+        final var originalConfig = net.minecraftforge.fml.config.ConfigTracker.INSTANCE.configSets().values()
+                .stream().flatMap(java.util.Collection::stream)
+                .filter(config -> config.getSpec() == spec).findFirst().orElseThrow().getConfigData();
+        final var fixtureConfig = copyConfig(originalConfig);
+        spec.setConfig(fixtureConfig);
         final double oldHeight = DeepVoidConfigConfiguration.TELEPORTHEIGHT.get();
         final boolean oldVoid = DeepVoidConfigConfiguration.PLAYERSTELEPORTINVOID.get();
         final boolean oldOther = DeepVoidConfigConfiguration.ALLOWOTHERWORLDTP.get();
@@ -68,7 +78,20 @@ public final class DeepVoidFallBoundaryGameTests {
             DeepVoidConfigConfiguration.PLAYERSTELEPORTINVOID.set(oldVoid);
             DeepVoidConfigConfiguration.ALLOWOTHERWORLDTP.set(oldOther);
             DeepVoidConfigConfiguration.PLAYERSTELEPORTINEND.set(oldEnd);
+            spec.setConfig(originalConfig);
         }
+    }
+
+    private static com.electronwill.nightconfig.core.CommentedConfig copyConfig(
+            final com.electronwill.nightconfig.core.UnmodifiableConfig source) {
+        final var copy = com.electronwill.nightconfig.core.CommentedConfig.inMemory();
+        for (var entry : source.entrySet()) {
+            final Object value = entry.getValue();
+            copy.set(java.util.List.of(entry.getKey()),
+                    value instanceof com.electronwill.nightconfig.core.UnmodifiableConfig section
+                            ? copyConfig(section) : value);
+        }
+        return copy;
     }
 
     private static void assertDecision(final GameTestHelper helper, final ServerLevel level,

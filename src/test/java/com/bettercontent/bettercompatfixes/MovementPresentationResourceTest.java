@@ -21,6 +21,8 @@ final class MovementPresentationResourceTest {
 
         assertTrue(client.contains("parcool.DodgeMixin"));
         assertTrue(client.contains("parcool.ClingToCliffPlayerRotationMixin"));
+        assertTrue(client.contains("parcool.ClingToCliffAscendingGrabMixin"));
+        assertTrue(client.contains("epicfight.EpicParCoolLedgeCameraMixin"));
         assertFalse(client.contains("minecraft.LocalPlayerSprintMixin"));
         assertTrue(client.contains("epicfight.FirstPersonRendererMixin"));
         assertTrue(client.contains("epicfight.WearableItemLayerMixin"));
@@ -64,6 +66,27 @@ final class MovementPresentationResourceTest {
         assertTrue(mixin.contains("cancellable = true"));
         assertTrue(mixin.contains("callbackInfo.cancel()"));
         assertTrue(mixin.contains("climb motion and camera input"));
+    }
+
+    @Test
+    void ledgeChangesKeepNativeReachAndUnrelatedPovSettings() throws IOException {
+        final String grab = Files.readString(SOURCE_ROOT.resolve("mixin/parcool/ClingToCliffAscendingGrabMixin.java"));
+        assertTrue(grab.contains("method = \"canStart("));
+        assertTrue(grab.contains("@Constant(doubleValue = 0.2D)"));
+        assertTrue(grab.contains("return Double.POSITIVE_INFINITY"));
+        assertTrue(grab.contains("require = 1") && grab.contains("allow = 1"));
+        assertFalse(grab.contains("callbackInfo.cancel()"));
+        final String camera = Files.readString(SOURCE_ROOT.resolve("mixin/epicfight/EpicParCoolLedgeCameraMixin.java"));
+        assertTrue(camera.contains("\"epicparcool\".equals(name.getNamespace())"));
+        assertTrue(camera.contains("if (!ledgeHang) return"));
+        assertTrue(camera.contains("original.cameraTransform()"));
+        assertTrue(camera.contains("original.visibilities()"));
+        assertTrue(camera.contains("original.rootTransformation()"));
+        assertTrue(camera.contains("original.visibilityOthers()"));
+        assertTrue(camera.contains("original.hasUniqueAnimation()"));
+        assertTrue(camera.contains("original.syncFrame()"));
+        final String plugin = Files.readString(SOURCE_ROOT.resolve("mixin/BetterContentMixinPlugin.java"));
+        assertTrue(plugin.contains("hasVersion(mods, \"epicparcool\", \"20.12.0.1\")"));
     }
 
     @Test

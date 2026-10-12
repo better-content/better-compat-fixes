@@ -95,6 +95,22 @@ Ping Wheel to Mouse 4, and Epic Fight lock-on to Caps Lock. Existing customized 
 only exact legacy defaults are migrated once. ParCool's direct R dodge remains available, and vanilla's
 forward double-tap sprint behavior is left intact.
 
+For ParCool 3.4.3.3, ledge grabbing no longer rejects an otherwise valid edge solely because
+of upward speed. Native grab input, stamina, wall-running exclusion, facing, collision/reach and
+surface-friction checks remain intact, as does Epic ParCool's additional terrain scan. This lets
+the native detector attempt a catch during ascent instead of waiting until the jump slows down.
+The change is pending human in-game verification; it is not a confirmed fix for every two-block
+ledge failure.
+
+With Epic Fight 20.14.17, Epic ParCool 20.12.0.1 and ParCool 3.4.3.3, the five ledge-hanging
+first-person POV definitions no longer impose pitch/yaw viewing limits. This prevents Epic Fight's
+view-limit correction from recentering the camera on wall-facing model yaw, including a correction
+that would otherwise finish during pull-up. Body alignment, climbing movement, POV root/visibility
+settings and camera transforms remain unchanged; unrelated animations and third-person camera
+behavior are not altered. Source contracts and the repository's verification gate cover packaging
+and build compatibility; human in-game verification remains pending. This is not a confirmed
+diagnosis or fix for every pull-up camera snap.
+
 Keymap profile v2 moves Relics' ability list to Alt+A
 and More Artifacts' Eye teleport to Alt+P, and unbinds Quark Lock Rotation. As with the original profile,
 only bindings still equal to the prior pack defaults migrate; player customizations always win.
