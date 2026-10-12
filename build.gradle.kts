@@ -78,8 +78,24 @@ repositories {
 }
 
 val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTransitive = false }
+val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitive = false }
+val markerRenderNativePins = configurations.create("markerRenderNativePins") { isTransitive = false }
+val quarkSortNativePins = configurations.create("quarkSortNativePins") { isTransitive = false }
 
 dependencies {
+    compileOnly(fg.deobf("curse.maven:quark-243121:6427817"))
+    compileOnly(fg.deobf("curse.maven:zeta-968868:7335229"))
+    add(quarkSortNativePins.name, "curse.maven:quark-243121:6427817")
+    add(quarkSortNativePins.name, "curse.maven:zeta-968868:7335229")
+    add(quarkSortNativePins.name, "curse.maven:sophisticated-core-618298:7916595")
+    add(quarkSortNativePins.name, "curse.maven:curios-api-309927:6418456")
+    add(markerRenderNativePins.name, "curse.maven:realistic-block-physics-375616:6393411")
+    add(markerRenderNativePins.name, "curse.maven:realistic-physics-1030082:6026115")
+    add(markerRenderNativePins.name, "curse.maven:epic-fight-mod-405076:8049910")
+    compileOnly(fg.deobf("curse.maven:realistic-block-physics-375616:6393411"))
+    compileOnly(fg.deobf("curse.maven:realistic-physics-1030082:6026115"))
+    add(dhDepthNativePins.name, "curse.maven:oculus-581495:6020952")
+    add(dhDepthNativePins.name, "curse.maven:distant-horizons-508933:7375280")
     add(pneumaticNativePins.name, "curse.maven:pretty-pipes-376737:4769646")
     add(pneumaticNativePins.name, "curse.maven:pneumaticcraft-repressurized-281849:7307654")
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
@@ -647,7 +663,23 @@ val verifyPneumaticNativePins by tasks.registering {
         }
     }
 }
-tasks.test { dependsOn(verifyPneumaticNativePins) }
+tasks.test {
+    dependsOn(verifyPneumaticNativePins)
+    inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins)
+    doFirst {
+        val quarkNatives = quarkSortNativePins.resolve()
+        for (id in listOf("6427817", "7335229", "7916595", "6418456")) {
+            systemProperty("bc.quarkSort.$id", quarkNatives.single { it.name.contains(id) }.absolutePath)
+        }
+        val markerNatives = markerRenderNativePins.resolve()
+        for (id in listOf("6393411", "6026115", "8049910")) {
+            systemProperty("bc.markerRender.$id", markerNatives.single { it.name.contains(id) }.absolutePath)
+        }
+        val natives = dhDepthNativePins.resolve()
+        systemProperty("bc.dhDepth.oculus", natives.single { it.name.contains("6020952") }.absolutePath)
+        systemProperty("bc.dhDepth.dh", natives.single { it.name.contains("7375280") }.absolutePath)
+    }
+}
 tasks.matching { it.name == "runGameTestServer" }.configureEach { dependsOn(verifyPneumaticNativePins) }
 
 val verifyRuntimePneumaticPressurizer by tasks.registering {
@@ -683,7 +715,58 @@ val verifyRuntimePneumaticPressurizer by tasks.registering {
     }
 }
 
+val verifyRuntimeRespawnMarkerPhysics by tasks.registering {
+    group = "verification"
+    description = "Requires the exact RBP marker admission guard in the production JAR."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
+        ZipFile(runtimeJar).use { zip ->
+            fun bytes(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }
+                .toString(Charsets.ISO_8859_1)
+            val root = "com/bettercontent/bettercompatfixes/"
+            val hook = bytes(root + "mixin/rbp/BlockOperationSchedulerMixin.class")
+            check(hook.contains("xbigellx.rbp.internal.physics.BlockOperationScheduler")
+                    && hook.contains("RPBlockContext;") && hook.contains("PhysicsEngineBehaviour;")
+                    && hook.contains("RespawnMarkerPhysics") && hook.contains("blockState")
+                    && hook.contains("cancel")) { "Production RBP admission guard lost its native target/selector" }
+            val policy = bytes(root + "compat/RespawnMarkerPhysics.class")
+            check(policy.contains("better_spawns") && policy.contains("respawn_marker")
+                    && policy.contains("getKey") && policy.contains("m_60734_")) {
+                "Production marker identity guard lacks its native registry key or mapped block accessor"
+            }
+            check(bytes("better_compat_fixes.mixins.json").contains("rbp.BlockOperationSchedulerMixin"))
+        }
+    }
+}
+
+val verifyRuntimeDhOpaqueDepth by tasks.registering {
+    group = "verification"
+    description = "Requires the pinned client-only DH opaque-depth correction in the production JAR."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
+        ZipFile(runtimeJar).use { zip ->
+            fun bytes(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }
+                .toString(Charsets.ISO_8859_1)
+            val root = "com/bettercontent/bettercompatfixes/"
+            val hook = bytes(root + "mixin/oculus/DHCompatInternalMixin.class")
+            check(hook.contains("net.irisshaders.iris.compat.dh.DHCompatInternal")
+                    && hook.contains("getDepthTexNoTranslucent()I") && hook.contains("storedDepthTex")
+                    && hook.contains("DhOpaqueDepthPolicy") && hook.contains("DISABLED")) {
+                "Production DH opaque-depth hook lost its target, selector or conditional policy"
+            }
+            bytes(root + "compat/DhOpaqueDepthPolicy.class")
+            check(bytes("better_compat_fixes.mixins.json").contains("oculus.DHCompatInternalMixin"))
+        }
+    }
+}
+
 tasks.named("verifyFast") {
+    dependsOn(verifyRuntimeRespawnMarkerPhysics)
+    dependsOn(verifyRuntimeDhOpaqueDepth)
     dependsOn(verifyRuntimePneumaticPressurizer)
     dependsOn(verifyRuntimeDeepVoidFallBoundary)
     dependsOn(verifyRuntimeWeather2ResidentQueries)

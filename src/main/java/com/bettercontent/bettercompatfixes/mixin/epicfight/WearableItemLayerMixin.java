@@ -45,10 +45,12 @@ public abstract class WearableItemLayerMixin {
             final Operation<Void> original,
             @Local final EquipmentSlot slot
     ) {
-        if (firstPersonModel && BcFixesClientConfig.hideFirstPersonLimbs()) {
-            FirstPersonLimbVisibility.hideArmorLimbs(mesh, slot);
-        }
-        original.call(layer, poseStack, buffers, packedLight, mesh, armature,
+        final Runnable draw = () -> original.call(layer, poseStack, buffers, packedLight, mesh, armature,
                 red, green, blue, texture, poses);
+        if (firstPersonModel && BcFixesClientConfig.hideFirstPersonLimbs()) {
+            FirstPersonLimbVisibility.withHiddenArmorLimbs(mesh, slot, draw);
+        } else {
+            draw.run();
+        }
     }
 }

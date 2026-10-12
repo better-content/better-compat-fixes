@@ -117,6 +117,14 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.quark.")) {
+            return hasVersion(mods, "quark", "4.0-462")
+                    && hasVersion(mods, "zeta", "1.0-31");
+        }
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.rbp.")) {
+            return hasVersion(mods, "rbp", "1.0.0")
+                    && hasVersion(mods, "realisticphysics", "1.0.1");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.prettypipes.")) {
             return hasVersion(mods, "prettypipes", "1.15.0") && hasMods(mods, "pneumaticcraft");
         }
@@ -269,6 +277,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         }
         if (mixinClassName.startsWith(SGI_MIXIN_PREFIX)) {
             return hasVersion(mods, "structure_generation_improver", "1.0.0");
+        }
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.oculus.DHCompatInternalMixin")) {
+            return hasVersion(mods, "oculus", "1.8.0")
+                    && hasVersion(mods, "distanthorizons", "2.4.5-b");
         }
         if (mixinClassName.startsWith(DISTANT_HORIZONS_MIXIN_PREFIX)) {
             return hasVersion(mods, "distanthorizons", "2.4.5-b");

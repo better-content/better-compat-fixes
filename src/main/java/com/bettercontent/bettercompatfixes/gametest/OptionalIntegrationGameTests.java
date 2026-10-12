@@ -86,6 +86,12 @@ public final class OptionalIntegrationGameTests {
             helper.fail("Realistic Block Physics compatibility accepted an unsupported block state");
             return;
         }
+        helper.assertFalse(com.bettercontent.bettercompatfixes.compat.RespawnMarkerPhysics.isExcluded(
+                Blocks.CRYING_OBSIDIAN.defaultBlockState()), "Vanilla crying obsidian must retain native physics");
+        helper.assertFalse(com.bettercontent.bettercompatfixes.compat.RespawnMarkerPhysics.isExcluded(
+                Blocks.STONE.defaultBlockState()), "Ordinary blocks must retain native physics");
+        helper.assertFalse(com.bettercontent.bettercompatfixes.compat.RespawnMarkerPhysics.isExcluded(null),
+                "Missing state must not be treated as a marker");
         helper.succeed();
     }
 }

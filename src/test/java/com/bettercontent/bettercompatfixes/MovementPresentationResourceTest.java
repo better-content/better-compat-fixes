@@ -98,10 +98,21 @@ final class MovementPresentationResourceTest {
                 SOURCE_ROOT.resolve("mixin/epicfight/WearableItemLayerMixin.java"));
 
         assertTrue(visibility.contains("mesh.getAllParts().forEach(part -> part.setHidden(true))"));
-        assertTrue(config.contains("Animated arms remain visible while swimming or submerged."));
+        assertTrue(config.contains("Arms, sleeves and armor limbs stay hidden while swimming or submerged; held items remain visible."));
         assertTrue(visibility.contains("hideArmorLimbs"));
-        assertTrue(visibility.contains("player.isInWaterOrBubble() || player.isSwimming()"));
-        assertTrue(renderer.contains("hidePlayerModel"));
+        assertFalse(visibility.contains("showSwimArms"));
+        assertFalse(visibility.contains("isInWaterOrBubble"));
+        assertFalse(visibility.contains("isSwimming"));
+        assertFalse(visibility.contains("setHidden(false)"));
+        assertTrue(renderer.contains("withHiddenPlayerModel(mesh, draw)"));
+        assertTrue(armorRenderer.contains("withHiddenArmorLimbs(mesh, slot, draw)"));
+        assertTrue(visibility.contains("MeshPart::isHidden, MeshPart::setHidden"));
+        assertTrue(visibility.contains("() -> hidePlayerModel(mesh), originalDraw"));
+        assertTrue(visibility.contains("() -> hideArmorLimbs(mesh, slot), originalDraw"));
+        final String scope = Files.readString(SOURCE_ROOT.resolve("client/MeshVisibilityScope.java"));
+        assertTrue(scope.contains("finally"));
+        assertTrue(scope.contains("hidden[i] = isHidden.test(snapshot.get(i))"));
+        assertTrue(scope.contains("setHidden.accept(snapshot.get(i), hidden[i])"));
         assertTrue(renderer.contains("HumanoidMesh;draw"));
         assertTrue(renderer.contains("require = 2"));
         assertTrue(renderer.contains("hideFirstPersonPlayerLimbsBeforeDraw"));

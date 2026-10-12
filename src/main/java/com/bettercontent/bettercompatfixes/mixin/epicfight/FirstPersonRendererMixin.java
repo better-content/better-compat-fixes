@@ -37,10 +37,12 @@ public abstract class FirstPersonRendererMixin {
             final OpenMatrix4f[] poses,
             final Operation<Void> original
     ) {
-        if (BcFixesClientConfig.hideFirstPersonLimbs()) {
-            FirstPersonLimbVisibility.hidePlayerModel(mesh);
-        }
-        original.call(mesh, poseStack, buffers, renderType, packedLight,
+        final Runnable draw = () -> original.call(mesh, poseStack, buffers, renderType, packedLight,
                 red, green, blue, alpha, overlay, armature, poses);
+        if (BcFixesClientConfig.hideFirstPersonLimbs()) {
+            FirstPersonLimbVisibility.withHiddenPlayerModel(mesh, draw);
+        } else {
+            draw.run();
+        }
     }
 }

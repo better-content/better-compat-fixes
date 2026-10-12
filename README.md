@@ -8,6 +8,15 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+With Oculus `1.8.0` and Distant Horizons `2.4.5-b`, the client opaque-depth sampler uses DH's
+connected live depth when DH transparency is `DISABLED`. Oculus otherwise supplies an opaque-depth
+copy refreshed only by the transparent-pass event, which DH skips in this mode. Live depth is
+already opaque-only when transparency is disabled. `FAKE`/`COMPLETE`, unavailable DH configuration,
+and unconnected/cleared framebuffers retain Oculus' native result. The setting and texture ID are
+read on each request, so no cached override survives a setting change or resize. Camera transforms,
+view bobbing, shader TAA history, and DH transparency settings are unchanged. This is a depth-input
+correction, not a claim of completed in-game blur/bobbing acceptance; visual verification is pending.
+
 The Deep Void `1.98.1` fall entry uses each source dimension's actual minimum build height minus
 six blocks instead of its obsolete absolute `TeleportHeight`. All three native comparisons (normal,
 any-dimension, and End entry) are patched; native enable switches, dimension eligibility, comparison
@@ -86,9 +95,33 @@ disabled ParCool directional double-tap dodge, recommended control migration, fi
 that preserves Epic Fight held-item animations, automatic affirmative Explosion Overhaul scan decisions,
 and the pinned Dynamic Trees Aether 1.3.3 obsolete-branch tag repair.
 
+First-person limb hiding also applies while swimming/submerged: body arms/sleeves and chest
+armor arms no longer have an underwater exemption. The hooks remain scoped to first-person body
+and armor draw calls, not held-item layers. Both wrappers snapshot native hidden flags before
+applying the first-person mask and restore them in `finally`, including when the native draw
+throws. Pinned Epic Fight 20.14.17 native contracts additionally verify shared body/armor meshes
+reinitialize their hidden flags on subsequent third-person draws; this source gate is not human
+visual acceptance.
+
+With RBP 1.0.0 and Realistic Physics 1.0.1, only `better_spawns:respawn_marker` is rejected
+at RBP's common falling/breaking-operation admission method. Placement integrity checks,
+neighbor fall checks and chunk-analysis operations converge on this method, as verified against
+the exact native archives. Other blocks, including `minecraft:crying_obsidian`, retain native
+physics; neighbors still get their ordinary checks. No global physics switch, indestructibility,
+world scan or crying-obsidian-wide exclusion is introduced.
+
 Newly placed structure templates remove vanilla effect potions, splash and lingering potions, and tipped
 arrows from embedded inventories. Plain water bottles and unrelated or mod-owned items remain intact, and
 cached templates, existing chunks, player inventories, and command-given stacks are not changed.
+
+For Quark 4.0-462 with Zeta 1.0-31, a middle mouse button actually bound to a native sort key
+routes to at most one existing Quark sort callback. Vanilla personal inventory and both native
+Curios screens use the player provider; eligible container storage and its player section use their
+respective native providers. Cursor-held stacks, invalid/stale hover, hotbar/equipment/crafting,
+overlaid controls and disallowed screens do not sort. Sophisticated storage keeps its independent
+native input/sort handler. Other buttons, keyboard bindings and unbound middle-click retain native
+Quark dispatch. Native packet, sound and storage authority remain unchanged; paired in-game visual
+and human-pointer acceptance is pending.
 
 The client control profile moves ParCool Fast Run to Shift, ParCool's contextual mouse actions to Mouse 5,
 Ping Wheel to Mouse 4, and Epic Fight lock-on to Caps Lock. Existing customized bindings are preserved;
