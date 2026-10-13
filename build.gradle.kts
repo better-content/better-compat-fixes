@@ -81,8 +81,11 @@ val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTrans
 val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitive = false }
 val markerRenderNativePins = configurations.create("markerRenderNativePins") { isTransitive = false }
 val quarkSortNativePins = configurations.create("quarkSortNativePins") { isTransitive = false }
+val backpackEquipmentNativePins = configurations.create("backpackEquipmentNativePins") { isTransitive = false }
 
 dependencies {
+    add(backpackEquipmentNativePins.name, "curse.maven:curios-api-309927:6418456")
+    add(backpackEquipmentNativePins.name, "curse.maven:sophisticated-backpacks-422301:7916619")
     compileOnly(fg.deobf("curse.maven:quark-243121:6427817"))
     compileOnly(fg.deobf("curse.maven:zeta-968868:7335229"))
     add(quarkSortNativePins.name, "curse.maven:quark-243121:6427817")
@@ -665,8 +668,12 @@ val verifyPneumaticNativePins by tasks.registering {
 }
 tasks.test {
     dependsOn(verifyPneumaticNativePins)
-    inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins)
+    inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins)
     doFirst {
+        val backpackNatives = backpackEquipmentNativePins.resolve()
+        for (id in listOf("6418456", "7916619")) {
+            systemProperty("bc.backpackEquipment.$id", backpackNatives.single { it.name.contains(id) }.absolutePath)
+        }
         val quarkNatives = quarkSortNativePins.resolve()
         for (id in listOf("6427817", "7335229", "7916595", "6418456")) {
             systemProperty("bc.quarkSort.$id", quarkNatives.single { it.name.contains(id) }.absolutePath)
@@ -779,6 +786,44 @@ tasks.named("verifyFast") {
     dependsOn(verifyRuntimeMonsterRoomSpawnerRecovery)
     dependsOn(verifyRuntimeCreativeSearchTabMixin)
 }
+
+val verifyRuntimeBackpackEquipment by tasks.registering {
+    group = "verification"
+    description = "Requires exclusive native player backpack admission and production selectors in the staged JAR."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
+        ZipFile(runtimeJar).use { zip ->
+            fun bytes(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }
+                .toString(Charsets.ISO_8859_1)
+            val root = "com/bettercontent/bettercompatfixes/"
+            val api = bytes(root + "mixin/backpackequipment/CuriosApiMixin.class")
+            val handler = bytes(root + "mixin/backpackequipment/DynamicStackHandlerMixin.class")
+            check(api.contains("isStackValid(Ltop/theillusivec4/curios/api/SlotContext;Lnet/minecraft/world/item/ItemStack;)Z")
+                    && handler.contains("isItemValid(ILnet/minecraft/world/item/ItemStack;)Z")
+                    && handler.contains("ctxBuilder") && handler.contains("RETURN") && api.contains("WrapMethod")
+                    && api.contains("Operation"))
+            val bag = bytes(root + "mixin/backpackequipment/BackpackItemMixin.class")
+            check(bag.contains("canEquip") && bag.contains("m_147233_") && bag.contains("m_20743_")
+                    && bag.contains("net/minecraft/world/entity/player/Player")) {
+                "Native backpack armor guard lost its production Forge default/type calls"
+            }
+            val player = bytes(root + "mixin/backpackequipment/PlayerMixin.class")
+            check(player.contains("canTakeItem(Lnet/minecraft/world/item/ItemStack;)Z")
+                    && player.contains("m_7066_(Lnet/minecraft/world/item/ItemStack;)Z") && player.contains("RETURN"))
+            val policy = bytes(root + "compat/BackpackEquipmentPolicy.class")
+            check(policy.contains("BackpackItem") && policy.contains("better_backpack")
+                    && policy.contains("PlayerLoggedInEvent") && !policy.contains("m_8061_")
+                    && !policy.contains("setStackInSlot"))
+            val config = bytes("better_compat_fixes.mixins.json")
+            for (hook in listOf("CuriosApiMixin", "DynamicStackHandlerMixin", "BackpackItemMixin", "PlayerMixin")) {
+                check(config.contains("backpackequipment.$hook"))
+            }
+        }
+    }
+}
+tasks.named("verifyFast") { dependsOn(verifyRuntimeBackpackEquipment) }
 
 jacoco {
     toolVersion = "0.8.12"

@@ -1,4 +1,5 @@
 {
+  "better_compat_fixes.backpack.misplaced": "Move your equipped backpack to the Backpack slot. Existing bags can still be removed.",
   "gui.better_compat_fixes.pressurizer.minimum": "Minimum 2 bar",
   "gui.better_compat_fixes.pressurizer.consumption": "10 mL/item",
   "key.categories.better_compat_fixes": "Better Content",

@@ -8,6 +8,23 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+With Curios `5.14.1+1.20.1` and Sophisticated Backpacks `1.20.1-3.24.35.1675`
+(FML mod version `3.24.35.1675`), every installed
+`BackpackItem` tier can be worn by players only in functional Curios `better_backpack` index 0.
+Final native API/handler admission overrides competing Curios predicates and equip-event results
+for backpacks only. Other Curios identifiers, indices and cosmetic slots reject backpacks;
+Forge armor admission and native player dispenser eligibility reject them as well. Nonplayer
+wearing mobs, unrelated armor/accessories, hands, ordinary inventory/hotbar carrying and native
+backpack placement/opening remain under their original owners. No storage or packet protocol is
+replaced. These optional hooks are exact-version gated and tested against hash-pinned upstream
+bytecode plus transformed native GameTests covering all six tiers and competing listeners.
+
+Already misplaced equipped bags are not moved or deleted. Login gives one concise warning when
+such a bag is present; native removal remains available. Operator authoring commands/direct saved
+state setters are deliberately outside gameplay admission. The pack owns the `better_backpack`
+slot declaration. Production-JAR checks and native admission tests do not replace paired real
+client review or human pointer acceptance under [native parity](../../better-content-modpack/docs/inventory-parity.md).
+
 With Oculus `1.8.0` and Distant Horizons `2.4.5-b`, the client opaque-depth sampler uses DH's
 connected live depth when DH transparency is `DISABLED`. Oculus otherwise supplies an opaque-depth
 copy refreshed only by the transparent-pass event, which DH skips in this mode. Live depth is
