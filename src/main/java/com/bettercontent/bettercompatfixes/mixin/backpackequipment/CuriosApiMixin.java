@@ -18,6 +18,6 @@ public abstract class CuriosApiMixin {
                                                            Operation<Boolean> original) {
         boolean nativeResult = original.call(context, stack);
         return BackpackEquipmentPolicy.applies(context, stack)
-                ? BackpackEquipmentPolicy.allowed(context) : nativeResult;
+                ? BackpackEquipmentPolicy.allowed(context, stack) : nativeResult;
     }
 }

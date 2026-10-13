@@ -104,6 +104,18 @@ public final class BackpackEquipmentGameTests {
                 helper.assertTrue(!BackpackEquipmentPolicy.hasMisplacedBackpack(player), "Carry/hotbar/hands do not warn");
             }
             competitor.result = Event.Result.ALLOW;
+            for (boolean cosmetic : new boolean[]{false, true}) {
+                var reserved = new DynamicStackHandler(2,
+                        i -> new SlotContext("better_backpack", player, i, cosmetic, true));
+                for (int index = 0; index < 2; index++) {
+                    var nonBackpack = new ItemStack(Items.STICK);
+                    var context = new SlotContext("better_backpack", player, index, cosmetic, true);
+                    helper.assertTrue(!reserved.isItemValid(index, nonBackpack), "Competing ALLOW cannot admit a nonbag to reserved slot");
+                    helper.assertTrue(!reserved.isItemValid(index, ItemStack.EMPTY), "Empty validation must not admit a reserved-slot item");
+                    helper.assertTrue(!CuriosApi.isStackValid(context, nonBackpack), "Reserved-slot API rejects nonbackpacks");
+                    helper.assertTrue(!reserved.insertItem(index, nonBackpack, true).isEmpty(), "Reserved-slot simulated insertion returns nonbag");
+                }
+            }
             var unrelated = new DynamicStackHandler(1, i -> new SlotContext("back", player, i, false, true));
             helper.assertTrue(unrelated.isItemValid(0, new ItemStack(Items.STICK)), "Unrelated event result remains native");
             helper.assertTrue(new ItemStack(Items.IRON_CHESTPLATE).canEquip(EquipmentSlot.CHEST, player), "Unrelated armor remains admissible");

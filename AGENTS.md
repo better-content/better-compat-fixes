@@ -7,6 +7,11 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
 - Deterministic CI-equivalent lane: `./gradlew verifyFast`.
 - Runtime/GameTest changes: `./gradlew verifyFull`.
 - Stage: `./gradlew stageRuntimeJar`, `build/libs/better-compat-fixes-<version>.jar`.
+- Backpack admission changes also run `./gradlew clean verifyFull stageRuntimeJar -PbackpackWithoutCurios=true --no-daemon`.
+  This native profile omits Curios and its mandatory-dependent Ars Nouveau, asserts actual mod absence,
+  and runs the Curios-free armor regression. Then run default `./gradlew clean verifyFull stageRuntimeJar --no-daemon`
+  to stage the paired-inventory candidate. Production-JAR checks include optional-class-linkage absence;
+  this source/GameTest profile is not a standalone production-server or human-pointer verdict.
 - Inventory compatibility changes also read [native parity](../../better-content-modpack/docs/inventory-parity.md).
 
 ## Shared authority

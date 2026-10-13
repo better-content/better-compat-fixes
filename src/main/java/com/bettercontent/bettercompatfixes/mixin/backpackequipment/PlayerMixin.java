@@ -1,6 +1,6 @@
 package com.bettercontent.bettercompatfixes.mixin.backpackequipment;
 
-import com.bettercontent.bettercompatfixes.compat.BackpackEquipmentPolicy;
+import com.bettercontent.bettercompatfixes.compat.BackpackArmorPolicy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +14,6 @@ public abstract class PlayerMixin {
     @Inject(method = {"canTakeItem(Lnet/minecraft/world/item/ItemStack;)Z", "m_7066_(Lnet/minecraft/world/item/ItemStack;)Z"},
             at = @At("RETURN"), cancellable = true, remap = false, require = 1)
     private void betterContent$denyDispenserBackpack(ItemStack stack, CallbackInfoReturnable<Boolean> callback) {
-        if (BackpackEquipmentPolicy.backpack(stack)) callback.setReturnValue(false);
+        if (BackpackArmorPolicy.backpack(stack)) callback.setReturnValue(false);
     }
 }

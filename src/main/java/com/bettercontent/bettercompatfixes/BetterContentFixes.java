@@ -76,6 +76,9 @@ public final class BetterContentFixes {
             MinecraftForge.EVENT_BUS.register(DynamicTreesSupportSweepCommand.class);
         }
         MinecraftForge.EVENT_BUS.register(ButcherKnifeDurability.class);
+        if (ModList.get().isLoaded("sophisticatedbackpacks")) {
+            MinecraftForge.EVENT_BUS.register(com.bettercontent.bettercompatfixes.compat.BackpackArmorPolicy.class);
+        }
         if (ModList.get().isLoaded("curios") && ModList.get().isLoaded("sophisticatedbackpacks")) {
             MinecraftForge.EVENT_BUS.register(CuriosSlotPolicy.class);
             MinecraftForge.EVENT_BUS.register(com.bettercontent.bettercompatfixes.compat.BackpackEquipmentPolicy.class);
@@ -89,6 +92,9 @@ public final class BetterContentFixes {
     }
 
     private void onRegisterGameTests(final RegisterGameTestsEvent event) {
+        if (ModList.get().isLoaded("sophisticatedbackpacks")) {
+            event.register(com.bettercontent.bettercompatfixes.gametest.BackpackArmorGameTests.class);
+        }
         if (ModList.get().isLoaded("curios") && ModList.get().isLoaded("sophisticatedbackpacks")) {
             event.register(com.bettercontent.bettercompatfixes.gametest.BackpackEquipmentGameTests.class);
         }

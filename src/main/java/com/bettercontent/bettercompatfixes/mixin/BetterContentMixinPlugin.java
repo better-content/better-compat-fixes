@@ -142,6 +142,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.deepvoid.")) {
             return hasVersion(mods, "the_deep_void", "1.98.1");
         }
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.backpackequipment.PlayerMixin")
+                || mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.backpackequipment.BackpackItemMixin")) {
+            return hasVersion(mods, "sophisticatedbackpacks", "3.24.35.1675");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.backpackequipment.")) {
             return hasVersion(mods, "curios", "5.14.1+1.20.1")
                     && hasVersion(mods, "sophisticatedbackpacks", "3.24.35.1675");

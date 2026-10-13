@@ -13,6 +13,8 @@ plugins {
 group = "com.bettercontent"
 version = property("mod_version") as String
 val mixinExtrasVersion = "0.5.0"
+// Native optional-absence profile; Ars Nouveau requires Curios and cannot be present in it.
+val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
 base {
     archivesName.set(property("artifact_name") as String)
 }
@@ -45,6 +47,7 @@ minecraft {
             property("forge.enableGameTest", "true")
             property("forge.gameTestServer", "true")
             property("forge.enabledGameTestNamespaces", property("mod_id") as String)
+            property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
             arg("--nogui")
         }
     }
@@ -163,12 +166,14 @@ dependencies {
     runtimeOnly(fg.deobf("curse.maven:thirst-was-taken-679270:6660408"))
     runtimeOnly(fg.deobf("curse.maven:realistic-block-physics-375616:6393411"))
     runtimeOnly(fg.deobf("curse.maven:realistic-physics-1030082:6026115"))
-    runtimeOnly(fg.deobf("curse.maven:curios-api-309927:6418456"))
+    if (!backpackWithoutCurios) {
+        runtimeOnly(fg.deobf("curse.maven:curios-api-309927:6418456"))
+        runtimeOnly(fg.deobf("curse.maven:ars-nouveau-401955:6688854"))
+    }
     runtimeOnly(fg.deobf("curse.maven:architectury-api-419699:5137938"))
     runtimeOnly(fg.deobf("curse.maven:mantle-74924:7563777"))
     runtimeOnly(fg.deobf("curse.maven:tinkers-construct-74072:7449219"))
     runtimeOnly(fg.deobf("curse.maven:polymorph-388800:6450982"))
-    runtimeOnly(fg.deobf("curse.maven:ars-nouveau-401955:6688854"))
     runtimeOnly(fg.deobf("curse.maven:geckolib-388172:7553267"))
     runtimeOnly(fg.deobf("curse.maven:sophisticated-core-618298:7916595"))
     runtimeOnly(fg.deobf("curse.maven:sophisticated-storage-619320:7973265"))
@@ -257,6 +262,12 @@ tasks.matching { it.name.startsWith("prepareRunGameTestServer") }.configureEach 
 // gate must actually execute its pinned native regression rather than silently skip registration.
 tasks.matching { it.name == "runGameTestServer" }.configureEach {
     doFirst {
+        val curiosPresent = configurations.runtimeClasspath.get().files.any { file ->
+            file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
+                zip.getEntry("top/theillusivec4/curios/api/CuriosApi.class") != null
+            }
+        }
+        check(curiosPresent != backpackWithoutCurios) { "Native Curios profile classpath does not match the requested presence/absence" }
         check(configurations.runtimeClasspath.get().files.any { file ->
             file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
                 zip.getEntry("net/mcreator/thedeepvoid/procedures/IfPlayerFallsInVoidProcedure.class") != null &&
@@ -813,9 +824,15 @@ val verifyRuntimeBackpackEquipment by tasks.registering {
             check(player.contains("canTakeItem(Lnet/minecraft/world/item/ItemStack;)Z")
                     && player.contains("m_7066_(Lnet/minecraft/world/item/ItemStack;)Z") && player.contains("RETURN"))
             val policy = bytes(root + "compat/BackpackEquipmentPolicy.class")
-            check(policy.contains("BackpackItem") && policy.contains("better_backpack")
-                    && policy.contains("PlayerLoggedInEvent") && !policy.contains("m_8061_")
+            check(policy.contains("better_backpack")
+                    && policy.contains("PlayerLoggedInEvent") && policy.contains("BackpackArmorPolicy") && !policy.contains("m_8061_")
                     && !policy.contains("setStackInSlot"))
+            val armorPolicy = bytes(root + "compat/BackpackArmorPolicy.class")
+            check(armorPolicy.contains("BackpackItem") && armorPolicy.contains("PlayerLoggedInEvent")
+                    && !armorPolicy.contains("top/theillusivec4/") && !player.contains("top/theillusivec4/")
+                    && !bag.contains("top/theillusivec4/")) {
+                "Native armor/dispenser support must not link optional Curios classes"
+            }
             val config = bytes("better_compat_fixes.mixins.json")
             for (hook in listOf("CuriosApiMixin", "DynamicStackHandlerMixin", "BackpackItemMixin", "PlayerMixin")) {
                 check(config.contains("backpackequipment.$hook"))

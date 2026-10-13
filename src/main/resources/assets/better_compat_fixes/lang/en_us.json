@@ -1,4 +1,5 @@
 {
+  "better_compat_fixes.backpack.unavailable": "Backpacks can't be worn without Curios. Remove equipped bags to carry or place them.",
   "better_compat_fixes.backpack.misplaced": "Move your equipped backpack to the Backpack slot. Existing bags can still be removed.",
   "gui.better_compat_fixes.pressurizer.minimum": "Minimum 2 bar",
   "gui.better_compat_fixes.pressurizer.consumption": "10 mL/item",

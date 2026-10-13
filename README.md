@@ -12,12 +12,16 @@ With Curios `5.14.1+1.20.1` and Sophisticated Backpacks `1.20.1-3.24.35.1675`
 (FML mod version `3.24.35.1675`), every installed
 `BackpackItem` tier can be worn by players only in functional Curios `better_backpack` index 0.
 Final native API/handler admission overrides competing Curios predicates and equip-event results
-for backpacks only. Other Curios identifiers, indices and cosmetic slots reject backpacks;
-Forge armor admission and native player dispenser eligibility reject them as well. Nonplayer
+for backpacks and reserves `better_backpack` exclusively for them, including against a competing
+ALLOW for a nonbackpack. Other Curios identifiers, indices and cosmetic slots reject backpacks.
+Forge armor admission and native player dispenser eligibility reject them independently of Curios:
+with the pinned Sophisticated version but no Curios, bags remain carry/place/open items, not wearable
+equipment. The two armor hooks and their recognition/warning policy have no Curios class linkage. Nonplayer
 wearing mobs, unrelated armor/accessories, hands, ordinary inventory/hotbar carrying and native
 backpack placement/opening remain under their original owners. No storage or packet protocol is
-replaced. These optional hooks are exact-version gated and tested against hash-pinned upstream
-bytecode plus transformed native GameTests covering all six tiers and competing listeners.
+replaced. The armor hooks require only the exact Sophisticated FML version; Curios hooks require both
+exact versions. Tests inspect hash-pinned upstream bytecode and transformed native GameTests covering
+all six tiers, reserved-slot nonbackpack denial, competing listeners and a real no-Curios mod profile.
 
 Already misplaced equipped bags are not moved or deleted. Login gives one concise warning when
 such a bag is present; native removal remains available. Operator authoring commands/direct saved
@@ -195,6 +199,10 @@ and ReHooked Intro Hooks. Their registries, assets, config, and commands live in
 ./gradlew verifyFast
 ./gradlew verifyFull
 ./gradlew stageRuntimeJar
+# Native optional-absence regression: also omits Ars Nouveau, whose native dependency requires Curios.
+./gradlew clean verifyFull stageRuntimeJar -PbackpackWithoutCurios=true --no-daemon
+# Restore the default paired-inventory candidate after the absence profile.
+./gradlew clean verifyFull stageRuntimeJar --no-daemon
 ```
 
 ## Release artifact

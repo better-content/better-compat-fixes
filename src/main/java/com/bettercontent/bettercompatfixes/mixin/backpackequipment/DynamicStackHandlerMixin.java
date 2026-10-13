@@ -21,7 +21,7 @@ public abstract class DynamicStackHandlerMixin {
     private void betterContent$exclusiveBackpack(int index, ItemStack stack, CallbackInfoReturnable<Boolean> callback) {
         SlotContext context = ctxBuilder.apply(index);
         if (BackpackEquipmentPolicy.applies(context, stack)) {
-            callback.setReturnValue(BackpackEquipmentPolicy.allowed(context));
+            callback.setReturnValue(BackpackEquipmentPolicy.allowed(context, stack));
         }
     }
 }
