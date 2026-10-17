@@ -123,6 +123,13 @@ disabled ParCool directional double-tap dodge, recommended control migration, fi
 that preserves Epic Fight held-item animations, automatic affirmative Explosion Overhaul scan decisions,
 and the pinned Dynamic Trees Aether 1.3.3 obsolete-branch tag repair.
 
+Fighting Styles replaces the basic-attack combo, including its dash/air slots, without replacing
+held-item capabilities or special skills. Selected-style ordinary swings preserve combo progression
+instead of being rejected by the held weapon's native animation-membership check. Dash/air clips
+still reset the counter; timeouts, unrelated actions and the default selection retain native
+weapon handling. The local native regression exercises the transformed Epic Fight counter path
+with an axe style selected while holding a sword; this is not full-pack gameplay acceptance.
+
 First-person limb hiding also applies while swimming/submerged: body arms/sleeves and chest
 armor arms no longer have an underwater exemption. The hooks remain scoped to first-person body
 and armor draw calls, not held-item layers. Both wrappers snapshot native hidden flags before

@@ -120,6 +120,9 @@ public final class BetterContentFixes {
         event.register(VanillaBoatGameTests.class);
         event.register(WaterWheelBiomePolicyGameTests.class);
         event.register(OptionalIntegrationGameTests.class);
+        if (ModList.get().isLoaded("epicfight")) {
+            event.register(com.bettercontent.bettercompatfixes.gametest.StyleComboGameTests.class);
+        }
         event.register(PotionStructureSanitizerGameTests.class);
         event.register(CustomControlEpisodeGameTests.class);
         event.register(SleepTimelapseEventGameTests.class);

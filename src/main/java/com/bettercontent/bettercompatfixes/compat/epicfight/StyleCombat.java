@@ -9,6 +9,8 @@ import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.AnimationManager.AnimationAccessor;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.MainFrameAnimation;
+import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent.Causal;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -34,6 +36,30 @@ public final class StyleCombat {
             alternate.add(accessor);
         }
         return alternate.size() >= 3 ? List.copyOf(alternate) : nativeCombo;
+    }
+
+    /** The native capability handler validates against the held weapon, not the selected style. */
+    public static int counter(CapabilityItem capability, Causal cause, PlayerPatch<?> patch,
+            AnimationAccessor<? extends MainFrameAnimation> animation, int next) {
+        if (cause != Causal.TIME_EXPIRED && StyleCatalogue.melee(capability)
+                && patch.getOriginal() instanceof ServerPlayer player) {
+            String id = StyleState.selected(player,
+                    (yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch) patch);
+            var entry = id.isEmpty() ? null : StyleCatalogue.get(patch, id);
+            // Resolve the full list through the same validation as playback. Invalid/restored
+            // entries must fall back to native handling, not preserve an unplayable combo.
+            if (entry != null) {
+                var motions = combo(capability, patch);
+                if (motions != null && motions.size() == entry.animations().size()
+                        && java.util.stream.IntStream.range(0, motions.size()).allMatch(index ->
+                                entry.animations().get(index).equals(motions.get(index).registryName()))) {
+                    Integer selected = StyleComboPolicy.counter(motions, animation, next);
+                    if (selected != null) return selected;
+                }
+            }
+        }
+        // Keep weapon-specific handling for unrelated actions, default style and timeouts.
+        return capability.handleComboCounter(cause, patch, animation, next);
     }
 
     public static List<Entity> collide(Collider authored, LivingEntityPatch<?> patch,
