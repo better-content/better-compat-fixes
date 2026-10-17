@@ -37,6 +37,47 @@ public final class BackpackEquipmentGameTests {
     }
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
+    public static void emptyBottlePolicyLeavesProviderAdmissionIntact(GameTestHelper helper) {
+        Player player = new Player(helper.getLevel(), BlockPos.ZERO, 0,
+                new GameProfile(UUID.randomUUID(), "EmptyBottleAdmission")) {
+            @Override public boolean isSpectator() { return false; }
+            @Override public boolean isCreative() { return false; }
+        };
+        try {
+            for (int count : new int[]{1, 64}) {
+                var stack = new ItemStack(Items.GLASS_BOTTLE, count);
+                var context = new SlotContext("empty_bottle", player, 0, false, true);
+                var event = new CurioEquipEvent(stack, context);
+                MinecraftForge.EVENT_BUS.post(event);
+                helper.assertTrue(event.getResult() == Event.Result.DEFAULT,
+                        "Valid glass bottles must reach Drinking Water's validator, not be denied or force-allowed");
+            }
+            for (boolean cosmetic : new boolean[]{false, true}) {
+                for (int index = 0; index < 2; index++) {
+                    for (var item : new net.minecraft.world.item.Item[]{Items.GLASS_BOTTLE, Items.POTION, Items.STONE}) {
+                        var context = new SlotContext("empty_bottle", player, index, cosmetic, true);
+                        var event = new CurioEquipEvent(new ItemStack(item), context);
+                        MinecraftForge.EVENT_BUS.post(event);
+                        boolean valid = item == Items.GLASS_BOTTLE && index == 0 && !cosmetic;
+                        helper.assertTrue(event.getResult() == (valid ? Event.Result.DEFAULT : Event.Result.DENY),
+                                "Only glass bottles in functional empty_bottle[0] may reach native validation");
+                    }
+                }
+            }
+            for (String slot : new String[]{"water", "better_backpack", "unknown"}) {
+                var event = new CurioEquipEvent(new ItemStack(Items.GLASS_BOTTLE),
+                        new SlotContext(slot, player, 0, false, true));
+                MinecraftForge.EVENT_BUS.post(event);
+                helper.assertTrue(event.getResult() == Event.Result.DENY,
+                        "Empty-bottle exception must not leak into " + slot);
+            }
+            helper.succeed();
+        } finally {
+            player.invalidateCaps();
+        }
+    }
+
+    @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void allNativeTiersRemainExclusiveDespiteCompetingListeners(GameTestHelper helper) {
         Player player = new Player(helper.getLevel(), BlockPos.ZERO, 0,
                 new GameProfile(UUID.randomUUID(), "BackpackAdmission")) {

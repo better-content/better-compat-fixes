@@ -23,6 +23,13 @@ replaced. The armor hooks require only the exact Sophisticated FML version; Curi
 exact versions. Tests inspect hash-pinned upstream bytecode and transformed native GameTests covering
 all six tiers, reserved-slot nonbackpack denial, competing listeners and a real no-Curios mod profile.
 
+The Curios equipment allowlist also recognizes Better Drinking Water's functional
+`empty_bottle[0]`: glass bottles are left to the owning mod's native validator, just as water
+bottles are in `water[0]`. Unrelated items, extra indices and cosmetic empty-bottle slots remain
+denied. This prevents the allowlist from blocking manual glass-bottle placement and causing
+automatic empty returns to fall through to backpack/hotbar storage. Return order, stacking and
+storage remain owned by Better Drinking Water; paired in-game acceptance is pending.
+
 Already misplaced equipped bags are not moved or deleted. Login gives one concise warning when
 such a bag is present; native removal remains available. Operator authoring commands/direct saved
 state setters are deliberately outside gameplay admission. The pack owns the `better_backpack`

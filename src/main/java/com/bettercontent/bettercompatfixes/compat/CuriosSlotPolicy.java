@@ -54,7 +54,9 @@ public final class CuriosSlotPolicy {
         if (stack.isEmpty()) return false;
         if (stack.getItem() instanceof BackpackItem) return slot.equals("better_backpack");
         if (slot.equals("better_backpack")) return false;
-        // Better Drinking Water defines a validator for this slot instead of an item tag.
+        // Better Drinking Water defines validators for these slots instead of item tags.
+        // Do not DENY valid empties before its validator can accept manual/automatic insertion.
+        if (slot.equals("empty_bottle")) return stack.is(Items.GLASS_BOTTLE);
         if (slot.equals("water")) return stack.is(Items.POTION) && PotionUtils.getPotion(stack) == Potions.WATER;
         Set<String> tags = SOURCE_TAGS.get(slot);
         if (tags == null) return false;
