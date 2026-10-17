@@ -189,6 +189,12 @@ behavior are not altered. Source contracts and the repository's verification gat
 and build compatibility; human in-game verification remains pending. This is not a confirmed
 diagnosis or fix for every pull-up camera snap.
 
+Vanilla crouch toggle remains a Survival land control. In water or bubble columns, descent
+follows the held crouch binding instead, and leaving water does not restore the old land latch.
+Jump input, sprint input, or an already sprinting player clears the land crouch latch without
+changing the saved toggle option or the sprint mapping. Hold-crouch mode remains hold-based.
+Source wiring checks cover these hooks; human in-game movement acceptance is pending.
+
 Keymap profile v2 moves Relics' ability list to Alt+A
 and More Artifacts' Eye teleport to Alt+P, and unbinds Quark Lock Rotation. As with the original profile,
 only bindings still equal to the prior pack defaults migrate; player customizations always win.

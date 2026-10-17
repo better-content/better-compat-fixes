@@ -28,7 +28,9 @@ public final class ToggleSneakHandler {
     public static void onClientTick(final TickEvent.ClientTickEvent event) {
         final Minecraft minecraft = Minecraft.getInstance();
         if (event.phase == TickEvent.Phase.START) {
-            if (toggled && minecraft.player != null && minecraft.screen == null && minecraft.options.keyJump.isDown()) {
+            if (toggled && minecraft.player != null && minecraft.screen == null
+                    && (minecraft.options.keyJump.isDown() || minecraft.options.keySprint.isDown()
+                        || minecraft.player.isSprinting() || minecraft.player.isInWaterOrBubble())) {
                 toggled = false;
                 minecraft.options.keyShift.setDown(false);
             }
@@ -72,14 +74,22 @@ public final class ToggleSneakHandler {
         }
         physicalKeyWasDown = physicalKeyDown;
 
-        // Do not keep crouch active while another system owns mounted movement.
-        if (minecraft.player.isPassenger() || minecraft.options.keyJump.isDown()) {
+        // Water uses hold-to-descend; never retain a land crouch latch there.
+        if (minecraft.player.isInWaterOrBubble()) {
+            toggled = false;
+            sneak.setDown(physicalKeyDown);
+            return;
+        }
+
+        // Movement intent exits crouch before vanilla attempts to start sprinting.
+        if (minecraft.player.isPassenger() || minecraft.options.keyJump.isDown()
+                || minecraft.options.keySprint.isDown() || minecraft.player.isSprinting()) {
             toggled = false;
         }
         sneak.setDown(toggled);
     }
 
-    private static boolean physicalKeyDown(final Minecraft minecraft, final InputConstants.Key key) {
+    public static boolean physicalKeyDown(final Minecraft minecraft, final InputConstants.Key key) {
         if (key.getType() == InputConstants.Type.KEYSYM) {
             return GLFW.glfwGetKey(minecraft.getWindow().getWindow(), key.getValue()) == GLFW.GLFW_PRESS;
         }
