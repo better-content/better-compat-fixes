@@ -23,6 +23,7 @@ final class MovementPresentationResourceTest {
         assertTrue(client.contains("parcool.ClingToCliffPlayerRotationMixin"));
         assertTrue(client.contains("parcool.ClingToCliffAscendingGrabMixin"));
         assertTrue(client.contains("epicfight.EpicParCoolLedgeCameraMixin"));
+        assertTrue(client.contains("epicfight.EpicFightClimbCameraMixin"));
         assertFalse(client.contains("minecraft.LocalPlayerSprintMixin"));
         assertTrue(client.contains("epicfight.FirstPersonRendererMixin"));
         assertTrue(client.contains("epicfight.WearableItemLayerMixin"));
@@ -87,6 +88,22 @@ final class MovementPresentationResourceTest {
         assertTrue(camera.contains("original.syncFrame()"));
         final String plugin = Files.readString(SOURCE_ROOT.resolve("mixin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"epicparcool\", \"20.12.0.1\")"));
+    }
+
+    @Test
+    void ladderVineOverrideOnlyRemovesTheNativeClimbViewLimit() throws IOException {
+        final String camera = Files.readString(SOURCE_ROOT.resolve("mixin/epicfight/EpicFightClimbCameraMixin.java"));
+        assertTrue(camera.contains("\"epicfight\".equals(name.getNamespace())"));
+        assertTrue(camera.contains("\"biped/living/climb\".equals(name.getPath())"));
+        assertTrue(camera.contains("original == null || original.viewLimit() == null"));
+        assertTrue(camera.contains("original.rootTransformation(),\n                null,"));
+        for (String field : new String[] {"cameraTransform", "visibilities", "rootTransformation",
+                "visibilityOthers", "hasUniqueAnimation", "syncFrame"}) {
+            assertTrue(camera.contains("original." + field + "()"));
+        }
+        assertTrue(camera.contains("require = 1") && camera.contains("allow = 1"));
+        final String plugin = Files.readString(SOURCE_ROOT.resolve("mixin/BetterContentMixinPlugin.java"));
+        assertTrue(plugin.contains("(EPIC_FIGHT_MIXIN_PREFIX + \"EpicFightClimbCameraMixin\").equals(mixinClassName)"));
     }
 
     @Test

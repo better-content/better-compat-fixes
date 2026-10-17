@@ -198,7 +198,8 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         }
         if (EPIC_FIGHT_FIRST_PERSON_RENDERER_MIXIN.equals(mixinClassName)
                 || EPIC_FIGHT_FIRST_PERSON_ARMOR_MIXIN.equals(mixinClassName)
-                || EPIC_FIGHT_ATTACK_POV_MIXIN.equals(mixinClassName)) {
+                || EPIC_FIGHT_ATTACK_POV_MIXIN.equals(mixinClassName)
+                || (EPIC_FIGHT_MIXIN_PREFIX + "EpicFightClimbCameraMixin").equals(mixinClassName)) {
             return hasVersion(mods, "epicfight", "20.14.17");
         }
         if (mixinClassName.startsWith(FALLOUT_WASTELANDS_MIXIN_PREFIX)) {

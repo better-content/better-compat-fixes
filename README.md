@@ -189,6 +189,11 @@ behavior are not altered. Source contracts and the repository's verification gat
 and build compatibility; human in-game verification remains pending. This is not a confirmed
 diagnosis or fix for every pull-up camera snap.
 
+Epic Fight 20.14.17's native `epicfight:biped/living/climb` first-person POV also has
+its pitch/yaw viewing limits removed for ladder/vine climbing. The override preserves camera
+transforms, root transformation, visibility and animation synchronization; it does not change
+climbing movement, ParCool routes or other animations. Human in-game verification remains pending.
+
 Vanilla crouch toggle remains a Survival land control. In water or bubble columns, descent
 follows the held crouch binding instead, and leaving water does not restore the old land latch.
 Jump input, sprint input, or an already sprinting player clears the land crouch latch without
