@@ -759,6 +759,33 @@ val verifyRuntimeRespawnMarkerPhysics by tasks.registering {
     }
 }
 
+val verifyRuntimeSwimmingAttackPov by tasks.registering {
+    group = "verification"
+    description = "Requires the client-only swimming attack POV selector in the production JAR."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
+        ZipFile(runtimeJar).use { zip ->
+            fun bytes(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Runtime JAR is missing $path")).use { it.readBytes() }
+                .toString(Charsets.ISO_8859_1)
+            val root = "com/bettercontent/bettercompatfixes/"
+            val hook = bytes(root + "mixin/epicfight/LocalPlayerAttackPovMixin.class")
+            check(hook.contains("clientTick(Lnet/minecraftforge/event/entity/living/LivingEvent\$LivingTickEvent;)V")
+                    && hook.contains("iterVisibleLayersUntilFalse(Ljava/util/function/Function;)Z")
+                    && hook.contains("FirstPersonPovPriority") && hook.contains("AttackAnimation")
+                    && hook.contains("POV_ANIMATION") && hook.contains("getFirstPersonLayer")
+                    && hook.contains("SWIM") && hook.contains("FLOAT")) {
+                "Production swimming attack hook lacks its native selector or scoped POV policy"
+            }
+            bytes(root + "client/FirstPersonPovPriority.class")
+            check(bytes("better_compat_fixes.mixins.json").contains("epicfight.LocalPlayerAttackPovMixin"))
+            check(bytes(root + "mixin/BetterContentMixinPlugin.class").contains("LocalPlayerAttackPovMixin"))
+        }
+    }
+}
+tasks.named("verifyFast") { dependsOn(verifyRuntimeSwimmingAttackPov) }
+
 val verifyRuntimeDhOpaqueDepth by tasks.registering {
     group = "verification"
     description = "Requires the pinned client-only DH opaque-depth correction in the production JAR."

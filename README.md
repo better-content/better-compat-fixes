@@ -131,6 +131,16 @@ throws. Pinned Epic Fight 20.14.17 native contracts additionally verify shared b
 reinitialize their hidden flags on subsequent third-person draws; this source gate is not human
 visual acceptance.
 
+Epic Fight 20.14.17 first-person swimming/floating also respects visible melee attack overlays.
+With non-stiff combos, the native POV selector otherwise skips a melee attack without a dedicated
+POV clip and selects the lower swimming POV, hiding the weapon swing despite server-side damage.
+A client-only selector wrapper stops at that attack and clears the aquatic POV through native
+`FirstPersonLayer.off()`, allowing the renderer to use the combined movement/attack pose. Native
+selection resumes when the attack layer goes away. Dedicated attack POV clips, non-attack layers,
+land movement, limb hiding, combat movement locks and server-side damage are unchanged. The hook
+is version-pinned and covered by selector regressions and hash-pinned native bytecode contracts;
+these checks are not real-client visual acceptance.
+
 With RBP 1.0.0 and Realistic Physics 1.0.1, only `better_spawns:respawn_marker` is rejected
 at RBP's common falling/breaking-operation admission method. Placement integrity checks,
 neighbor fall checks and chunk-analysis operations converge on this method, as verified against

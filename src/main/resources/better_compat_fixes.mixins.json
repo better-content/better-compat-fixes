@@ -110,6 +110,7 @@
     "epicfight.FirstPersonRendererMixin",
     "epicfight.EpicParCoolLedgeCameraMixin",
     "epicfight.LocalPlayerPatchMixin",
+    "epicfight.LocalPlayerAttackPovMixin",
     "epicfight.WearableItemLayerMixin",
     "epicfightvs.CameraMixin",
     "epicfightvs.EpicFightCameraApiMixin",
