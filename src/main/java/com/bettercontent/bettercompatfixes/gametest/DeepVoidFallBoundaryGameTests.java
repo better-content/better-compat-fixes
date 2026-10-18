@@ -82,6 +82,82 @@ public final class DeepVoidFallBoundaryGameTests {
         }
     }
 
+    @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty", batch = "deep_void_placement", timeoutTicks = 200)
+    public static void nativeHoleTemplatesAndDelayedOpeningsUseExtendedBottom(final GameTestHelper helper) {
+        final var level = helper.getLevel().getServer().getLevel(net.minecraft.resources.ResourceKey.create(
+                net.minecraft.core.registries.Registries.DIMENSION,
+                new net.minecraft.resources.ResourceLocation(BetterContentFixes.MOD_ID, "deep_void_placement_test")));
+        helper.assertTrue(level != null && level.getMinBuildHeight() == -128, "Missing extended-bottom fixture");
+        final var spec = DeepVoidConfigConfiguration.SPEC;
+        final var originalConfig = net.minecraftforge.fml.config.ConfigTracker.INSTANCE.configSets().values()
+                .stream().flatMap(java.util.Collection::stream)
+                .filter(config -> config.getSpec() == spec).findFirst().orElseThrow().getConfigData();
+        final var variables = TheDeepVoidModVariables.MapVariables.get(level);
+        final boolean originalPlaced = variables.CultTemplePlaced;
+        final boolean originalRule = level.getGameRules().getBoolean(
+                net.mcreator.thedeepvoid.init.TheDeepVoidModGameRules.SPAWN_HOLE_STRUCTURE);
+        spec.setConfig(copyConfig(originalConfig));
+        final Runnable restore = () -> {
+            spec.setConfig(originalConfig);
+            variables.CultTemplePlaced = originalPlaced;
+            level.getGameRules().getRule(net.mcreator.thedeepvoid.init.TheDeepVoidModGameRules.SPAWN_HOLE_STRUCTURE)
+                    .set(originalRule, level.getServer());
+        };
+        try {
+            // Deliberately impossible absolute height proves actual native placement is redirected.
+            DeepVoidConfigConfiguration.HOLESTRUCTUREY.set(12345.0D);
+            for (boolean old : new boolean[] {true, false}) {
+                DeepVoidConfigConfiguration.OLDHOLESTRUCTURE.set(old);
+                final int offset = old ? -8 : -12;
+                final BlockPos anchor = new BlockPos(offset, -128, offset);
+                final var template = level.getStructureManager().getOrCreate(new net.minecraft.resources.ResourceLocation(
+                        "the_deep_void", old ? "void_cult_temple" : "cult_temple_noair3"));
+                final var settings = new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings();
+                final var sample = net.minecraft.core.registries.BuiltInRegistries.BLOCK.stream()
+                        .filter(block -> block != net.minecraft.world.level.block.Blocks.AIR
+                                && block != net.minecraft.world.level.block.Blocks.STRUCTURE_VOID)
+                        .flatMap(block -> template.filterBlocks(anchor, settings, block).stream())
+                        .filter(info -> !info.pos().equals(anchor.above()))
+                        .findFirst().orElseThrow();
+                level.setBlock(sample.pos(), net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState(), 3);
+                variables.CultTemplePlaced = false;
+                DeepVoidConfigConfiguration.PLACECULTTEMPLE.set(false);
+                net.mcreator.thedeepvoid.procedures.CultTemplePlacementProcedure.execute(level);
+                helper.assertTrue(!variables.CultTemplePlaced && level.getBlockState(sample.pos()).is(
+                        net.minecraft.world.level.block.Blocks.BARRIER), "Disabled placement must remain disabled");
+                DeepVoidConfigConfiguration.PLACECULTTEMPLE.set(true);
+                level.getGameRules().getRule(net.mcreator.thedeepvoid.init.TheDeepVoidModGameRules.SPAWN_HOLE_STRUCTURE)
+                        .set(false, level.getServer());
+                net.mcreator.thedeepvoid.procedures.CultTemplePlacementProcedure.execute(level);
+                helper.assertTrue(!variables.CultTemplePlaced, "Disabled gamerule must retain native guard");
+                level.getGameRules().getRule(net.mcreator.thedeepvoid.init.TheDeepVoidModGameRules.SPAWN_HOLE_STRUCTURE)
+                        .set(true, level.getServer());
+                net.mcreator.thedeepvoid.procedures.CultTemplePlacementProcedure.execute(level);
+                helper.assertTrue(variables.CultTemplePlaced && level.getBlockState(sample.pos()).equals(sample.state()),
+                        "Native template must place at -128, old=" + old);
+                level.setBlock(sample.pos(), net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState(), 3);
+                net.mcreator.thedeepvoid.procedures.CultTemplePlacementProcedure.execute(level);
+                helper.assertTrue(level.getBlockState(sample.pos()).is(net.minecraft.world.level.block.Blocks.BARRIER),
+                        "Existing placement flag must prevent replacement");
+            }
+            // Both native one-tick callbacks read the height again: keep the fixture config until they run.
+            level.setBlock(new BlockPos(-8, -127, -8), net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState(), 3);
+            level.setBlock(new BlockPos(-12, -127, -12), net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState(), 3);
+            helper.runAfterDelay(3, () -> {
+                try {
+                    helper.assertTrue(level.getBlockState(new BlockPos(-8, -127, -8)).isAir(), "Old delayed opening at bottom+1");
+                    helper.assertTrue(level.getBlockState(new BlockPos(-12, -127, -12)).isAir(), "New delayed opening at bottom+1");
+                    helper.succeed();
+                } finally {
+                    restore.run();
+                }
+            });
+        } catch (Throwable failure) {
+            restore.run();
+            throw failure;
+        }
+    }
+
     private static com.electronwill.nightconfig.core.CommentedConfig copyConfig(
             final com.electronwill.nightconfig.core.UnmodifiableConfig source) {
         final var copy = com.electronwill.nightconfig.core.CommentedConfig.inMemory();

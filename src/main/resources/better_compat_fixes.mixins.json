@@ -16,6 +16,7 @@
     "backpackequipment.PlayerMixin",
     "bettercaves.AbstractCarverMixin",
     "deepvoid.IfPlayerFallsInVoidProcedureMixin",
+    "deepvoid.CultTemplePlacementProcedureMixin",
     "cataclysm.CursedPyramidPieceMixin",
     "create.HandCrankBlockMixin",
     "create.WaterWheelBlockEntityMixin",

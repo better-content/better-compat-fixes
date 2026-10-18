@@ -787,6 +787,18 @@ val verifyRuntimeDeepVoidFallBoundary by tasks.registering {
                 "Runtime mixin configuration is missing actual-bottom Deep Void fall entry"
             }
             bytecode("com/bettercontent/bettercompatfixes/compat/DeepVoidFallBoundary.class")
+            val placement = bytecode("com/bettercontent/bettercompatfixes/mixin/deepvoid/CultTemplePlacementProcedureMixin.class")
+            check(placement.contains("CultTemplePlacementProcedure") && placement.contains("Double;doubleValue()D")
+                    && placement.contains("lambda\$execute\$0") && placement.contains("lambda\$execute\$1")
+                    && placement.contains("m_141937_") && placement.contains("require") && placement.contains("allow")) {
+                "Deep Void template/floor opening correction must survive production reobfuscation"
+            }
+            check(bytecode("better_compat_fixes.mixins.json").contains("deepvoid.CultTemplePlacementProcedureMixin"))
+            for (kind in listOf("dimension", "dimension_type")) {
+                check(zip.getEntry("data/better_compat_fixes/$kind/deep_void_placement_test.json") == null) {
+                    "Extended-bottom placement fixture must never ship"
+                }
+            }
         }
     }
 }

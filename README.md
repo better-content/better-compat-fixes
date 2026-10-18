@@ -101,6 +101,15 @@ still trigger below -70; a -128 floor triggers below -134, and a zero-based floo
 six-block margin deliberately supersedes the native absolute-height setting. Tests inspect the pinned
 native procedure, exercise the transformed native entry branches and check the staged production JAR.
 
+The same pinned Deep Void integration anchors both one-time origin entrance templates to the actual
+minimum build height instead of `HoleStructureY`. Both delayed floor-opening callbacks use that same
+bottom (retaining native bottom+1), while native X/Z offsets, template choice, config/gamerule guards
+and the saved `CultTemplePlaced` flag remain unchanged. This does not regenerate or move an already
+placed entrance. The pack enables `PlaceCultTemple`; existing unplaced worlds become eligible on their
+next native level load. A nonshipping -128-bottom fixture exercises real template placement, both
+delayed openings and disabled/already-placed controls. No distributed-hole generator or Abductor
+spawn-rate change is introduced.
+
 The Better Caves compatibility hook clips only block-carve attempts outside a chunk's legal vertical
 range. This preserves Better Caves and C2ME generation at valid heights while preventing Better Caves
 `2.0.6` from writing negative `CarvingMask` indices in zero-minimum dimensions such as

@@ -1,0 +1,13 @@
+{
+  "type": "better_compat_fixes:deep_void_placement_test",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "minecraft:plains",
+      "lakes": false,
+      "features": false,
+      "layers": [{"block": "minecraft:bedrock", "height": 1}],
+      "structure_overrides": []
+    }
+  }
+}

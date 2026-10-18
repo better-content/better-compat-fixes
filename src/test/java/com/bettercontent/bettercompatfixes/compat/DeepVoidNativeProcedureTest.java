@@ -13,6 +13,33 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Inspect the pinned Gradle-fetched native artifact, not a historical decompiler/log output. */
 final class DeepVoidNativeProcedureTest {
     @Test
+    void pinnedTemplePlacementHasFourAnchorReadsAndTwoDelayedFloorReads() throws Exception {
+        try (InputStream input = getClass().getResourceAsStream(
+                "/net/mcreator/thedeepvoid/procedures/CultTemplePlacementProcedure.class")) {
+            assertNotNull(input);
+            ClassNode type = new ClassNode();
+            new ClassReader(input).accept(type, 0);
+            var expected = java.util.Map.of("execute", 4, "lambda$execute$0", 1, "lambda$execute$1", 1);
+            for (var entry : expected.entrySet()) {
+                var method = type.methods.stream().filter(candidate -> candidate.name.equals(entry.getKey())
+                        && candidate.desc.equals(entry.getKey().equals("execute")
+                                ? "(Lnet/minecraftforge/eventbus/api/Event;Lnet/minecraft/world/level/LevelAccessor;)V"
+                                : "(Lnet/minecraft/world/level/LevelAccessor;)V"))
+                        .findFirst().orElseThrow();
+                int heights = 0;
+                int conversions = 0;
+                for (var instruction : method.instructions) {
+                    if (instruction instanceof FieldInsnNode field && field.name.equals("HOLESTRUCTUREY")) heights++;
+                    if (instruction instanceof MethodInsnNode call && call.owner.equals("java/lang/Double")
+                            && call.name.equals("doubleValue")) conversions++;
+                }
+                assertEquals(entry.getValue().intValue(), heights, entry.getKey());
+                assertEquals(heights, conversions, "Selector must replace only hole heights: " + entry.getKey());
+            }
+        }
+    }
+
+    @Test
     void pinnedNativeFallProcedureHasExactlyThreeAbsoluteThresholdConversions() throws Exception {
         try (InputStream input = getClass().getResourceAsStream(
                 "/net/mcreator/thedeepvoid/procedures/IfPlayerFallsInVoidProcedure.class")) {
