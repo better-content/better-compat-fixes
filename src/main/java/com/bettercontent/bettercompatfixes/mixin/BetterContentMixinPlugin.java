@@ -146,6 +146,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
                 || mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.weather2.StormObjectMixin")) {
             return hasVersion(mods, "weather2", "1.20.1-2.8.3");
         }
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.wom.")) {
+            return hasVersion(mods, "wom", "2.0.171");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.deepvoid.")) {
             return hasVersion(mods, "the_deep_void", "1.98.1");
         }

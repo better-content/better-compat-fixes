@@ -106,6 +106,10 @@ public final class BetterContentFixes {
                 .filter(mod -> mod.getModInfo().getVersion().toString().equals("1.98.1")).isPresent()) {
             event.register(com.bettercontent.bettercompatfixes.gametest.DeepVoidFallBoundaryGameTests.class);
         }
+        if (ModList.get().getModContainerById("wom")
+                .filter(mod -> mod.getModInfo().getVersion().toString().equals("2.0.171")).isPresent()) {
+            event.register(com.bettercontent.bettercompatfixes.gametest.SaulomonkSpawnGameTests.class);
+        }
         event.register(AmbientSurfaceSpawnGameTests.class);
         event.register(DaylightProtectionGameTests.class);
         if (ModList.get().isLoaded("weather2")) {

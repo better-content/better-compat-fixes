@@ -222,6 +222,10 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:architectury-api-419699:5137938"))
     compileOnly(fg.deobf("curse.maven:epic-fight-mod-405076:8049910"))
     runtimeOnly(fg.deobf("curse.maven:epic-fight-mod-405076:8049910"))
+    // Exact pack pin: compile/native fixture only, never bundled into our runtime artifact.
+    compileOnly(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
+    runtimeOnly(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
+    testImplementation(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
     compileOnly(fg.deobf("curse.maven:parcool-482378:7760589"))
     compileOnly(fg.deobf("curse.maven:sleeping-overhaul-2-887716:6471182"))
     compileOnly(fg.deobf("curse.maven:distant-horizons-508933:7375280"))
@@ -368,6 +372,15 @@ tasks.matching { it.name == "runGameTestServer" }.configureEach {
             }
         }
         check(heatPresent != spoilageWithoutHeat) { "Native Heat profile classpath does not match requested presence/absence" }
+        check(configurations.runtimeClasspath.get().files.any { file ->
+            file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
+                zip.getEntry("reascer/wom/world/entity/mob/Saulomonk.class") != null &&
+                    zip.getEntry("META-INF/mods.toml")?.let { entry ->
+                        zip.getInputStream(entry).use { it.readBytes() }.toString(Charsets.UTF_8)
+                            .contains("version=\"2.0.171\"")
+                    } == true
+            }
+        }) { "Required pinned WoM 2.0.171 native Saulomonk fixture is missing" }
         val curiosPresent = configurations.runtimeClasspath.get().files.any { file ->
             file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
                 zip.getEntry("top/theillusivec4/curios/api/CuriosApi.class") != null

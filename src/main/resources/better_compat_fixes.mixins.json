@@ -17,6 +17,7 @@
     "bettercaves.AbstractCarverMixin",
     "deepvoid.IfPlayerFallsInVoidProcedureMixin",
     "deepvoid.CultTemplePlacementProcedureMixin",
+    "wom.SaulomonkMixin",
     "cataclysm.CursedPyramidPieceMixin",
     "create.HandCrankBlockMixin",
     "create.WaterWheelBlockEntityMixin",

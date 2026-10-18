@@ -8,6 +8,24 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+With Weapons of Miracles **2.0.171**, Saulomonk admission measures horizontal distance
+from the **nearest living, nonspectating player's permanent Better Spawns onboarding
+point** in the current dimension, strictly greater than **2,000 blocks**. It no longer
+measures from `(0, 64, 0)` or requires 5,000 blocks. Selection follows the nearest player
+at the attempted mob position, not the nearest stored point; it does not borrow a farther
+player's point when the nearest player lacks one. Missing, malformed or other-dimension
+points deny admission, with no world-origin/bed fallback. The four typed
+`better_spawns:respawn_{dim,x,y,z}` persistent-data fields are the existing owner contract;
+no player files, chunks or offline-player histories are scanned. Native desert biome
+injection, sand, difficulty and native mob-spawn checks remain unchanged. This is
+an admission gate, not a despawn rule or a change to encounter weight/equipment/drops.
+The optional mixin is version-gated and requires exactly one distance expression and
+one threshold. `verifyFull` includes the exact WoM pin and executes its transformed
+native predicate, including boundary, nearest-player, missing/different-dimension anchor,
+spectator, sand and peaceful regressions with the NATURAL reason; the preserved
+upstream predicate is `Mob.checkMobSpawnRules`, not the darker-light monster predicate. This is source-native verification, not full-pack
+natural-spawn acceptance or deployment.
+
 Chopping logs and Dynamic Trees branches emits material chips at a rate increasing linearly
 from 2 to 18 particles per second with actual break completion: `2 + 16 * completion`.
 A fractional accumulator integrates that rate once per native mining tick (20 Hz), never per
