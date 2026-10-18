@@ -176,7 +176,7 @@ GUI acceptance; paired in-game visual and human-pointer review is separately
 required under the shared GUI policy.
 
 Runtime behavior includes pack-owned compatibility fixes, including permanent Epic Fight Battle mode,
-disabled ParCool directional double-tap dodge, recommended control migration, first-person player-limb hiding
+disabled ParCool directional double-tap dodge, first-person player-limb hiding
 that preserves Epic Fight held-item animations, automatic affirmative Explosion Overhaul scan decisions,
 and the pinned Dynamic Trees Aether 1.3.3 obsolete-branch tag repair.
 
@@ -251,10 +251,11 @@ server change is introduced. Keep Epic Fight's `camera_perspective_toggle_mode =
 shipping-selector and toggle/queue regressions are source validation; real-client combat/camera
 acceptance remains pending.
 
-The client control profile moves ParCool Fast Run to Shift, ParCool's contextual mouse actions to Mouse 5,
-Ping Wheel to Mouse 4, and Epic Fight lock-on to Caps Lock. Existing customized bindings are preserved;
-only exact legacy defaults are migrated once. ParCool's direct R dodge remains available, and vanilla's
-forward double-tap sprint behavior is left intact.
+Recommended control defaults are authored in the modpack's tracked `options.txt`, not migrated or
+rewritten by this mod. They bind ParCool Fast Run to Shift, ParCool's contextual mouse actions to
+Mouse 5, Ping Wheel to Mouse 4, Epic Fight lock-on to Caps Lock, and free target switching to
+Shift+Caps Lock; Epic Fight dodge is unbound. ParCool's direct R dodge remains available, and
+vanilla's forward double-tap sprint behavior is left intact.
 
 For ParCool 3.4.3.3, ledge grabbing no longer rejects an otherwise valid edge solely because
 of upward speed. Native grab input, stamina, wall-running exclusion, facing, collision/reach and
@@ -283,9 +284,9 @@ Jump input, sprint input, or an already sprinting player clears the land crouch 
 changing the saved toggle option or the sprint mapping. Hold-crouch mode remains hold-based.
 Source wiring checks cover these hooks; human in-game movement acceptance is pending.
 
-Keymap profile v2 moves Relics' ability list to Alt+A
-and More Artifacts' Eye teleport to Alt+P, and unbinds Quark Lock Rotation. As with the original profile,
-only bindings still equal to the prior pack defaults migrate; player customizations always win.
+The pack's `options.txt` also binds Rotavision rotate/toggle to Alt+R / Alt+T, Relics' ability list
+to Alt+A, and More Artifacts' Eye teleport to Alt+P, and leaves Quark Lock Rotation unbound.
+There is no runtime keymap migration or profile-version marker.
 
 When Better Content Threads is installed, accepted server-side ParCool starts for the configured dodge,
 fast-run, and contextual actions emit optional learning signals. The first action opens one persistent
