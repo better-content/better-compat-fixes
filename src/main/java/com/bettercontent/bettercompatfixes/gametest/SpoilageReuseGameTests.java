@@ -87,15 +87,27 @@ public final class SpoilageReuseGameTests {
                             && !FishProperties.BaitRestrictions.LUSH_BAIT.correctBait().contains(meatId),
                     "Spoiled meat must not satisfy specialist or legendary bait restrictions");
             helper.setBlock(new BlockPos(2, 1, 2), Blocks.WATER);
-            bob.setPos(pos.getX() + .5, pos.getY(), pos.getZ() + .5);
-            // Advance the native missed-bite branch deterministically; no fishing RNG or minigame injection.
-            var state = FishingBobEntity.class.getDeclaredField("currentState");
-            state.setAccessible(true);
-            @SuppressWarnings({"rawtypes", "unchecked"})
-            Object biting = Enum.valueOf((Class) state.getType(), "BITING");
-            state.set(bob, biting);
+            helper.setBlock(new BlockPos(2, 2, 2), Blocks.WATER);
+            bob.setPos(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+            bob.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+            // Preserve the benefit assertions above; only accelerate this fixture's PUBLIC timing fields.
+            // nextInt(1) is always zero, so the native max-time fallback deterministically triggers the bite.
+            bob.minTicksToFish = 0;
+            bob.maxTicksToFish = 0;
+            bob.ticksInFluid = 0;
+            bob.chanceToFishEachTick = 1;
+            bob.tick(); // Native fluid contact moves FLYING -> BOBBING.
+            helper.assertTrue(bob.ticksInFluid == 0,
+                    "Initial native fluid contact must precede the bobbing timer");
+            bob.tick(); // Native bobbing timer moves BOBBING -> BITING.
+            helper.assertTrue(bob.getEntityData().get(FishingBobEntity.STATE) == 2 && bob.ticksInFluid == 1,
+                    "Native tick must observe BOBBING and advance its timer before entering the bite");
+            helper.assertTrue(ModDataComponents.get(rod, ModDataComponents.BAIT).stack().getCount() == 3,
+                    "Native contact and bite onset must not consume bait early");
             bob.timeBiting = 80;
-            bob.tick();
+            bob.tick(); // Native missed-bite timeout consumes exactly one bait.
+            helper.assertTrue(bob.getEntityData().get(FishingBobEntity.STATE) == 3 && bob.timeBiting == 81,
+                    "Native BITING state must advance through the public missed-bite timeout");
             helper.assertTrue(ModDataComponents.get(rod, ModDataComponents.BAIT).stack().getCount() == 2,
                     "Native missed bite must consume exactly one bait");
         } finally {
