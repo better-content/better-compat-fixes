@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "better_industrial_heat:spoiled_meat", "required": false }
+  ]
+}

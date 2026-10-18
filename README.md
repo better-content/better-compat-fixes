@@ -8,6 +8,27 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+Chopping logs and Dynamic Trees branches emits 48 fractional-budget material chips per actual
+completed block. The local client's hardness/tool-adjusted destroy-progress increments drive the
+budget, never rendering FPS or a per-particle packet. Chips originate at the ray's cut-face
+intersection, with Dynamic Trees using its native primitive-log/stripped-log material. Native hold-hit
+particles are suppressed only for logs/branches; completion debris and other blocks remain native.
+Stopping, restarting, target/material changes and progress rollback discard obsolete fractional debt.
+Client visual acceptance remains separate from headless/source checks.
+
+When Industrial Heat is installed, spoiled produce enters vanilla composting at a 65% layer chance
+(first layer guaranteed by vanilla), yielding native bone-meal fertilizer on completion. With
+Starcatcher `2.2.1`, spoiled meat is admitted by its additive native bait tag and receives the native
+basic `DECREASES_LURE_TIME` default catch modifier. Its unchanged rod menu persists the stack;
+Starcatcher's bobber applies the benefit and owns consumption. No fish pools, specialist/legendary
+correct-bait lists, rod UI, or production loot are replaced. Source GameTests exercise the native
+bridge using actual spoiled items when available, otherwise explicit wither-skull/poisonous-potato fixtures;
+fixture passes are not full-pack or actual-Industrial-Heat acceptance. A resources-only
+`nativeFixture` mirrors the pack's existing authored disabled `starcatcher:aquaculture_fillet`
+recipe, avoiding the upstream malformed optional-mod condition without restoring a deliberately
+disabled recipe. Native/artifact hashes and fixture byte parity are checked; the override is
+excluded from this mod's production JAR. Other inherited source-fixture diagnostics are not waived.
+
 With Curios `5.14.1+1.20.1` and Sophisticated Backpacks `1.20.1-3.24.35.1675`
 (FML mod version `3.24.35.1675`), every installed
 `BackpackItem` tier can be worn by players only in functional Curios `better_backpack` index 0.

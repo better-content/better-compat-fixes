@@ -65,6 +65,7 @@ public final class BetterContentFixes {
         if (ModList.get().isLoaded("dynamictrees")) {
             modEventBus.addListener(DynamicTreesUnearthedSoils::onCommonSetup);
         }
+        modEventBus.addListener(com.bettercontent.bettercompatfixes.compat.SpoilageReuse::setup);
         modEventBus.addListener(this::onRegisterGameTests);
         MinecraftForge.EVENT_BUS.register(FarmlandTrampleProtection.class);
         MinecraftForge.EVENT_BUS.register(AmbientSurfaceSpawnControl.class);
@@ -118,6 +119,9 @@ public final class BetterContentFixes {
         event.register(FarmlandTrampleProtectionGameTests.class);
         event.register(FluidMixBlockerGameTests.class);
         event.register(VanillaBoatGameTests.class);
+        if (ModList.get().isLoaded("starcatcher")) {
+            event.register(com.bettercontent.bettercompatfixes.gametest.SpoilageReuseGameTests.class);
+        }
         event.register(WaterWheelBiomePolicyGameTests.class);
         event.register(OptionalIntegrationGameTests.class);
         if (ModList.get().isLoaded("epicfight")) {

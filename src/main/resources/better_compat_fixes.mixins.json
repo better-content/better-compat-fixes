@@ -90,6 +90,8 @@
     "weather2.CoroUtilCompatibilityMixin"
   ],
   "client": [
+    "minecraft.ChoppingProgressMixin",
+    "minecraft.ChoppingHitEffectsMixin",
     "quark.SortProviderAccessor",
     "quark.InventoryButtonHandlerMixin",
     "quark.QuarkGeneralConfigMixin",

@@ -23,6 +23,18 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
+// Mirror the pack's authored disabled optional fillet recipe only in source GameTests.
+// This source set is never included in the production JAR.
+val nativeFixture by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+val authoredStarcatcherFillet = file("../../better-content-modpack/kubejs/data/starcatcher/recipes/aquaculture_fillet.json")
+tasks.named<ProcessResources>(nativeFixture.processResourcesTaskName) {
+    from(authoredStarcatcherFillet) { into("data/starcatcher/recipes") }
+    doLast { check(authoredStarcatcherFillet.isFile) { "Missing authored disabled Starcatcher recipe" } }
+}
+
 minecraft {
     mappings("official", property("minecraft_version") as String)
     copyIdeResources = true
@@ -48,6 +60,7 @@ minecraft {
             property("forge.gameTestServer", "true")
             property("forge.enabledGameTestNamespaces", property("mod_id") as String)
             property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
+            mods { named(property("mod_id") as String) { source(nativeFixture) } }
             arg("--nogui")
         }
     }
@@ -85,6 +98,7 @@ val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitiv
 val markerRenderNativePins = configurations.create("markerRenderNativePins") { isTransitive = false }
 val quarkSortNativePins = configurations.create("quarkSortNativePins") { isTransitive = false }
 val backpackEquipmentNativePins = configurations.create("backpackEquipmentNativePins") { isTransitive = false }
+val starcatcherNativePins = configurations.create("starcatcherNativePins") { isTransitive = false }
 
 dependencies {
     add(backpackEquipmentNativePins.name, "curse.maven:curios-api-309927:6418456")
@@ -104,6 +118,9 @@ dependencies {
     add(dhDepthNativePins.name, "curse.maven:distant-horizons-508933:7375280")
     add(pneumaticNativePins.name, "curse.maven:pretty-pipes-376737:4769646")
     add(pneumaticNativePins.name, "curse.maven:pneumaticcraft-repressurized-281849:7307654")
+    add(starcatcherNativePins.name, "curse.maven:starcatcher-1357603:7582886")
+    compileOnly(fg.deobf("curse.maven:starcatcher-1357603:7582886"))
+    runtimeOnly(fg.deobf("curse.maven:starcatcher-1357603:7582886"))
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
     compileOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
     runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
@@ -256,6 +273,7 @@ val syncGameTestStructures = tasks.register<Sync>("syncGameTestStructures") {
 tasks.matching { it.name.startsWith("prepareRunGameTestServer") }.configureEach {
     dependsOn(resetGameTestMods)
     dependsOn(syncGameTestStructures)
+    dependsOn(tasks.named(nativeFixture.processResourcesTaskName))
 }
 
 // The optional hook must remain safe for consumers without Deep Void, but this owner's full
@@ -679,8 +697,11 @@ val verifyPneumaticNativePins by tasks.registering {
 }
 tasks.test {
     dependsOn(verifyPneumaticNativePins)
-    inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins)
+    inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins,
+        starcatcherNativePins, authoredStarcatcherFillet)
+    dependsOn(tasks.named(nativeFixture.processResourcesTaskName))
     doFirst {
+        systemProperty("bc.starcatcher.native", starcatcherNativePins.resolve().single().absolutePath)
         val backpackNatives = backpackEquipmentNativePins.resolve()
         for (id in listOf("6418456", "7916619")) {
             systemProperty("bc.backpackEquipment.$id", backpackNatives.single { it.name.contains(id) }.absolutePath)
@@ -809,7 +830,26 @@ val verifyRuntimeDhOpaqueDepth by tasks.registering {
     }
 }
 
+val verifyRuntimeChoppingSpoilage by tasks.registering {
+    group = "verification"
+    description = "Requires production chopping/spoilage hooks and excludes the source-only recipe fixture."
+    dependsOn(stageRuntimeJar)
+    doLast {
+        ZipFile(layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile).use { zip ->
+            check(zip.getEntry("data/starcatcher/recipes/aquaculture_fillet.json") == null) {
+                "Source-only authored disabled-recipe fixture leaked into production"
+            }
+            for (entry in listOf("compat/ChoppingParticles", "compat/ChoppingProgress", "compat/SpoilageReuse",
+                    "compat/StarcatcherSpoilage", "mixin/minecraft/ChoppingProgressMixin", "mixin/minecraft/ChoppingHitEffectsMixin")) {
+                check(zip.getEntry("com/bettercontent/bettercompatfixes/$entry.class") != null)
+            }
+            check(zip.getEntry("data/starcatcher/tags/items/baits.json") != null)
+        }
+    }
+}
+
 tasks.named("verifyFast") {
+    dependsOn(verifyRuntimeChoppingSpoilage)
     dependsOn(verifyRuntimeRespawnMarkerPhysics)
     dependsOn(verifyRuntimeDhOpaqueDepth)
     dependsOn(verifyRuntimePneumaticPressurizer)
