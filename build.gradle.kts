@@ -39,6 +39,14 @@ val choppingMixins by sourceSets.creating {
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
 sourceSets.main { java.exclude(choppingPaths) }
+// Track the AP's actual task-named output, not the final packaged refmap name. Always
+// process both tiny hooks together so classpath-only recompilation cannot leave a stale map.
+tasks.named<JavaCompile>(choppingMixins.compileJavaTaskName) {
+    options.isIncremental = false
+    val refmap = layout.buildDirectory.file("tmp/compileChoppingMixinsJava/compileChoppingMixinsJava-refmap.json")
+    outputs.file(refmap)
+    doLast { check(refmap.get().asFile.isFile) { "Chopping annotation processor did not produce its refmap" } }
+}
 
 // Mirror the pack's authored disabled optional fillet recipe only in source GameTests.
 // This source set is never included in the production JAR.
@@ -138,9 +146,11 @@ val quarkSortNativePins = configurations.create("quarkSortNativePins") { isTrans
 val backpackEquipmentNativePins = configurations.create("backpackEquipmentNativePins") { isTransitive = false }
 val starcatcherNativePins = configurations.create("starcatcherNativePins") { isTransitive = false }
 val heatNativePins = configurations.create("heatNativePins") { isTransitive = false }
+val aetherRenderNativePins = configurations.create("aetherRenderNativePins") { isTransitive = false }
 
 dependencies {
     add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
+    add(aetherRenderNativePins.name, "curse.maven:the-aether-255308:6134920")
     add(heatNativePins.name, "curse.maven:kotlin-for-forge-351264:7291067")
     add(heatNativePins.name, "curse.maven:chemlib-340666:5128632")
     add(backpackEquipmentNativePins.name, "curse.maven:curios-api-309927:6418456")
@@ -397,7 +407,8 @@ mixin {
 // Standard dev-module resource placement, separate from processResources to avoid a cycle.
 val syncChoppingRefmap by tasks.registering(Copy::class) {
     dependsOn(tasks.named(choppingMixins.compileJavaTaskName), tasks.named("processResources"))
-    from(layout.buildDirectory.file("tmp/compileChoppingMixinsJava/better_compat_fixes.chopping.refmap.json"))
+    from(layout.buildDirectory.file("tmp/compileChoppingMixinsJava/compileChoppingMixinsJava-refmap.json"))
+    rename { "better_compat_fixes.chopping.refmap.json" }
     into(layout.buildDirectory.dir("resources/main"))
     doLast {
         check(layout.buildDirectory.file("resources/main/better_compat_fixes.chopping.refmap.json").get().asFile.isFile) {
@@ -798,9 +809,10 @@ val verifyPneumaticNativePins by tasks.registering {
 tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
     inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins,
-        starcatcherNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
+        starcatcherNativePins, aetherRenderNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
+        systemProperty("bc.aetherRender.native", aetherRenderNativePins.resolve().single().absolutePath)
         systemProperty("bc.starcatcher.native", starcatcherNativePins.resolve().single().absolutePath)
         val backpackNatives = backpackEquipmentNativePins.resolve()
         for (id in listOf("6418456", "7916619")) {

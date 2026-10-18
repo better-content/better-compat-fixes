@@ -119,6 +119,11 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.aetherepicfight.")) {
+            return hasVersion(mods, "aether", "1.20.1-1.5.2-neoforge")
+                    && hasVersion(mods, "curios", "5.14.1+1.20.1")
+                    && hasVersion(mods, "epicfight", "20.14.17");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.quark.")) {
             return hasVersion(mods, "quark", "4.0-462")
                     && hasVersion(mods, "zeta", "1.0-31");

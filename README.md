@@ -196,6 +196,20 @@ land movement, limb hiding, combat movement locks and server-side damage are unc
 is version-pinned and covered by selector regressions and hash-pinned native bytecode contracts;
 these checks are not real-client visual acceptance.
 
+With Aether `1.20.1-1.5.2-neoforge`, Curios `5.14.1+1.20.1`, and Epic Fight `20.14.17`,
+Aether's gloves, pendants, and Shield of Repulsion opt into Epic Fight's native per-item Curios
+adapter. A scoped geometry bridge skins their humanoid models to the animated skeleton while
+retaining Aether's original material passes: slim/standard arms, dye, armor trims, enchantment/
+Quark rune glint, and active/inactive shield textures. Unused default humanoid cubes are excluded
+from gloves/pendants. Bind-pose baking restores model poses/visibility afterward; the pose scope
+is exception-safe, and resource reload destroys cached meshes at Epic Fight's own Curios reload
+boundary. Normal non-Epic rendering and Aether's separate first-person hand methods stay native.
+This does not replace Curios slots, equipment/storage protocols, other mods' renderers, or cape
+rendering. Hash-pinned native contracts and staged-JAR checks are source validation, not real-client
+visual acceptance. Both personal-inventory paths (with/without backpack), mixed equipment,
+resource reload, slim arms, materials, and combat/locomotion poses need same-artifact visual review
+before claiming acceptance; no deployment or pack runtime run is implied by these sources.
+
 With RBP 1.0.0 and Realistic Physics 1.0.1, only `better_spawns:respawn_marker` is rejected
 at RBP's common falling/breaking-operation admission method. Placement integrity checks,
 neighbor fall checks and chunk-analysis operations converge on this method, as verified against

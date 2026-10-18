@@ -90,6 +90,10 @@
     "weather2.CoroUtilCompatibilityMixin"
   ],
   "client": [
+    "aetherepicfight.GlovesRendererMixin",
+    "aetherepicfight.PendantRendererMixin",
+    "aetherepicfight.ShieldOfRepulsionRendererMixin",
+    "aetherepicfight.CuriosCompatReloadMixin",
     "quark.SortProviderAccessor",
     "quark.InventoryButtonHandlerMixin",
     "quark.QuarkGeneralConfigMixin",
