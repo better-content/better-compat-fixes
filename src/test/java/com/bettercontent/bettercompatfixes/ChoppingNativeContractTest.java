@@ -46,7 +46,7 @@ class ChoppingNativeContractTest {
             }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         }
         assertEquals(2, hits[0]);
-        String mixins = Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"));
+        String mixins = Files.readString(Path.of("src/main/resources/better_compat_fixes.chopping.mixins.json"));
         assertTrue(mixins.contains("minecraft.ChoppingProgressMixin"));
         assertTrue(mixins.contains("minecraft.ChoppingHitEffectsMixin"));
         String renderer = Files.readString(Path.of("src/main/java/com/bettercontent/bettercompatfixes/compat/ChoppingParticles.java"));

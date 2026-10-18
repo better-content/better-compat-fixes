@@ -26,6 +26,20 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
+// Process only the two chopping hooks with Mixin AP; all other production hooks retain
+// their existing compilation/remapping path and bytecode.
+val choppingPaths = listOf(
+    "com/bettercontent/bettercompatfixes/mixin/minecraft/ChoppingProgressMixin.java",
+    "com/bettercontent/bettercompatfixes/mixin/minecraft/ChoppingHitEffectsMixin.java"
+)
+val choppingMixins by sourceSets.creating {
+    java.setSrcDirs(listOf("src/main/java"))
+    java.setIncludes(choppingPaths)
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+sourceSets.main { java.exclude(choppingPaths) }
+
 // Mirror the pack's authored disabled optional fillet recipe only in source GameTests.
 // This source set is never included in the production JAR.
 val nativeFixture by sourceSets.creating {
@@ -61,6 +75,7 @@ minecraft {
             mods {
                 create(property("mod_id") as String) {
                     source(sourceSets.main.get())
+                    source(choppingMixins)
                 }
             }
         }
@@ -125,6 +140,7 @@ val starcatcherNativePins = configurations.create("starcatcherNativePins") { isT
 val heatNativePins = configurations.create("heatNativePins") { isTransitive = false }
 
 dependencies {
+    add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(heatNativePins.name, "curse.maven:kotlin-for-forge-351264:7291067")
     add(heatNativePins.name, "curse.maven:chemlib-340666:5128632")
     add(backpackEquipmentNativePins.name, "curse.maven:curios-api-309927:6418456")
@@ -246,6 +262,9 @@ dependencies {
 }
 
 tasks.named<Jar>("jar") {
+    from(choppingMixins.output)
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json")
+    filesMatching("better_compat_fixes.chopping.refmap.json") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
     finalizedBy("reobfJar")
 }
 
@@ -371,8 +390,28 @@ tasks.processResources {
 }
 
 mixin {
+    add(choppingMixins, "better_compat_fixes.chopping.refmap.json")
     config("better_compat_fixes.mixins.json")
+    config("better_compat_fixes.chopping.mixins.json")
 }
+// Standard dev-module resource placement, separate from processResources to avoid a cycle.
+val syncChoppingRefmap by tasks.registering(Copy::class) {
+    dependsOn(tasks.named(choppingMixins.compileJavaTaskName), tasks.named("processResources"))
+    from(layout.buildDirectory.file("tmp/compileChoppingMixinsJava/better_compat_fixes.chopping.refmap.json"))
+    into(layout.buildDirectory.dir("resources/main"))
+    doLast {
+        check(layout.buildDirectory.file("resources/main/better_compat_fixes.chopping.refmap.json").get().asFile.isFile) {
+            "Missing annotation-processor generated chopping refmap"
+        }
+    }
+}
+tasks.withType<JavaCompile>().configureEach {
+    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName) dependsOn(syncChoppingRefmap)
+}
+tasks.withType<Test>().configureEach { dependsOn(syncChoppingRefmap) }
+tasks.withType<Jar>().configureEach { dependsOn(syncChoppingRefmap) }
+tasks.matching { it.name == "addMixinsToJar" || it.name.startsWith("prepareRun") }
+    .configureEach { dependsOn(syncChoppingRefmap) }
 
 val verifyRuntimeDispenserAlias by tasks.registering {
     group = "verification"
