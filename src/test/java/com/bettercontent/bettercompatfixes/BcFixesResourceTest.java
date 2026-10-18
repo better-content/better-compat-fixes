@@ -83,10 +83,14 @@ final class BcFixesResourceTest {
         String source = Files.readString(Path.of(
                 "src/main/java/com/bettercontent/bettercompatfixes/mixin/minecraft/DispenserBlockMixin.java"));
 
-        assertTrue(source.contains("@Shadow(remap = false)")
-                        && source.contains("public static Map<Item, DispenseItemBehavior> f_52661_;")
-                        && source.contains("Collections.synchronizedMap(f_52661_)"),
-                "the public dispenser registry must use its production SRG name without an invalid alias");
+        assertTrue(source.contains("@WrapOperation(method = \"<clinit>\"")
+                        && source.contains("DispenserBlock;DISPENSER_REGISTRY:Ljava/util/Map;")
+                        && source.contains("DispenserBlock;f_52661_:Ljava/util/Map;")
+                        && source.contains("opcode = Opcodes.PUTSTATIC")
+                        && source.contains("remap = false, require = 1, allow = 1")
+                        && source.contains("original.call(Collections.synchronizedMap(registry))")
+                        && !source.contains("@Shadow"),
+                "exactly one native assignment must be wrapped in both development and production without illegal public-field aliases");
         assertTrue(source.contains("@WrapMethod(method = {\"registerBehavior\", \"m_52672_\"}, remap = false)"),
                 "dispenser registration must resolve its named and production SRG methods without a refmap");
     }

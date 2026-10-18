@@ -1,5 +1,7 @@
 import java.util.zip.ZipFile
 import java.security.MessageDigest
+import java.time.Instant
+import java.nio.file.Files
 
 plugins {
     idea
@@ -15,6 +17,7 @@ version = property("mod_version") as String
 val mixinExtrasVersion = "0.5.0"
 // Native optional-absence profile; Ars Nouveau requires Curios and cannot be present in it.
 val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
+val spoilageWithoutHeat = providers.gradleProperty("spoilageWithoutHeat").map(String::toBoolean).getOrElse(false)
 base {
     archivesName.set(property("artifact_name") as String)
 }
@@ -30,8 +33,17 @@ val nativeFixture by sourceSets.creating {
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
 val authoredStarcatcherFillet = file("../../better-content-modpack/kubejs/data/starcatcher/recipes/aquaculture_fillet.json")
+// Exact authored pack repairs for malformed optional upstream data, never shipping fixes here.
+val authoredRespiteOverrides = listOf(
+    "recipes/filling/water_cup.json", "recipes/pouring/water_cup.json",
+    "recipes/emptying/water_cup.json", "loot_tables/blocks/kettle.json",
+    "advancements/main/stunt_tea_bush.json"
+).associateWith { file("../../better-content-modpack/kubejs/data/farmersrespite/$it") }
 tasks.named<ProcessResources>(nativeFixture.processResourcesTaskName) {
     from(authoredStarcatcherFillet) { into("data/starcatcher/recipes") }
+    authoredRespiteOverrides.forEach { (relative, authored) ->
+        from(authored) { into("data/farmersrespite/${relative.substringBeforeLast('/')}") }
+    }
     doLast { check(authoredStarcatcherFillet.isFile) { "Missing authored disabled Starcatcher recipe" } }
 }
 
@@ -60,6 +72,7 @@ minecraft {
             property("forge.gameTestServer", "true")
             property("forge.enabledGameTestNamespaces", property("mod_id") as String)
             property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
+            property("better_compat_fixes.expectHeatAbsent", spoilageWithoutHeat.toString())
             mods { named(property("mod_id") as String) { source(nativeFixture) } }
             arg("--nogui")
         }
@@ -78,7 +91,15 @@ fun betterContentJar(repository: String, artifact: String): java.io.File {
     return jar
 }
 
+val heatProvider = if (spoilageWithoutHeat) null else betterContentJar("better-industrial-heat", "better-industrial-heat-0.1.0.jar")
 repositories {
+    if (heatProvider != null) ivy {
+        name = "industrialHeatLocal"
+        url = uri(heatProvider.parentFile)
+        patternLayout { artifact("[artifact]-[revision].[ext]") }
+        metadataSources { artifact() }
+        content { includeGroup("bettercontent.local.heat") }
+    }
     maven("https://maven.minecraftforge.net")
     maven("https://api.modrinth.com/maven")
     maven("https://maven.createmod.net")
@@ -99,8 +120,11 @@ val markerRenderNativePins = configurations.create("markerRenderNativePins") { i
 val quarkSortNativePins = configurations.create("quarkSortNativePins") { isTransitive = false }
 val backpackEquipmentNativePins = configurations.create("backpackEquipmentNativePins") { isTransitive = false }
 val starcatcherNativePins = configurations.create("starcatcherNativePins") { isTransitive = false }
+val heatNativePins = configurations.create("heatNativePins") { isTransitive = false }
 
 dependencies {
+    add(heatNativePins.name, "curse.maven:kotlin-for-forge-351264:7291067")
+    add(heatNativePins.name, "curse.maven:chemlib-340666:5128632")
     add(backpackEquipmentNativePins.name, "curse.maven:curios-api-309927:6418456")
     add(backpackEquipmentNativePins.name, "curse.maven:sophisticated-backpacks-422301:7916619")
     compileOnly(fg.deobf("curse.maven:quark-243121:6427817"))
@@ -121,6 +145,12 @@ dependencies {
     add(starcatcherNativePins.name, "curse.maven:starcatcher-1357603:7582886")
     compileOnly(fg.deobf("curse.maven:starcatcher-1357603:7582886"))
     runtimeOnly(fg.deobf("curse.maven:starcatcher-1357603:7582886"))
+    if (!spoilageWithoutHeat) {
+        runtimeOnly(fg.deobf("bettercontent.local.heat:better-industrial-heat:0.1.0"))
+        // Actual pack pins, not Heat's lower compatible development floor.
+        runtimeOnly(fg.deobf("curse.maven:kotlin-for-forge-351264:7291067"))
+        runtimeOnly(fg.deobf("curse.maven:chemlib-340666:5128632"))
+    }
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
     compileOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
     runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
@@ -253,16 +283,36 @@ tasks.register("verifyFast") {
     dependsOn(tasks.named("check"))
 }
 
+val verifyNativeDiagnostics by tasks.registering {
+    group = "verification"
+    dependsOn(tasks.named("headlessGameTest"))
+    doLast {
+        val nativeLog = file("run-gametest/logs/latest.log")
+        check(nativeLog.isFile) { "Missing current native GameTest diagnostics" }
+        val errors = nativeLog.readLines().filter { line ->
+            listOf("/ERROR]", "/FATAL]", "[ERROR]", "[FATAL]", "Mixin apply failed").any(line::contains)
+        }
+        check(errors.isEmpty()) { "Native GameTest failed-operation/ERROR/FATAL diagnostics: ${errors.take(8).joinToString("\n")}" }
+    }
+}
 tasks.register("verifyFull") {
     group = "verification"
-    description = "Runs the full verification lane including headless Forge game tests."
+    description = "Runs the full verification lane including headless Forge game tests and strict native diagnostics."
     dependsOn(tasks.named("verifyFast"))
-    dependsOn(tasks.named("headlessGameTest"))
+    dependsOn(verifyNativeDiagnostics)
 }
 
-val resetGameTestMods = tasks.register<Delete>("resetGameTestMods") {
-    delete(layout.projectDirectory.dir("run-gametest/mods"))
-    delete(layout.projectDirectory.dir("run-gametest/world"))
+val resetGameTestMods = tasks.register("resetGameTestMods") {
+    doLast {
+        val retained = file("run-gametest/retained/${Instant.now().toEpochMilli()}")
+        for (name in listOf("mods", "world", "logs")) {
+            val previous = file("run-gametest/$name")
+            if (previous.exists()) {
+                retained.mkdirs()
+                Files.move(previous.toPath(), retained.resolve(name).toPath())
+            }
+        }
+    }
 }
 
 val syncGameTestStructures = tasks.register<Sync>("syncGameTestStructures") {
@@ -280,6 +330,12 @@ tasks.matching { it.name.startsWith("prepareRunGameTestServer") }.configureEach 
 // gate must actually execute its pinned native regression rather than silently skip registration.
 tasks.matching { it.name == "runGameTestServer" }.configureEach {
     doFirst {
+        val heatPresent = configurations.runtimeClasspath.get().files.any { file ->
+            file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
+                zip.getEntry("com/bettercontent/betterindustrialheat/HeatSyncMod.class") != null
+            }
+        }
+        check(heatPresent != spoilageWithoutHeat) { "Native Heat profile classpath does not match requested presence/absence" }
         val curiosPresent = configurations.runtimeClasspath.get().files.any { file ->
             file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
                 zip.getEntry("top/theillusivec4/curios/api/CuriosApi.class") != null
@@ -326,8 +382,10 @@ val verifyRuntimeDispenserAlias by tasks.registering {
             val mixin = zip.getEntry("com/bettercontent/bettercompatfixes/mixin/minecraft/DispenserBlockMixin.class")
                 ?: throw GradleException("Runtime JAR is missing DispenserBlockMixin: $runtimeJar")
             val bytecode = zip.getInputStream(mixin).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
-            check(bytecode.contains("f_52661_")) {
-                "Runtime dispenser mixin lacks the production SRG alias f_52661_: $runtimeJar"
+            check(bytecode.contains("DispenserBlock;f_52661_:Ljava/util/Map;")
+                    && bytecode.contains("DispenserBlock;DISPENSER_REGISTRY:Ljava/util/Map;")
+                    && bytecode.contains("WrapOperation") && bytecode.contains("synchronizedMap")) {
+                "Runtime dispenser mixin lacks its exact dual native assignment targets/map wrapper: $runtimeJar"
             }
         }
     }
@@ -698,7 +756,7 @@ val verifyPneumaticNativePins by tasks.registering {
 tasks.test {
     dependsOn(verifyPneumaticNativePins)
     inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins,
-        starcatcherNativePins, authoredStarcatcherFillet)
+        starcatcherNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.processResourcesTaskName))
     doFirst {
         systemProperty("bc.starcatcher.native", starcatcherNativePins.resolve().single().absolutePath)
@@ -719,7 +777,23 @@ tasks.test {
         systemProperty("bc.dhDepth.dh", natives.single { it.name.contains("7375280") }.absolutePath)
     }
 }
-tasks.matching { it.name == "runGameTestServer" }.configureEach { dependsOn(verifyPneumaticNativePins) }
+val verifySpoilageNativePins by tasks.registering {
+    group = "verification"
+    doLast {
+        val pins = mapOf("7291067" to "962fdb760409d6d71cbf079235f1ca94e3863a22",
+            "5128632" to "fe8feeed94c9cd7354c4a075ad81fc6f5e0a0d2c")
+        // Starcatcher's SHA-256 is additionally checked by StarcatcherNativeFixtureTest.
+        for (native in heatNativePins.resolve()) {
+            val id = pins.keys.single { native.name.contains(it) }
+            val digest = MessageDigest.getInstance("SHA-1").digest(native.readBytes()).joinToString("") { "%02x".format(it) }
+            check(digest == pins.getValue(id)) { "Spoilage native dependency $id does not match actual pack pin" }
+        }
+    }
+}
+tasks.test { dependsOn(verifySpoilageNativePins) }
+tasks.matching { it.name == "runGameTestServer" }.configureEach {
+    dependsOn(verifyPneumaticNativePins, verifySpoilageNativePins)
+}
 
 val verifyRuntimePneumaticPressurizer by tasks.registering {
     group = "verification"
@@ -836,6 +910,9 @@ val verifyRuntimeChoppingSpoilage by tasks.registering {
     dependsOn(stageRuntimeJar)
     doLast {
         ZipFile(layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile).use { zip ->
+            check(zip.entries().asSequence().none {
+                it.name.startsWith("data/farmersrespite/") || it.name.startsWith("data/the_deep_void/dimension/")
+            }) { "Source-only native fixture overrides leaked into production" }
             check(zip.getEntry("data/starcatcher/recipes/aquaculture_fillet.json") == null) {
                 "Source-only authored disabled-recipe fixture leaked into production"
             }

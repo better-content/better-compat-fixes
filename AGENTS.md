@@ -7,6 +7,11 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
 - Deterministic CI-equivalent lane: `./gradlew verifyFast`.
 - Runtime/GameTest changes: `./gradlew verifyFull`.
 - Stage: `./gradlew stageRuntimeJar`, `build/libs/better-compat-fixes-<version>.jar`.
+- Default full native gate requires canonical staged `better-industrial-heat-0.1.0.jar`
+  via `BC_CUSTOM_MOD_JAR_DIR` or sibling `build/libs`; prepare that provider first.
+  Spoilage changes also run `./gradlew clean verifyFull stageRuntimeJar -PspoilageWithoutHeat=true --no-daemon`,
+  then default `./gradlew clean verifyFull stageRuntimeJar --no-daemon` for the actual-item candidate.
+  The full gate rejects native ERROR/FATAL diagnostics and retains prior native worlds/logs/mods.
 - Backpack admission changes also run `./gradlew clean verifyFull stageRuntimeJar -PbackpackWithoutCurios=true --no-daemon`.
   This native profile omits Curios and its mandatory-dependent Ars Nouveau, asserts actual mod absence,
   and runs the Curios-free armor regression. Then run default `./gradlew clean verifyFull stageRuntimeJar --no-daemon`

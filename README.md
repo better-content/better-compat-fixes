@@ -22,13 +22,33 @@ When Industrial Heat is installed, spoiled produce enters vanilla composting at 
 Starcatcher `2.2.1`, spoiled meat is admitted by its additive native bait tag and receives the native
 basic `DECREASES_LURE_TIME` default catch modifier. Its unchanged rod menu persists the stack;
 Starcatcher's bobber applies the benefit and owns consumption. No fish pools, specialist/legendary
-correct-bait lists, rod UI, or production loot are replaced. Source GameTests exercise the native
-bridge using actual spoiled items when available, otherwise explicit wither-skull/poisonous-potato fixtures;
-fixture passes are not full-pack or actual-Industrial-Heat acceptance. A resources-only
-`nativeFixture` mirrors the pack's existing authored disabled `starcatcher:aquaculture_fillet`
-recipe, avoiding the upstream malformed optional-mod condition without restoring a deliberately
-disabled recipe. Native/artifact hashes and fixture byte parity are checked; the override is
-excluded from this mod's production JAR. Other inherited source-fixture diagnostics are not waived.
+correct-bait lists, rod UI, or production loot are replaced. The default `verifyFull` requires the
+canonical staged `better-industrial-heat-0.1.0.jar` provider (via `BC_CUSTOM_MOD_JAR_DIR` or sibling
+`build/libs`) and actual pack-pinned Kotlin for Forge 4.12.0/ChemLib 2.0.19. It asserts production
+common-setup registration on the actual spoiled items, without stand-ins or manually installing
+bridge defaults, then native compost consumption/fertilizer and rod-menu persistence/lure benefit.
+The real bobber's public ticks traverse fluid contact, bite and missed-bite consumption; only its
+public timing fields are accelerated. `./gradlew clean verifyFull stageRuntimeJar -PspoilageWithoutHeat=true --no-daemon`
+separately proves actual provider/registry absence without fabricating bait defaults. These isolated
+source profiles are not full-pack, elapsed fishing, real-client or human-pointer acceptance.
+A resources-only `nativeFixture` mirrors the pack's existing authored disabled
+`starcatcher:aquaculture_fillet` and five narrowly scoped Farmer's Respite data repairs (three
+optional Miner's Delight cup recipes, kettle loot function and tea-bush advancement trigger).
+Exact fixture/pack byte parity and native dependency hashes are checked; every override is excluded
+from this mod's production JAR. No diagnostic is suppressed or allowlisted by these repairs.
+Previous source worlds, mods and logs move to `run-gametest/retained/` before each fresh native run.
+The same nonshipping fixture gives the two unused Deep Void dimensions empty flat generators while
+retaining their exact native dimension-type IDs. This isolates incidental upstream `flesh_stuff` /
+`giant_skulls` far-chunk placement failures during dimension startup; it is not an error exemption.
+The existing native fall-boundary tests still execute the unchanged Overworld/End capability decisions.
+Neither this fixture nor its pass proves Deep Void terrain generation or a real player teleport;
+full-pack runtime gates must use the actual unmodified production dimension generators.
+
+The dispenser registry's one native static assignment is wrapped with a synchronized map using
+both pinned development/production field selectors (exactly one must match), avoiding the invalid
+production-only shadow that previously failed in source launches. Native direct writers and
+`registerBehavior` share that same map; the native gate exercises concurrent writes and rejects
+failed mixin applications as failed operations rather than treating them as harmless warnings.
 
 With Curios `5.14.1+1.20.1` and Sophisticated Backpacks `1.20.1-3.24.35.1675`
 (FML mod version `3.24.35.1675`), every installed

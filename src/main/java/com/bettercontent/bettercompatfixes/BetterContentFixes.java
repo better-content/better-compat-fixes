@@ -119,6 +119,7 @@ public final class BetterContentFixes {
         event.register(FarmlandTrampleProtectionGameTests.class);
         event.register(FluidMixBlockerGameTests.class);
         event.register(VanillaBoatGameTests.class);
+        event.register(com.bettercontent.bettercompatfixes.gametest.DispenserRegistryGameTests.class);
         if (ModList.get().isLoaded("starcatcher")) {
             event.register(com.bettercontent.bettercompatfixes.gametest.SpoilageReuseGameTests.class);
         }

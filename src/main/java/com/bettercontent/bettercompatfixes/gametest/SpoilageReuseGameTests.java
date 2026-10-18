@@ -1,7 +1,6 @@
 package com.bettercontent.bettercompatfixes.gametest;
 
 import com.bettercontent.bettercompatfixes.BetterContentFixes;
-import com.bettercontent.bettercompatfixes.compat.StarcatcherSpoilage;
 import com.wdiscute.starcatcher.bob.FishingBobEntity;
 import com.wdiscute.starcatcher.io.ModDataComponents;
 import com.wdiscute.starcatcher.io.SingleStackContainer;
@@ -18,19 +17,18 @@ import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import net.minecraftforge.registries.ForgeRegistries;
 
-/** Native bridge fixture, not a claim that the full pack/Industrial Heat was loaded. */
+/** Actual optional provider/common-setup native fixture; not full-pack acceptance. */
 @PrefixGameTestTemplate(false)
 public final class SpoilageReuseGameTests {
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void produceBridgeConsumesAndProducesNativeFertilizer(GameTestHelper helper) {
         var id = new ResourceLocation("better_industrial_heat", "spoiled_produce");
-        var item = ForgeRegistries.ITEMS.containsKey(id) ? ForgeRegistries.ITEMS.getValue(id)
-                : net.minecraft.world.item.Items.POISONOUS_POTATO;
+        if (assertHeatProfile(helper)) { helper.succeed(); return; }
+        var item = ForgeRegistries.ITEMS.getValue(id);
         var map = net.minecraft.world.level.block.ComposterBlock.COMPOSTABLES;
-        boolean had = map.containsKey(item);
-        float previous = map.getFloat(item);
-        com.bettercontent.bettercompatfixes.compat.SpoilageReuse.registerProduce(item);
-        try {
+        helper.assertTrue(map.containsKey(item) && map.getFloat(item) == .65f,
+                "Production common setup must register actual spoiled produce at 65% compost chance");
+        {
             var pos = helper.absolutePos(new BlockPos(2, 1, 2));
             var state = Blocks.COMPOSTER.defaultBlockState();
             helper.getLevel().setBlockAndUpdate(pos, state);
@@ -45,8 +43,6 @@ public final class SpoilageReuseGameTests {
                     new net.minecraft.world.phys.AABB(pos).inflate(1));
             helper.assertTrue(drops.stream().anyMatch(e -> e.getItem().is(net.minecraft.world.item.Items.BONE_MEAL)),
                     "Completed native compost must return usable bone meal fertilizer");
-        } finally {
-            if (had) map.put(item, previous); else map.removeFloat(item);
         }
         helper.succeed();
     }
@@ -57,12 +53,13 @@ public final class SpoilageReuseGameTests {
         helper.assertTrue(disabledFillet.isPresent() && disabledFillet.get().getResultItem(helper.getLevel().registryAccess())
                         .is(net.minecraft.world.item.Items.STICK),
                 "Native recipe loading must use the exact authored disabled override, not the malformed optional recipe");
-        // Use the actual production meat when that optional provider is present; otherwise an explicit native wither-skull bait fixture.
+        if (assertHeatProfile(helper)) { helper.succeed(); return; }
         var meatId = new ResourceLocation("better_industrial_heat", "spoiled_meat");
-        var baitItem = ForgeRegistries.ITEMS.getValue(ForgeRegistries.ITEMS.containsKey(meatId)
-                ? meatId : new ResourceLocation("minecraft", "wither_skeleton_skull"));
-        var previousDefaults = ModDataComponents.getDefaults().get(baitItem);
-        StarcatcherSpoilage.registerBasicBait(baitItem);
+        var baitItem = ForgeRegistries.ITEMS.getValue(meatId);
+        helper.assertTrue(ModDataComponents.getDefaults().containsKey(baitItem)
+                        && java.util.List.of(com.wdiscute.starcatcher.registry.custom.catchmodifiers.ModCatchModifiers.DECREASES_LURE_TIME.getFirst())
+                        .equals(ModDataComponents.get(new ItemStack(baitItem), ModDataComponents.CATCH_MODIFIERS)),
+                "Production common setup must install exactly the basic native lure modifier on actual spoiled meat");
         var player = FakePlayerFactory.get(helper.getLevel(), new com.mojang.authlib.GameProfile(
                 java.util.UUID.fromString("7fc91369-142e-43d9-b74d-e563aad8793e"), "SpoilageBridge"));
         var pos = helper.absolutePos(new BlockPos(2, 2, 2));
@@ -114,9 +111,24 @@ public final class SpoilageReuseGameTests {
             bob.discard();
             emptyBob.discard();
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-            if (previousDefaults == null) ModDataComponents.getDefaults().remove(baitItem);
-            else ModDataComponents.getDefaults().put(baitItem, previousDefaults);
         }
         helper.succeed();
+    }
+
+    private static boolean assertHeatProfile(GameTestHelper helper) {
+        boolean absent = Boolean.getBoolean("better_compat_fixes.expectHeatAbsent");
+        helper.assertTrue(net.minecraftforge.fml.ModList.get().isLoaded("better_industrial_heat") != absent,
+                "Native Heat mod presence must match explicitly requested profile");
+        for (String name : new String[]{"spoiled_produce", "spoiled_meat"}) {
+            var id = new ResourceLocation("better_industrial_heat", name);
+            helper.assertTrue(ForgeRegistries.ITEMS.containsKey(id) != absent,
+                    "Actual Heat registry identity must match profile: " + id);
+        }
+        if (absent) {
+            helper.assertTrue(ModDataComponents.getDefaults().keySet().stream().noneMatch(item ->
+                            "better_industrial_heat".equals(ForgeRegistries.ITEMS.getKey(item).getNamespace())),
+                    "Absent Heat must not fabricate native bait defaults");
+        }
+        return absent;
     }
 }
