@@ -12,8 +12,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(Minecraft.class)
 public abstract class ChoppingHitEffectsMixin {
     // Cover both normal hold and Forge-cancelled swings: no unrelated vanilla stream for wood.
-    @Redirect(method = "continueAttack", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/particle/ParticleEngine;addBlockHitEffects(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/BlockHitResult;)V"), require = 2)
+    @Redirect(method = {"continueAttack(Z)V", "m_91386_(Z)V"}, remap = false,
+            at = @At(value = "INVOKE", remap = false,
+                    target = "Lnet/minecraft/client/particle/ParticleEngine;addBlockHitEffects(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/BlockHitResult;)V"),
+            require = 2, allow = 2)
     private void bc$replaceWoodHits(ParticleEngine engine, BlockPos pos, BlockHitResult hit) {
         var level = ((Minecraft) (Object) this).level;
         if (level == null || !ChoppingParticles.isWood(level.getBlockState(pos))) engine.addBlockHitEffects(pos, hit);
