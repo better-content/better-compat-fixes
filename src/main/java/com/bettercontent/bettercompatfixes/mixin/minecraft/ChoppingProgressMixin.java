@@ -44,7 +44,9 @@ public abstract class ChoppingProgressMixin {
             return;
         }
         if (ChoppingParticles.isWood(state)) {
-            ChoppingParticles.emit(minecraft, pos, face, bc$chips.advance(destroyProgress));
+            // This hook runs once per native mining tick (20 Hz), not once per rendered frame.
+            ChoppingParticles.emit(minecraft, pos, face,
+                    bc$chips.advance(destroyProgress, ChoppingProgress.NATIVE_TICK_SECONDS));
         } else bc$chips.reset();
     }
 }

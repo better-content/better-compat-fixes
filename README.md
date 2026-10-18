@@ -8,9 +8,10 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
-Chopping logs and Dynamic Trees branches emits 48 fractional-budget material chips per actual
-completed block. The local client's hardness/tool-adjusted destroy-progress increments drive the
-budget, never rendering FPS or a per-particle packet. Chips originate at the ray's cut-face
+Chopping logs and Dynamic Trees branches emits material chips at a rate increasing linearly
+from 2 to 18 particles per second with actual break completion: `2 + 16 * completion`.
+A fractional accumulator integrates that rate once per native mining tick (20 Hz), never per
+rendered frame or progress delta, and never sends a per-particle packet. Chips originate at the ray's cut-face
 intersection, with Dynamic Trees using its native primitive-log/stripped-log material. Native hold-hit
 particles are suppressed only for logs/branches; completion debris and other blocks remain native.
 Stopping, restarting, target/material changes and progress rollback discard obsolete fractional debt.
