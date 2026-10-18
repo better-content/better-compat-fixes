@@ -44,16 +44,31 @@ final class MovementPresentationResourceTest {
     }
 
     @Test
-    void directionalDoubleTapDodgeIsDisabledWithoutReplacingVanillaSprint() throws IOException {
+    void physicalArrowDodgeKeepsNativeEligibilityAndVanillaSprint() throws IOException {
         final String mixin = Files.readString(SOURCE_ROOT.resolve("mixin/parcool/DodgeMixin.java"));
         final String config = Files.readString(SOURCE_ROOT.resolve("config/BcFixesClientConfig.java"));
 
-        assertTrue(mixin.contains("return Boolean.FALSE"));
+        assertTrue(mixin.contains("return Boolean.FALSE")); // No duplicate native movement-key double taps.
+        assertTrue(mixin.contains("DodgeDirection.Front : DodgeDirection.Back"));
+        assertTrue(mixin.contains("getLastMoveVector()Lnet/minecraft/world/phys/Vec3;"));
+        assertTrue(mixin.contains("@ModifyVariable") && mixin.contains("require = 1"));
+        final String arrows = Files.readString(SOURCE_ROOT.resolve("client/ArrowDoubleTapDodgeClient.java"));
+        for (String key : new String[] {"UP", "DOWN", "LEFT", "RIGHT"}) {
+            assertTrue(arrows.contains("GLFW.GLFW_KEY_" + key));
+        }
+        assertTrue(arrows.contains("if (!InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_SHIFT)) {\n"
+                + "            TRACKER.reset();\n            return;\n        }"));
+        assertTrue(arrows.contains("minecraft.player.isShiftKeyDown()"));
+        assertTrue(arrows.contains("minecraft.player.isCrouching()"));
+        assertTrue(arrows.contains("minecraft.options.keyShift.isDown()"));
+        assertTrue(arrows.contains("TRACKER.reset()"));
+        assertFalse(arrows.contains("setDown("));
+        assertFalse(arrows.contains("setDeltaMovement("));
         assertFalse(config.contains("directionalDoubleTapDodge"));
         assertFalse(config.contains("doubleTapWindowTicks"));
         assertFalse(config.contains("replaceForwardDoubleTapSprint"));
         assertFalse(Files.exists(SOURCE_ROOT.resolve("client/ParCoolDirectionalDodgeClient.java")));
-        assertFalse(Files.exists(SOURCE_ROOT.resolve("client/DirectionalDoubleTapTracker.java")));
+        assertTrue(Files.exists(SOURCE_ROOT.resolve("client/DirectionalDoubleTapTracker.java")));
         assertFalse(Files.exists(SOURCE_ROOT.resolve("client/VanillaDoubleTapSprintSuppressor.java")));
     }
 

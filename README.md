@@ -194,7 +194,7 @@ GUI acceptance; paired in-game visual and human-pointer review is separately
 required under the shared GUI policy.
 
 Runtime behavior includes pack-owned compatibility fixes, including permanent Epic Fight Battle mode,
-disabled ParCool directional double-tap dodge, first-person player-limb hiding
+physical-arrow ParCool double-tap dodge, first-person player-limb hiding
 that preserves Epic Fight held-item animations, automatic affirmative Explosion Overhaul scan decisions,
 and the pinned Dynamic Trees Aether 1.3.3 obsolete-branch tag repair.
 
@@ -273,7 +273,12 @@ Recommended control defaults are authored in the modpack's tracked `options.txt`
 rewritten by this mod. They bind ParCool Fast Run to Shift, ParCool's contextual mouse actions to
 Mouse 5, Ping Wheel to Mouse 4, Epic Fight lock-on to Caps Lock, and free target switching to
 Shift+Caps Lock; Epic Fight dodge is unbound. ParCool's direct R dodge remains available, and
-vanilla's forward double-tap sprint behavior is left intact.
+vanilla's forward double-tap sprint behavior is left intact. Double-tap a physical arrow key
+within seven client ticks (about 350 ms) while holding physical Left Shift to request ParCool's
+dodge in that direction while not crouching. Right Shift does not enable the shortcut. Movement-key rebinding does not move this shortcut onto WASD. Menus, focus loss,
+pausing, crouching, releasing Left Shift and player/world changes clear pending taps. ParCool retains its native
+stamina, cooldown, grounded-state and action restrictions; no velocity or key state is injected.
+The pinned native direction-local/vector bridge remains pending real-client acceptance.
 
 For ParCool 3.4.3.3, ledge grabbing no longer rejects an otherwise valid edge solely because
 of upward speed. Native grab input, stamina, wall-running exclusion, facing, collision/reach and

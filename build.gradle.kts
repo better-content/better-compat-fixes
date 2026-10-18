@@ -142,6 +142,7 @@ repositories {
 val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTransitive = false }
 val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitive = false }
 val markerRenderNativePins = configurations.create("markerRenderNativePins") { isTransitive = false }
+val parCoolNativePins = configurations.create("parCoolNativePins") { isTransitive = false }
 val quarkSortNativePins = configurations.create("quarkSortNativePins") { isTransitive = false }
 val backpackEquipmentNativePins = configurations.create("backpackEquipmentNativePins") { isTransitive = false }
 val starcatcherNativePins = configurations.create("starcatcherNativePins") { isTransitive = false }
@@ -227,6 +228,7 @@ dependencies {
     runtimeOnly(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
     testImplementation(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
     compileOnly(fg.deobf("curse.maven:parcool-482378:7760589"))
+    add(parCoolNativePins.name, "curse.maven:parcool-482378:7760589")
     compileOnly(fg.deobf("curse.maven:sleeping-overhaul-2-887716:6471182"))
     compileOnly(fg.deobf("curse.maven:distant-horizons-508933:7375280"))
     compileOnly(fg.deobf("curse.maven:structure-generation-improver-1473087:8102460"))
@@ -460,7 +462,7 @@ val verifyRuntimeDispenserAlias by tasks.registering {
 
 val verifyRuntimeSprintBridge by tasks.registering {
     group = "verification"
-    description = "Requires the staged runtime JAR to disable directional dodge without replacing vanilla sprint."
+    description = "Requires the physical-arrow ParCool dodge bridge without replacing vanilla sprint."
     dependsOn(stageRuntimeJar)
     doLast {
         val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
@@ -471,11 +473,15 @@ val verifyRuntimeSprintBridge by tasks.registering {
             }
             for (obsolete in listOf(
                 "client/ParCoolDirectionalDodgeClient.class",
-                "client/DirectionalDoubleTapTracker.class",
                 "client/VanillaDoubleTapSprintSuppressor.class"
             )) {
                 check(zip.getEntry("com/bettercontent/bettercompatfixes/$obsolete") == null) {
                     "Runtime JAR still contains obsolete directional double-tap code $obsolete: $runtimeJar"
+                }
+            }
+            for (required in listOf("client/ArrowDoubleTapDodgeClient.class", "client/DirectionalDoubleTapTracker.class")) {
+                check(zip.getEntry("com/bettercontent/bettercompatfixes/$required") != null) {
+                    "Runtime JAR is missing physical-arrow dodge code $required: $runtimeJar"
                 }
             }
             check(zip.getEntry(
@@ -834,10 +840,11 @@ val verifyPneumaticNativePins by tasks.registering {
 }
 tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
-    inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins,
+    inputs.files(dhDepthNativePins, markerRenderNativePins, parCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
         starcatcherNativePins, aetherRenderNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
+        systemProperty("bc.parcool.native", parCoolNativePins.resolve().single().absolutePath)
         systemProperty("bc.aetherRender.native", aetherRenderNativePins.resolve().single().absolutePath)
         systemProperty("bc.starcatcher.native", starcatcherNativePins.resolve().single().absolutePath)
         val backpackNatives = backpackEquipmentNativePins.resolve()
