@@ -100,6 +100,7 @@
     "prettypipes.PressurizerGuiMixin",
     "minecraft.CreativeModeInventoryScreenMixin",
     "minecraft.SurvivalCrouchToggleMixin",
+    "minecraft.PerspectiveControlsMixin",
     "ali.EmiCompatibilityMixin",
     "ambientsounds.AmbientSoundEngineMixin",
     "adpother.LevelRendererMixin",

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Split third-person controls into rear (existing perspective binding, default F5) and front (new F7 binding) toggles, preserving customized rear keys and native renderer/Epic Fight camera callbacks. Real-client acceptance remains pending.
+
 - Bridged pinned Aether gloves, pendants, and Shield of Repulsion into Epic Fight's native Curios rig adapter while retaining native material passes and non-Epic rendering. Real-client visual acceptance remains separate.
 - Tracked the chopping annotation processor's actual task-named refmap output and copied it under its packaged name, so recompilation does not silently omit the required map.
 

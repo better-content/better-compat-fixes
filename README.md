@@ -230,6 +230,18 @@ native input/sort handler. Other buttons, keyboard bindings and unbound middle-c
 Quark dispatch. Native packet, sound and storage authority remain unchanged; paired in-game visual
 and human-pointer acceptance is pending.
 
+Third-person views have independent toggle buttons. The existing vanilla perspective binding
+(default F5, including any player customization) is now **Toggle Rear Third Person**; the new
+**Toggle Front Third Person** binding defaults to F7 (F6 remains Epic Fight's skill screen).
+Each button enters its view from either other view and returns to first person when pressed
+again; simultaneous rear/front input favors rear. Both inputs use vanilla's camera-change branch,
+preserving its post-effect/chunk-render updates and Epic Fight's camera-change callbacks rather
+than setting the camera in a separate tick handler. No key migration, option rewrite, packet or
+server change is introduced. Keep Epic Fight's `camera_perspective_toggle_mode = "VANILLA"`
+(the pack default); its optional front-view skip policy still rejects front view. Native-shape,
+shipping-selector and toggle/queue regressions are source validation; real-client combat/camera
+acceptance remains pending.
+
 The client control profile moves ParCool Fast Run to Shift, ParCool's contextual mouse actions to Mouse 5,
 Ping Wheel to Mouse 4, and Epic Fight lock-on to Caps Lock. Existing customized bindings are preserved;
 only exact legacy defaults are migrated once. ParCool's direct R dodge remains available, and vanilla's

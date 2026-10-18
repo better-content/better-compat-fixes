@@ -261,6 +261,7 @@ dependencies {
     runtimeOnly(fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.20.1:1.4.10"))
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:[$mixinExtrasVersion,0.6.0)")!!)
+    testImplementation("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("com.google.code.gson:gson:2.10.1")
     testImplementation(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
