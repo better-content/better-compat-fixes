@@ -74,6 +74,8 @@ minecraft {
             property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
             property("better_compat_fixes.expectHeatAbsent", spoilageWithoutHeat.toString())
             mods { named(property("mod_id") as String) { source(nativeFixture) } }
+            // Mixin's actual launcher option, scoped only to this nonshipping native source run.
+            args("--mixin.config", "better_compat_fixes.native_fixture.mixins.json")
             arg("--nogui")
         }
     }
@@ -758,7 +760,7 @@ tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
     inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins,
         starcatcherNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
-    dependsOn(tasks.named(nativeFixture.processResourcesTaskName))
+    dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
         systemProperty("bc.starcatcher.native", starcatcherNativePins.resolve().single().absolutePath)
         val backpackNatives = backpackEquipmentNativePins.resolve()
@@ -911,6 +913,11 @@ val verifyRuntimeChoppingSpoilage by tasks.registering {
     dependsOn(stageRuntimeJar)
     doLast {
         ZipFile(layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile).use { zip ->
+            check(zip.entries().asSequence().none {
+                it.name.startsWith("com/bettercontent/bettercompatfixes/nativefixture/")
+                    || it.name == "com/bettercontent/bettercompatfixes/gametest/DispenserRegistryGameTests.class"
+                    || it.name == "better_compat_fixes.native_fixture.mixins.json"
+            }) { "Source-only native registry accessor/test/config leaked into production" }
             check(zip.entries().asSequence().none {
                 it.name.startsWith("data/farmersrespite/") || it.name.startsWith("data/the_deep_void/dimension/")
             }) { "Source-only native fixture overrides leaked into production" }

@@ -4,23 +4,24 @@ import com.bettercontent.bettercompatfixes.BetterContentFixes;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
-import java.util.Map;
+import com.bettercontent.bettercompatfixes.nativefixture.DispenserRegistryAccessor;
+import net.minecraftforge.event.RegisterGameTestsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 /** Observe the transformed native assignment, not a source-text substitute. */
 @PrefixGameTestTemplate(false)
+@Mod.EventBusSubscriber(modid = BetterContentFixes.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class DispenserRegistryGameTests {
+    @SubscribeEvent
+    public static void register(RegisterGameTestsEvent event) { event.register(DispenserRegistryGameTests.class); }
+
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void nativeRegistryAssignmentAndRegistrationRemainSynchronized(GameTestHelper helper) throws Exception {
-        var field = java.util.Arrays.stream(DispenserBlock.class.getDeclaredFields())
-                .filter(f -> Map.class.isAssignableFrom(f.getType()) && java.lang.reflect.Modifier.isStatic(f.getModifiers()))
-                .findFirst().orElseThrow();
-        field.setAccessible(true);
-        @SuppressWarnings("unchecked")
-        var registry = (Map<Item, DispenseItemBehavior>) field.get(null);
+        var registry = DispenserRegistryAccessor.better_compat_fixes$registry();
         helper.assertTrue(registry.getClass().getName().equals("java.util.Collections$SynchronizedMap"),
                 "Native clinit must assign a synchronized registry; silently failed mixin is not acceptable");
         boolean existed = registry.containsKey(Items.AIR);

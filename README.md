@@ -51,6 +51,10 @@ final-write bridge is needed in consumers. Native direct writers and `registerBe
 same map; the native gate exercises concurrent writes and rejects failed mixin applications as
 failed operations rather than treating them as harmless warnings. The archive/native-bytecode
 contract also checks the original final-field assignment and prohibits mixin field-write bridges.
+The concurrency diagnostic itself lives only in `nativeFixture`: its exact getter-only Mixin
+accessor reads the pinned private static final registry (`0x001a`) without changing its visibility,
+modifiers or value. Only the GameTest launcher loads that fixture config; the production archive
+must exclude its test, accessor and configuration, and production classes do not refer to them.
 
 With Curios `5.14.1+1.20.1` and Sophisticated Backpacks `1.20.1-3.24.35.1675`
 (FML mod version `3.24.35.1675`), every installed
