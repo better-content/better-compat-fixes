@@ -83,14 +83,14 @@ final class BcFixesResourceTest {
         String source = Files.readString(Path.of(
                 "src/main/java/com/bettercontent/bettercompatfixes/mixin/minecraft/DispenserBlockMixin.java"));
 
-        assertTrue(source.contains("@WrapOperation(method = \"<clinit>\"")
-                        && source.contains("DispenserBlock;DISPENSER_REGISTRY:Ljava/util/Map;")
-                        && source.contains("DispenserBlock;f_52661_:Ljava/util/Map;")
-                        && source.contains("opcode = Opcodes.PUTSTATIC")
+        assertTrue(source.contains("@ModifyExpressionValue(method = \"<clinit>\"")
+                        && source.contains("Util;make(Ljava/lang/Object;Ljava/util/function/Consumer;)Ljava/lang/Object;")
+                        && source.contains("Util;m_137469_(Ljava/lang/Object;Ljava/util/function/Consumer;)Ljava/lang/Object;")
                         && source.contains("remap = false, require = 1, allow = 1")
-                        && source.contains("original.call(Collections.synchronizedMap(registry))")
-                        && !source.contains("@Shadow"),
-                "exactly one native assignment must be wrapped in both development and production without illegal public-field aliases");
+                        && source.contains("return Collections.synchronizedMap(registry)")
+                        && !source.contains("@Shadow") && !source.contains("@Mutable")
+                        && !source.contains("@WrapOperation"),
+                "one native initializer expression must be wrapped without moving the final-field assignment out of native clinit");
         assertTrue(source.contains("@WrapMethod(method = {\"registerBehavior\", \"m_52672_\"}, remap = false)"),
                 "dispenser registration must resolve its named and production SRG methods without a refmap");
     }

@@ -374,7 +374,7 @@ mixin {
 
 val verifyRuntimeDispenserAlias by tasks.registering {
     group = "verification"
-    description = "Requires the runtime JAR dispenser mixin to retain its production SRG field alias."
+    description = "Requires the runtime JAR dispenser initializer expression hook without a final-field write bridge."
     dependsOn(stageRuntimeJar)
     doLast {
         val runtimeJar = layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile
@@ -382,10 +382,11 @@ val verifyRuntimeDispenserAlias by tasks.registering {
             val mixin = zip.getEntry("com/bettercontent/bettercompatfixes/mixin/minecraft/DispenserBlockMixin.class")
                 ?: throw GradleException("Runtime JAR is missing DispenserBlockMixin: $runtimeJar")
             val bytecode = zip.getInputStream(mixin).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
-            check(bytecode.contains("DispenserBlock;f_52661_:Ljava/util/Map;")
-                    && bytecode.contains("DispenserBlock;DISPENSER_REGISTRY:Ljava/util/Map;")
-                    && bytecode.contains("WrapOperation") && bytecode.contains("synchronizedMap")) {
-                "Runtime dispenser mixin lacks its exact dual native assignment targets/map wrapper: $runtimeJar"
+            check(bytecode.contains("Util;make(Ljava/lang/Object;Ljava/util/function/Consumer;)Ljava/lang/Object;")
+                    && bytecode.contains("Util;m_137469_(Ljava/lang/Object;Ljava/util/function/Consumer;)Ljava/lang/Object;")
+                    && bytecode.contains("ModifyExpressionValue") && bytecode.contains("synchronizedMap")
+                    && !bytecode.contains("WrapOperation") && !bytecode.contains("PUTSTATIC")) {
+                "Runtime dispenser mixin must wrap the native initializer result, never the final-field write: $runtimeJar"
             }
         }
     }
@@ -754,7 +755,7 @@ val verifyPneumaticNativePins by tasks.registering {
     }
 }
 tasks.test {
-    dependsOn(verifyPneumaticNativePins)
+    dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
     inputs.files(dhDepthNativePins, markerRenderNativePins, quarkSortNativePins, backpackEquipmentNativePins,
         starcatcherNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.processResourcesTaskName))

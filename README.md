@@ -44,11 +44,13 @@ The existing native fall-boundary tests still execute the unchanged Overworld/En
 Neither this fixture nor its pass proves Deep Void terrain generation or a real player teleport;
 full-pack runtime gates must use the actual unmodified production dimension generators.
 
-The dispenser registry's one native static assignment is wrapped with a synchronized map using
-both pinned development/production field selectors (exactly one must match), avoiding the invalid
-production-only shadow that previously failed in source launches. Native direct writers and
-`registerBehavior` share that same map; the native gate exercises concurrent writes and rejects
-failed mixin applications as failed operations rather than treating them as harmless warnings.
+The dispenser registry's one native initializer expression (`Util.make`) returns a synchronized
+map using pinned development/production invocation selectors (exactly one must match). Its original
+final-field assignment stays in native `<clinit>`: no shadow, access-transformer or relocated
+final-write bridge is needed in consumers. Native direct writers and `registerBehavior` share that
+same map; the native gate exercises concurrent writes and rejects failed mixin applications as
+failed operations rather than treating them as harmless warnings. The archive/native-bytecode
+contract also checks the original final-field assignment and prohibits mixin field-write bridges.
 
 With Curios `5.14.1+1.20.1` and Sophisticated Backpacks `1.20.1-3.24.35.1675`
 (FML mod version `3.24.35.1675`), every installed
