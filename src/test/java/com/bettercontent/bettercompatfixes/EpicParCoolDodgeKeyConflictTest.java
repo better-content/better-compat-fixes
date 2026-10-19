@@ -3,6 +3,7 @@ package com.bettercontent.bettercompatfixes;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.bettercontent.bettercompatfixes.client.DodgeKeyConflictPolicy;
+import com.bettercontent.bettercompatfixes.client.ArrowDodgeAnimationInputs;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,10 @@ import org.objectweb.asm.tree.*;
 /** Executes the hash-pinned native guard with tiny input doubles; not a Forge/client verdict. */
 final class EpicParCoolDodgeKeyConflictTest {
     private static final String GUARD = "lambda$onSetup$17";
+    private static final String ANIMATION = "lambda$onSetup$8";
+    private static boolean requested;
+    private static double arrowX;
+    private static double arrowZ;
     private static final String SKILL_GETTER = "Lyesman/epicfight/skill/SkillContainer;getSkill()Lyesman/epicfight/skill/Skill;";
 
     @Test
@@ -55,6 +60,62 @@ final class EpicParCoolDodgeKeyConflictTest {
     }
 
     @Test
+    void arrowAnimationMatchesNativeForEveryDirectionEvenWithConflictingWasd() throws Exception {
+        Method nativeAnimation = animation(false);
+        Method arrowAnimation = animation(true);
+        double diagonal = Math.sqrt(0.5);
+        double[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0},
+                {diagonal, diagonal}, {-diagonal, diagonal},
+                {diagonal, -diagonal}, {-diagonal, -diagonal}};
+        for (double[] direction : directions) {
+            PlayerPatch vanilla = new PlayerPatch();
+            vanilla.f_108618_.f_108566_ = (float) direction[0];
+            vanilla.f_108618_.f_108567_ = (float) direction[1];
+            Object expected = nativeAnimation.invoke(null, vanilla, new StartEvent(vanilla));
+            for (float[] wasd : new float[][] {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                PlayerPatch arrows = new PlayerPatch();
+                arrows.f_108618_.f_108566_ = wasd[0];
+                arrows.f_108618_.f_108567_ = wasd[1];
+                requested = true;
+                arrowX = direction[0];
+                arrowZ = direction[1];
+                assertSame(expected, arrowAnimation.invoke(null, arrows, new StartEvent(arrows)));
+                assertEquals(9f, arrows.energy, "Keep native single stamina deduction");
+                assertEquals(wasd[0], arrows.f_108618_.f_108566_, "Never mutate vanilla input");
+                assertEquals(wasd[1], arrows.f_108618_.f_108567_);
+            }
+            requested = false;
+            assertSame(expected, arrowAnimation.invoke(null, vanilla, new StartEvent(vanilla)),
+                    "Without arrow request, native animation selection stays unchanged");
+        }
+    }
+
+    private static Method animation(boolean hookInputs) throws Exception {
+        ClassNode type = nativeType();
+        MethodNode method = type.methods.stream().filter(m -> m.name.equals(ANIMATION)).findFirst().orElseThrow();
+        int left = 0;
+        int forward = 0;
+        for (AbstractInsnNode insn : method.instructions.toArray()) {
+            if (!(insn instanceof FieldInsnNode field) || !field.owner.equals("net/minecraft/client/player/Input")) continue;
+            String axis;
+            if (field.name.equals("f_108566_")) { left++; axis = "left"; }
+            else if (field.name.equals("f_108567_")) { forward++; axis = "forward"; }
+            else continue;
+            if (hookInputs) method.instructions.insert(field, new MethodInsnNode(Opcodes.INVOKESTATIC,
+                    Type.getInternalName(AnimationInputHooks.class), axis, "(F)F", false));
+        }
+        assertEquals(2, left);
+        assertEquals(1, forward);
+        String source = Files.readString(Path.of("src/main/java/com/bettercontent/bettercompatfixes/mixin/epicfight/EpicParCoolDodgeKeyConflictMixin.java"));
+        assertTrue(source.contains("method = \"" + ANIMATION + "\""));
+        assertTrue(source.contains("Lnet/minecraft/client/player/Input;f_108566_:F"));
+        assertTrue(source.contains("Lnet/minecraft/client/player/Input;f_108567_:F"));
+        assertTrue(source.contains("move == null ? 0 : move.x, move != null"));
+        assertTrue(source.contains("move == null ? 0 : move.z, move != null"));
+        return emit(method).getMethod("evaluate", PlayerPatch.class, StartEvent.class);
+    }
+
+    @Test
     void registeredMixinChangesOnlyTheSkillExpressionAndIsVersionGated() throws Exception {
         Path root = Path.of("src/main");
         String mixin = Files.readString(root.resolve("java/com/bettercontent/bettercompatfixes/mixin/epicfight/EpicParCoolDodgeKeyConflictMixin.java"));
@@ -78,7 +139,7 @@ final class EpicParCoolDodgeKeyConflictTest {
         return (Boolean) guard.invoke(null, player, new Object());
     }
 
-    private static Method guard(boolean applyExpressionHook, boolean arrows) throws Exception {
+    private static ClassNode nativeType() throws Exception {
         Path jar = Path.of(System.getProperty("bc.epicparcool.native"));
         assertEquals("d38194b73c91e5af84ef28a7a07e0eb4340ef76d", HexFormat.of().formatHex(
                 MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(jar))));
@@ -87,6 +148,11 @@ final class EpicParCoolDodgeKeyConflictTest {
              var in = zip.getInputStream(zip.getEntry("com/yesman/epicparcool/event/ParCoolEvents.class"))) {
             new ClassReader(in).accept(type, ClassReader.SKIP_FRAMES);
         }
+        return type;
+    }
+
+    private static Method guard(boolean applyExpressionHook, boolean arrows) throws Exception {
+        ClassNode type = nativeType();
         MethodNode setup = type.methods.stream().filter(m -> m.name.equals("onSetup")).findFirst().orElseThrow();
         boolean dodge = false;
         boolean cancellationMapping = false;
@@ -117,6 +183,10 @@ final class EpicParCoolDodgeKeyConflictTest {
             }
         }
         assertEquals(1, hooks, "Exact required production expression anchor");
+        return emit(method).getMethod("evaluate", PlayerPatch.class, Object.class);
+    }
+
+    private static Class<?> emit(MethodNode method) {
         // Remap only external input types to deterministic doubles. Preserve native branches,
         // key identity comparison, skill check, creative exemption and stamina arithmetic.
         Map<String, String> names = new LinkedHashMap<>();
@@ -131,6 +201,12 @@ final class EpicParCoolDodgeKeyConflictTest {
         names.put("yesman/epicfight/skill/Skill", Type.getInternalName(Skill.class));
         names.put("yesman/epicfight/gameasset/EpicFightSkills", Type.getInternalName(Skills.class));
         names.put("com/alrex/parcool/common/action/Action", "java/lang/Object");
+        names.put("com/alrex/parcool/api/unstable/action/ParCoolActionEvent$StartEvent", Type.getInternalName(StartEvent.class));
+        names.put("net/minecraft/client/player/LocalPlayer", Type.getInternalName(PlayerPatch.class));
+        names.put("net/minecraft/client/player/Input", Type.getInternalName(Input.class));
+        names.put("com/yesman/epicparcool/animations/ParCoolAnimations", Type.getInternalName(Animations.class));
+        names.put("yesman/epicfight/api/animation/AnimationManager$AnimationAccessor", "java/lang/Object");
+        names.put("yesman/epicfight/api/asset/AssetAccessor", "java/lang/Object");
         names.put("net/minecraft/world/entity/player/Player", Type.getInternalName(PlayerPatch.class));
         names.put("net/minecraft/world/entity/Entity", Type.getInternalName(PlayerPatch.class));
         method.desc = remap(method.desc, names);
@@ -151,7 +227,7 @@ final class EpicParCoolDodgeKeyConflictTest {
             Loader() { super(EpicParCoolDodgeKeyConflictTest.class.getClassLoader()); }
             Class<?> loadGuard() { byte[] b = writer.toByteArray(); return defineClass(null, b, 0, b.length); }
         }
-        return new Loader().loadGuard().getMethod("evaluate", PlayerPatch.class, Object.class);
+        return new Loader().loadGuard();
     }
 
     private static String remap(String text, Map<String, String> names) {
@@ -159,6 +235,26 @@ final class EpicParCoolDodgeKeyConflictTest {
         return text;
     }
 
+    public static final class AnimationInputHooks {
+        public static float left(float original) {
+            return ArrowDodgeAnimationInputs.impulse(original, arrowX, requested);
+        }
+        public static float forward(float original) {
+            return ArrowDodgeAnimationInputs.impulse(original, arrowZ, requested);
+        }
+    }
+    public static final class Input { public float f_108566_; public float f_108567_; }
+    public static final class StartEvent {
+        private final PlayerPatch player;
+        StartEvent(PlayerPatch player) { this.player = player; }
+        public PlayerPatch getPlayer() { return player; }
+    }
+    public static final class Animations {
+        public static final Object BIPED_ROLL_FORWARD = new Object();
+        public static final Object BIPED_ROLL_BACKWARD = new Object();
+        public static final Object BIPED_ROLL_LEFT = new Object();
+        public static final Object BIPED_ROLL_RIGHT = new Object();
+    }
     public static final class Key {
         private final Object key;
         Key(Object key) { this.key = key; }
@@ -180,6 +276,10 @@ final class EpicParCoolDodgeKeyConflictTest {
     public static final class PlayerPatch {
         boolean stamina = true;
         boolean creative;
+        float energy = 10;
+        public final Input f_108618_ = new Input();
+        public float getStamina() { return energy; }
+        public void setStamina(float value) { energy = value; }
         final Container container = new Container();
         public Container getSkill(Slot slot) { return container; }
         public PlayerPatch getOriginal() { return this; }
