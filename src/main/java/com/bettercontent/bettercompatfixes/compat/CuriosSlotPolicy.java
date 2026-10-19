@@ -13,6 +13,9 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import top.theillusivec4.curios.api.event.CurioEquipEvent;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.Map;
 import java.util.Set;
@@ -45,19 +48,26 @@ public final class CuriosSlotPolicy {
         if (!(event.getSlotContext().entity() instanceof Player)) return;
         final String slot = event.getSlotContext().identifier();
         final ItemStack stack = event.getStack();
-        if (event.getSlotContext().index() != 0 || event.getSlotContext().cosmetic() || !valid(slot, stack)) {
+        if (event.getSlotContext().index() != 0 || event.getSlotContext().cosmetic() || !valid(event.getSlotContext(), stack)) {
             event.setResult(Event.Result.DENY);
         }
     }
 
-    public static boolean valid(String slot, ItemStack stack) {
+    public static boolean valid(SlotContext context, ItemStack stack) {
+        String slot = context.identifier();
         if (stack.isEmpty()) return false;
         if (stack.getItem() instanceof BackpackItem) return slot.equals("better_backpack");
         if (slot.equals("better_backpack")) return false;
-        // Better Drinking Water defines validators for these slots instead of item tags.
-        // Do not DENY valid empties before its validator can accept manual/automatic insertion.
-        if (slot.equals("empty_bottle")) return stack.is(Items.GLASS_BOTTLE);
-        if (slot.equals("water")) return stack.is(Items.POTION) && PotionUtils.getPotion(stack) == Potions.WATER;
+        // The provider owns both admission and consumption. Consult its native predicate without
+        // re-entering CuriosApi.isStackValid (which would post this event recursively).
+        if (slot.equals("empty_bottle") || slot.equals("water")) {
+            var predicate = CuriosApi.getCurioPredicate(new ResourceLocation("better_drinking_water",
+                    slot.equals("water") ? "water_bottle" : "empty_bottle"));
+            if (predicate.isPresent()) return predicate.get().test(new SlotResult(context, stack));
+            // Keep the established narrow fallback when Drinking Water is absent.
+            return slot.equals("empty_bottle") ? stack.is(Items.GLASS_BOTTLE)
+                    : stack.is(Items.POTION) && PotionUtils.getPotion(stack) == Potions.WATER;
+        }
         Set<String> tags = SOURCE_TAGS.get(slot);
         if (tags == null) return false;
         // Generic Curios items occupy the charm slot only. Specific placement wins over

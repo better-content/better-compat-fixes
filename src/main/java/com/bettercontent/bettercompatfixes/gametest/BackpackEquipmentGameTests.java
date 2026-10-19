@@ -78,6 +78,52 @@ public final class BackpackEquipmentGameTests {
     }
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
+    public static void drinkingProviderOwnsExpandedVesselAdmission(GameTestHelper helper) {
+        Player player = new Player(helper.getLevel(), BlockPos.ZERO, 0,
+                new GameProfile(UUID.randomUUID(), "WaterProviderAdmission")) {
+            @Override public boolean isSpectator() { return false; }
+            @Override public boolean isCreative() { return false; }
+        };
+        var waterKey = new net.minecraft.resources.ResourceLocation("better_drinking_water", "water_bottle");
+        var emptyKey = new net.minecraft.resources.ResourceLocation("better_drinking_water", "empty_bottle");
+        var oldWater = CuriosApi.getCurioPredicate(waterKey);
+        var oldEmpty = CuriosApi.getCurioPredicate(emptyKey);
+        var active = new java.util.concurrent.atomic.AtomicBoolean(true);
+        try {
+            // Native registration is putIfAbsent, not replacement. Register reversible fixture
+            // callbacks only in the provider-absent source profile, never overwrite a real provider.
+            helper.assertTrue(oldWater.isEmpty() && oldEmpty.isEmpty(), "This fixture expects Drinking Water absent");
+            CuriosApi.registerCurioPredicate(waterKey, result -> active.get() ? result.stack().is(Items.WATER_BUCKET)
+                    : result.stack().is(Items.POTION) && net.minecraft.world.item.alchemy.PotionUtils.getPotion(result.stack())
+                    == net.minecraft.world.item.alchemy.Potions.WATER);
+            CuriosApi.registerCurioPredicate(emptyKey, result -> active.get() ? result.stack().is(Items.BUCKET)
+                    : result.stack().is(Items.GLASS_BOTTLE));
+            for (String slot : new String[]{"water", "empty_bottle"}) {
+                var approved = slot.equals("water") ? Items.WATER_BUCKET : Items.BUCKET;
+                for (int index : new int[]{0, 1}) {
+                    for (boolean cosmetic : new boolean[]{false, true}) {
+                        var event = new CurioEquipEvent(new ItemStack(approved),
+                                new SlotContext(slot, player, index, cosmetic, true));
+                        MinecraftForge.EVENT_BUS.post(event);
+                        helper.assertTrue(event.getResult() == (index == 0 && !cosmetic
+                                        ? Event.Result.DEFAULT : Event.Result.DENY),
+                                "Provider-approved vessels must reach native admission only in functional slot zero");
+                    }
+                }
+                var rejected = new CurioEquipEvent(new ItemStack(Items.GLASS_BOTTLE),
+                        new SlotContext(slot, player, 0, false, true));
+                MinecraftForge.EVENT_BUS.post(rejected);
+                helper.assertTrue(rejected.getResult() == Event.Result.DENY,
+                        "Compat must not widen the provider's actual predicate");
+            }
+            helper.succeed();
+        } finally {
+            active.set(false); // Leave both callbacks with exactly the provider-absent fallback behavior.
+            player.invalidateCaps();
+        }
+    }
+
+    @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")
     public static void allNativeTiersRemainExclusiveDespiteCompetingListeners(GameTestHelper helper) {
         Player player = new Player(helper.getLevel(), BlockPos.ZERO, 0,
                 new GameProfile(UUID.randomUUID(), "BackpackAdmission")) {
