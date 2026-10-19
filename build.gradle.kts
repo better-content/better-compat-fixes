@@ -143,6 +143,7 @@ val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTrans
 val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitive = false }
 val markerRenderNativePins = configurations.create("markerRenderNativePins") { isTransitive = false }
 val parCoolNativePins = configurations.create("parCoolNativePins") { isTransitive = false }
+val epicParCoolNativePins = configurations.create("epicParCoolNativePins") { isTransitive = false }
 val quarkSortNativePins = configurations.create("quarkSortNativePins") { isTransitive = false }
 val backpackEquipmentNativePins = configurations.create("backpackEquipmentNativePins") { isTransitive = false }
 val starcatcherNativePins = configurations.create("starcatcherNativePins") { isTransitive = false }
@@ -229,6 +230,7 @@ dependencies {
     testImplementation(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
     compileOnly(fg.deobf("curse.maven:parcool-482378:7760589"))
     add(parCoolNativePins.name, "curse.maven:parcool-482378:7760589")
+    add(epicParCoolNativePins.name, "curse.maven:epic-parcool-1259252:6870242")
     compileOnly(fg.deobf("curse.maven:sleeping-overhaul-2-887716:6471182"))
     compileOnly(fg.deobf("curse.maven:distant-horizons-508933:7375280"))
     compileOnly(fg.deobf("curse.maven:structure-generation-improver-1473087:8102460"))
@@ -840,11 +842,12 @@ val verifyPneumaticNativePins by tasks.registering {
 }
 tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
-    inputs.files(dhDepthNativePins, markerRenderNativePins, parCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
+    inputs.files(dhDepthNativePins, markerRenderNativePins, parCoolNativePins, epicParCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
         starcatcherNativePins, aetherRenderNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
         systemProperty("bc.parcool.native", parCoolNativePins.resolve().single().absolutePath)
+        systemProperty("bc.epicparcool.native", epicParCoolNativePins.resolve().single().absolutePath)
         systemProperty("bc.aetherRender.native", aetherRenderNativePins.resolve().single().absolutePath)
         systemProperty("bc.starcatcher.native", starcatcherNativePins.resolve().single().absolutePath)
         val backpackNatives = backpackEquipmentNativePins.resolve()

@@ -280,13 +280,20 @@ acceptance remains pending.
 Recommended control defaults are authored in the modpack's tracked `options.txt`, not migrated or
 rewritten by this mod. They bind ParCool Fast Run to Shift, ParCool's contextual mouse actions to
 Mouse 5, Ping Wheel to Mouse 4, Epic Fight lock-on to Caps Lock, and free target switching to
-Shift+Caps Lock; Epic Fight dodge is unbound. ParCool's direct R dodge remains available, and
+Shift+Caps Lock; Epic Fight and ParCool direct dodge are unbound in pack defaults (a direct
+ParCool dodge key can still be assigned in Controls), and
 vanilla's forward double-tap sprint behavior is left intact. Double-tap a physical arrow key
 within seven client ticks (about 350 ms) while holding physical Left Shift to request ParCool's
 dodge in that direction while not crouching. Right Shift does not enable the shortcut. Movement-key rebinding does not move this shortcut onto WASD. Menus, focus loss,
 pausing, crouching, releasing Left Shift and player/world changes clear pending taps. ParCool retains its native
 stamina, cooldown, grounded-state and action restrictions; no velocity or key state is injected.
-The pinned native direction-local/vector bridge remains pending real-client acceptance.
+Independent arrow requests do not participate in Epic ParCool's direct-key collision guard:
+in combat mode, two unbound dodge bindings otherwise compare as the same key and cancel
+ParCool dodge when an Epic Fight dodge skill is equipped. The narrow expression hook keeps
+native direct-key collision handling and Epic Fight's subsequent stamina check intact.
+`EpicParCoolDodgeKeyConflictTest` executes the hash-pinned native guard with deterministic input
+doubles for shared/unbound/distinct keys, equipped/absent skills, stamina and creative exemption.
+This is not a Forge client/input verdict; the bridge remains pending real-client acceptance.
 
 For ParCool 3.4.3.3, ledge grabbing no longer rejects an otherwise valid edge solely because
 of upward speed. Native grab input, stamina, wall-running exclusion, facing, collision/reach and

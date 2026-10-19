@@ -116,6 +116,7 @@
     "epicfight.EpicFightKeyMappingsMixin",
     "epicfight.FirstPersonRendererMixin",
     "epicfight.EpicParCoolLedgeCameraMixin",
+    "epicfight.EpicParCoolDodgeKeyConflictMixin",
     "epicfight.EpicFightClimbCameraMixin",
     "epicfight.LocalPlayerPatchMixin",
     "epicfight.LocalPlayerAttackPovMixin",

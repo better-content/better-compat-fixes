@@ -199,7 +199,8 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
                     && mods.getModFileById("epicfight") != null
                     && mods.getModFileById("controlify") != null;
         }
-        if (EPIC_PARCOOL_LEDGE_CAMERA_MIXIN.equals(mixinClassName)) {
+        if (EPIC_PARCOOL_LEDGE_CAMERA_MIXIN.equals(mixinClassName)
+                || (EPIC_FIGHT_MIXIN_PREFIX + "EpicParCoolDodgeKeyConflictMixin").equals(mixinClassName)) {
             return hasVersion(mods, "epicfight", "20.14.17")
                     && hasVersion(mods, "epicparcool", "20.12.0.1")
                     && hasVersion(mods, "parcool", "3.4.3.3");
