@@ -70,6 +70,7 @@ public final class BetterContentFixes {
         MinecraftForge.EVENT_BUS.register(FarmlandTrampleProtection.class);
         MinecraftForge.EVENT_BUS.register(AmbientSurfaceSpawnControl.class);
         MinecraftForge.EVENT_BUS.register(FluidMixBlocker.class);
+        MinecraftForge.EVENT_BUS.register(com.bettercontent.bettercompatfixes.compat.OffhandBlockPlacement.class);
         MinecraftForge.EVENT_BUS.register(DecorativeVegetationTrample.class);
         MinecraftForge.EVENT_BUS.register(ExtendedItemPickup.class);
         if (ModList.get().isLoaded("dynamictrees")) {
@@ -122,6 +123,7 @@ public final class BetterContentFixes {
         event.register(ExtendedItemPickupGameTests.class);
         event.register(FarmlandTrampleProtectionGameTests.class);
         event.register(FluidMixBlockerGameTests.class);
+        event.register(com.bettercontent.bettercompatfixes.gametest.OffhandBlockPlacementGameTests.class);
         event.register(VanillaBoatGameTests.class);
         if (ModList.get().isLoaded("starcatcher")) {
             event.register(com.bettercontent.bettercompatfixes.gametest.SpoilageReuseGameTests.class);

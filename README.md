@@ -8,6 +8,14 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+Offhand block items cannot be placed through ordinary right-click use. A common-side Forge
+interaction listener denies only the offhand `BlockItem` item-use leg, on client and server;
+main-hand placement, clicked-block interactions, and non-block offhand items remain unchanged.
+Items remain carryable in either hand. This does not prohibit non-BlockItem tools such as buckets
+from changing the world, nor command/automation placement. Native GameTests cover denied block/torch
+placement without consumption, ordinary main-hand placement, and interaction admission controls.
+Full-pack client acceptance requires a separately authorized run.
+
 With Weapons of Miracles **2.0.171**, Saulomonk admission measures horizontal distance
 from the **nearest living, nonspectating player's permanent Better Spawns onboarding
 point** in the current dimension, strictly greater than **2,000 blocks**. It no longer
