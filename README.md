@@ -127,14 +127,32 @@ still trigger below -70; a -128 floor triggers below -134, and a zero-based floo
 six-block margin deliberately supersedes the native absolute-height setting. Tests inspect the pinned
 native procedure, exercise the transformed native entry branches and check the staged production JAR.
 
-The same pinned Deep Void integration anchors both one-time origin entrance templates to the actual
-minimum build height instead of `HoleStructureY`. Both delayed floor-opening callbacks use that same
-bottom (retaining native bottom+1), while native X/Z offsets, template choice, config/gamerule guards
-and the saved `CultTemplePlaced` flag remain unchanged. This does not regenerate or move an already
-placed entrance. The pack enables `PlaceCultTemple`; existing unplaced worlds become eligible on their
-next native level load. A nonshipping -128-bottom fixture exercises real template placement, both
-delayed openings and disabled/already-placed controls. No distributed-hole generator or Abductor
-spawn-rate change is introduced.
+Deep Void entrances now use the registered `better_compat_fixes:deep_void_entrance` structure and
+`deep_void_entrances` structure set: 128-chunk spacing, 64-chunk separation, equal selection among all
+18 inspected native temple, ruin, platform and marrow-hole templates (including upstream revisions).
+A saved piece anchors native decoration to the actual minimum build height and adds a separate
+lined 3×3 bore, a surrounding floor/chamber and an approach into the decoration. All writes are
+chunk-clipped; each placement uses private settings, filters authoring structure blocks, preserves
+explicit native air and ignores saved entities. Native loot/spawners are retained. A dimension guard
+excludes even other dimensions sharing Overworld biomes. Entrances are searchable using
+`/locate structure better_compat_fixes:deep_void_entrance`. New starts do not retrofit old chunks.
+
+The pack disables the competing one-time origin temple with `PlaceCultTemple = false`. Its optional
+height compatibility remains: both native templates and their delayed block cleanup use the actual
+bottom. The modern delayed cleanup removes a saved authoring structure block, not the main hole.
+Existing origin temples and the native placement flag are not migrated. Abductors are unchanged.
+
+Carried ordinary compasses below Y=0 in the Overworld use a server-selected nearest entrance start
+within an eight-region square search radius; Y≥0, other dimensions, lodestone/recovery compasses,
+item frames and absent targets retain native behavior. The client receives only a transient target;
+no item NBT is changed. Candidate order follows the registered placement seed/spacing, then confirmed
+saved/generated starts, skipping old chunks without entrances. Search requests are asynchronous and
+limited to one globally in flight / one new request per ten ticks, exclusively at `STRUCTURE_STARTS`:
+structure metadata may be created, but no terrain/full chunks are requested. A 512-entry start cache,
+32-block movement refresh, five-minute target refresh and lifecycle/data-reload invalidation bound
+work and stale targets. Native tests cover registered start generation, cross-dimension rejection,
+all variant bores at -128, saved pieces, clipping and compass policy. These checks are not actual
+client needle/packet or full-pack exploration acceptance.
 
 The Better Caves compatibility hook clips only block-carve attempts outside a chunk's legal vertical
 range. This preserves Better Caves and C2ME generation at valid heights while preventing Better Caves
@@ -294,6 +312,9 @@ native direct-key collision handling and Epic Fight's subsequent stamina check i
 `EpicParCoolDodgeKeyConflictTest` executes the hash-pinned native guard with deterministic input
 doubles for shared/unbound/distinct keys, equipped/absent skills, stamina and creative exemption.
 This is not a Forge client/input verdict; the bridge remains pending real-client acceptance.
+Arrow requests also feed Epic ParCool's native roll-animation selector with their direction instead
+of unrelated vanilla WASD impulses; no vanilla input state, animation implementation or native
+stamina deduction is changed. Real-client acceptance remains pending.
 
 For ParCool 3.4.3.3, ledge grabbing no longer rejects an otherwise valid edge solely because
 of upward speed. Native grab input, stamina, wall-running exclusion, facing, collision/reach and

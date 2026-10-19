@@ -62,6 +62,11 @@ public final class BetterContentFixes {
             ThirstLootModifierCompat.register(modEventBus);
         }
         VoidWormSpawnRemoval.SERIALIZERS.register(modEventBus);
+        com.bettercontent.bettercompatfixes.deepvoid.DeepVoidStructures.register(modEventBus);
+        com.bettercontent.bettercompatfixes.deepvoid.DeepVoidCompassNetwork.register();
+        if (ModList.get().isLoaded("the_deep_void")) {
+            MinecraftForge.EVENT_BUS.register(com.bettercontent.bettercompatfixes.deepvoid.DeepVoidCompassSearch.class);
+        }
         if (ModList.get().isLoaded("dynamictrees")) {
             modEventBus.addListener(DynamicTreesUnearthedSoils::onCommonSetup);
         }
@@ -106,6 +111,7 @@ public final class BetterContentFixes {
         if (ModList.get().getModContainerById("the_deep_void")
                 .filter(mod -> mod.getModInfo().getVersion().toString().equals("1.98.1")).isPresent()) {
             event.register(com.bettercontent.bettercompatfixes.gametest.DeepVoidFallBoundaryGameTests.class);
+            event.register(com.bettercontent.bettercompatfixes.gametest.DeepVoidEntranceGameTests.class);
         }
         if (ModList.get().getModContainerById("wom")
                 .filter(mod -> mod.getModInfo().getVersion().toString().equals("2.0.171")).isPresent()) {

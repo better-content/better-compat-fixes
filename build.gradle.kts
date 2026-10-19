@@ -815,6 +815,22 @@ val verifyRuntimeDeepVoidFallBoundary by tasks.registering {
                 "Deep Void template/floor opening correction must survive production reobfuscation"
             }
             check(bytecode("better_compat_fixes.mixins.json").contains("deepvoid.CultTemplePlacementProcedureMixin"))
+            for (name in listOf("DeepVoidCompassMixin", "DeepVoidStructureManagerMixin", "DeepVoidStructureDimensionMixin")) {
+                check(bytecode("better_compat_fixes.mixins.json").contains("minecraft.$name"))
+                bytecode("com/bettercontent/bettercompatfixes/mixin/minecraft/$name.class")
+            }
+            val compass = bytecode("com/bettercontent/bettercompatfixes/mixin/minecraft/DeepVoidCompassMixin.class")
+            check(compass.contains("m_234954_") && compass.contains("m_234964_") && compass.contains("getCompassRotation")) {
+                "Client compass target selectors must include pinned development and production names"
+            }
+            val manager = bytecode("com/bettercontent/bettercompatfixes/mixin/minecraft/DeepVoidStructureManagerMixin.class")
+            check(manager.contains("f_220460_")) { "Dimension bridge must retain its production field alias" }
+            val search = bytecode("com/bettercontent/bettercompatfixes/deepvoid/DeepVoidCompassSearch.class")
+            check(search.contains("m_8431_") && search.contains("f_62315_")) {
+                "Production compass must retain asynchronous STRUCTURE_STARTS-only lookup"
+            }
+            bytecode("data/better_compat_fixes/worldgen/structure/deep_void_entrance.json")
+            bytecode("data/better_compat_fixes/worldgen/structure_set/deep_void_entrances.json")
             for (kind in listOf("dimension", "dimension_type")) {
                 check(zip.getEntry("data/better_compat_fixes/$kind/deep_void_placement_test.json") == null) {
                     "Extended-bottom placement fixture must never ship"

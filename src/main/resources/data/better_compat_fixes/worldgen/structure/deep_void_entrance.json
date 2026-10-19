@@ -1,0 +1,7 @@
+{
+  "type": "better_compat_fixes:deep_void_entrance",
+  "biomes": "#minecraft:is_overworld",
+  "step": "underground_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

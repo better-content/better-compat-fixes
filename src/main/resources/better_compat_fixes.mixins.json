@@ -17,6 +17,8 @@
     "bettercaves.AbstractCarverMixin",
     "deepvoid.IfPlayerFallsInVoidProcedureMixin",
     "deepvoid.CultTemplePlacementProcedureMixin",
+    "minecraft.DeepVoidStructureManagerMixin",
+    "minecraft.DeepVoidStructureDimensionMixin",
     "wom.SaulomonkMixin",
     "cataclysm.CursedPyramidPieceMixin",
     "create.HandCrankBlockMixin",
@@ -92,6 +94,7 @@
     "weather2.CoroUtilCompatibilityMixin"
   ],
   "client": [
+    "minecraft.DeepVoidCompassMixin",
     "aetherepicfight.GlovesRendererMixin",
     "aetherepicfight.PendantRendererMixin",
     "aetherepicfight.ShieldOfRepulsionRendererMixin",
