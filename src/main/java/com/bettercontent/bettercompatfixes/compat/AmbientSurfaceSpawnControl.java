@@ -1,6 +1,9 @@
 package com.bettercontent.bettercompatfixes.compat;
 
 import com.bettercontent.bettercompatfixes.BetterContentFixes;
+import com.bettercontent.bettercompatfixes.api.event.GeologicalAmbientEligibilityEvent;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.EntityType;
 import com.bettercontent.bettercompatfixes.config.BcFixesConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +35,17 @@ public final class AmbientSurfaceSpawnControl {
                 overworld,
                 ForgeRegistries.ENTITY_TYPES.getKey(event.getEntity().getType()).toString(),
                 spawnType)) {
+            event.setResult(Event.Result.DENY);
+            return;
+        }
+
+        // Pack-owned replacement for the former In Control Y<=62 natural-only rule.
+        // The query waives this one restriction, never another listener's DENY result.
+        if (overworld && spawnType == MobSpawnType.NATURAL && event.getY() <= 62
+                && event.getEntity().getType().is(Tags.LEGACY_UNDERGROUND_DENIED)
+                && !GeologicalAmbientEligibilityEvent.eligible(event.getLevel(),
+                    BlockPos.containing(event.getX(), event.getY(), event.getZ()),
+                    event.getEntity().getType(), spawnType)) {
             event.setResult(Event.Result.DENY);
             return;
         }
@@ -100,6 +114,9 @@ public final class AmbientSurfaceSpawnControl {
     }
 
     private static final class Tags {
+        private static final TagKey<EntityType<?>> LEGACY_UNDERGROUND_DENIED = TagKey.create(
+                Registries.ENTITY_TYPE, new ResourceLocation(BetterContentFixes.MOD_ID,
+                        "legacy_underground_ambient_denied"));
         private static final TagKey<Block> AMBIENT_SPAWN_DENIED_SURFACES = BlockTags.create(
                 new ResourceLocation(BetterContentFixes.MOD_ID, "ambient_spawn_denied_surfaces"));
 

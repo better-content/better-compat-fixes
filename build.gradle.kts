@@ -55,6 +55,8 @@ val nativeFixture by sourceSets.creating {
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
 val authoredStarcatcherFillet = file("../../better-content-modpack/kubejs/data/starcatcher/recipes/aquaculture_fillet.json")
+// Exercise the exact pack-owned harvest classification without shipping it in this mod.
+val authoredSpawnerTier = file("../../better-content-modpack/kubejs/data/minecraft/tags/blocks/needs_diamond_tool.json")
 // Exact authored pack repairs for malformed optional upstream data, never shipping fixes here.
 val authoredRespiteOverrides = listOf(
     "recipes/filling/water_cup.json", "recipes/pouring/water_cup.json",
@@ -63,6 +65,7 @@ val authoredRespiteOverrides = listOf(
 ).associateWith { file("../../better-content-modpack/kubejs/data/farmersrespite/$it") }
 tasks.named<ProcessResources>(nativeFixture.processResourcesTaskName) {
     from(authoredStarcatcherFillet) { into("data/starcatcher/recipes") }
+    from(authoredSpawnerTier) { into("data/minecraft/tags/blocks") }
     authoredRespiteOverrides.forEach { (relative, authored) ->
         from(authored) { into("data/farmersrespite/${relative.substringBeforeLast('/')}") }
     }
@@ -859,7 +862,7 @@ val verifyPneumaticNativePins by tasks.registering {
 tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
     inputs.files(dhDepthNativePins, markerRenderNativePins, parCoolNativePins, epicParCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
-        starcatcherNativePins, aetherRenderNativePins, authoredStarcatcherFillet, authoredRespiteOverrides.values)
+        starcatcherNativePins, aetherRenderNativePins, authoredStarcatcherFillet, authoredSpawnerTier, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
         systemProperty("bc.parcool.native", parCoolNativePins.resolve().single().absolutePath)

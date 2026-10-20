@@ -12,6 +12,7 @@ public final class BcFixesConfig {
     public static final ForgeConfigSpec.BooleanValue DYNAMIC_TREES_UNEARTHED_REGOLITH_SOILS;
     public static final ForgeConfigSpec.BooleanValue DYNAMIC_TREES_DESTROY_UNSUPPORTED_TREES;
     public static final ForgeConfigSpec.BooleanValue DYNAMIC_TREES_SPECIES_HARDNESS;
+    public static final ForgeConfigSpec.IntValue DYNAMIC_TREES_FELLING_DURABILITY_MULTIPLIER;
     public static final ForgeConfigSpec.BooleanValue HYLE_SAFE_TERTIARY_SELECTION;
     public static final ForgeConfigSpec.BooleanValue HYLE_COMPLETE_BOTTOM_SECTION;
     public static final ForgeConfigSpec.BooleanValue HYLE_RUN_AFTER_UNDERGROUND_DECORATION;
@@ -116,6 +117,10 @@ public final class BcFixesConfig {
                         "This preserves wood-species mining differences shared with native log felling instead of Dynamic Trees' global 2.0 hardness.",
                         "Disable to restore Dynamic Trees' default branch hardness.")
                 .define("speciesHardness", true);
+        DYNAMIC_TREES_FELLING_DURABILITY_MULTIPLIER = builder
+                .comment("Multiplies nominal durability charges for player-triggered Dynamic Trees felling before native mitigation.",
+                        "Ordinary logs, stripping, automation and zero-cost operations remain unchanged. 1 restores upstream wear.")
+                .defineInRange("fellingDurabilityMultiplier", 10, 1, 100);
         builder.pop();
 
         builder.push("pollution");
@@ -327,6 +332,10 @@ public final class BcFixesConfig {
 
     public static boolean dynamicTreesDestroyUnsupportedTrees() {
         return DYNAMIC_TREES_DESTROY_UNSUPPORTED_TREES.get() && isLoaded("dynamictrees");
+    }
+
+    public static int dynamicTreesFellingDurabilityMultiplier() {
+        return DYNAMIC_TREES_FELLING_DURABILITY_MULTIPLIER.get();
     }
 
     public static boolean dynamicTreesSpeciesHardness() {

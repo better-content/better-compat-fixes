@@ -21,6 +21,8 @@ public final class StyleInventoryEntry {
         if (!(event.getScreen() instanceof AbstractContainerScreen<?> screen)
                 || !StyleInventoryPolicy.accepts(screen instanceof InventoryScreen,
                     screen.getClass().getName(), ModList.get().isLoaded("epicfight"))) return;
+        if (StyleInventoryPolicy.journalHost(ModList.get().isLoaded("better_journal_inventory"),
+                screen instanceof InventoryScreen, screen.getClass().getName())) return;
         int left = screen.getGuiLeft();
         int top = screen.getGuiTop();
         event.addListener(Button.builder(Component.translatable("screen.better_compat_fixes.fighting_styles"),

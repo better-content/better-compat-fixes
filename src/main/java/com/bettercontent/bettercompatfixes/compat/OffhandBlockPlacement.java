@@ -7,14 +7,16 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-/** Deny the item-use leg only: clicked blocks can still open or otherwise interact. */
+/** Deny nonflower offhand BlockItem use only; flower placement and clicked-block interactions stay native. */
 public final class OffhandBlockPlacement {
     private OffhandBlockPlacement() {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onRightClickBlock(final PlayerInteractEvent.RightClickBlock event) {
-        if (event.getHand() == InteractionHand.OFF_HAND && event.getItemStack().getItem() instanceof BlockItem) {
+        if (event.getHand() == InteractionHand.OFF_HAND
+                && event.getItemStack().getItem() instanceof BlockItem blockItem
+                && !DecorativeFlowerPolicy.isDecorative(blockItem.getBlock().defaultBlockState())) {
             event.setUseItem(Event.Result.DENY);
         }
     }

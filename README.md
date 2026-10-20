@@ -8,13 +8,30 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
-Offhand block items cannot be placed through ordinary right-click use. A common-side Forge
-interaction listener denies only the offhand `BlockItem` item-use leg, on client and server;
-main-hand placement, clicked-block interactions, and non-block offhand items remain unchanged.
+Nonflower offhand block items cannot be placed through ordinary right-click use. A common-side
+Forge interaction listener denies only that `BlockItem` item-use leg, on client and server.
+Decorative flower blocks in the Cultivars-owned `better_bumblezone_crops:decorative_flowers`
+block tag are exempt, preserving native placement from both hands, substrate/clearance checks,
+and item consumption. This is not a forced admission and does not override other denials.
+Main-hand placement, clicked-block interactions, and non-block offhand items remain unchanged.
 Items remain carryable in either hand. This does not prohibit non-BlockItem tools such as buckets
 from changing the world, nor command/automation placement. Native GameTests cover denied block/torch
 placement without consumption, ordinary main-hand placement, and interaction admission controls.
-Full-pack client acceptance requires a separately authorized run.
+Additional source/GameTest assertions cover both-hand flower placement, invalid support, tall-flower
+clearance, petal quantities, nonflower/crop/azalea negative controls, and preservation of other denials.
+The nonshipping native fixture supplies only four declared vanilla representatives of the canonical
+flower tag; the Cultivars Python contract checks that subset against the full authored classification.
+These new assertions are uncompiled/unrun; full-pack client acceptance requires a separately authorized run.
+
+Non-Creative player mining of exactly `minecraft:spawner` requires the main-hand stack's native
+correct-tool-for-drops capability. The pack's additive `needs_diamond_tool` block tag supplies
+the diamond-or-higher threshold, including for Tinkers tools. Unsuitable tools are denied at
+left-click, break-speed and authoritative block-break events; Creative bypass remains native.
+This does not add collection, alter hardness/loot/spawner data, grant Adventure/Spectator
+permission, or intercept independent explosions, spells, machines, movement or extraction.
+Fake-player breaks traversing player events receive the same check. The nonshipping native
+fixture loads the exact pack tag and tests vanilla/Tinkers stacks and actual player removal;
+these source tests do not establish exact-candidate full-pack acceptance.
 
 With Weapons of Miracles **2.0.171**, Saulomonk admission measures horizontal distance
 from the **nearest living, nonspectating player's permanent Better Spawns onboarding
@@ -33,6 +50,20 @@ native predicate, including boundary, nearest-player, missing/different-dimensio
 spectator, sand and peaceful regressions with the NATURAL reason; the preserved
 upstream predicate is `Mob.checkMobSpawnRules`, not the darker-light monster predicate. This is source-native verification, not full-pack
 natural-spawn acceptance or deployment.
+
+Dynamic Trees **1.20.1-1.4.10** player felling multiplies each existing nominal durability
+charge by `dynamicTrees.fellingDurabilityMultiplier` (COMMON integer, default **10**, range
+1–100; **1** restores upstream wear). The ordinary axe mining charge and deferred Dynamic
+Trees surcharge are scaled separately before native mitigation, preserving their dispatch order
+and the native thickness rounding/subtraction. Tinkers' native harvest path does not pay its
+ordinary charge when Dynamic Trees queues removal and returns false, so only its actual
+additional charge is scaled; zero-cost thin branches remain zero-cost. No minimum-durability
+check is added. Tool modifiers, creative immunity, unbreakable/broken tools and break callbacks
+remain native. Ordinary logs, stripping, combat, FakePlayer automation and non-axe mining are
+unchanged. Player/held-stack identity scopes are synchronous, restored in `finally` on exceptions,
+and never retained across the deferred tick. No saved-world server configuration is rewritten;
+the pack keeps `THICKNESS`. Arithmetic/scope and pinned-bytecode contracts are Minecraft-free;
+transformed-native and full-pack gameplay acceptance require separately authorized runs.
 
 Chopping logs and Dynamic Trees branches emits material chips at a rate increasing linearly
 from 2 to 18 particles per second with actual break completion: `2 + 16 * completion`.
@@ -370,6 +401,52 @@ When Better Content Threads is installed, each participating sleeper emits one c
 Several formerly bundled features now ship as standalone Better Content mods: Realistic Placement
 Preview, Exploration Tick Governor, Airtight Machinery, Regolith Farmland, Burnt Grass Compatibility,
 and ReHooked Intro Hooks. Their registries, assets, config, and commands live in those repositories.
+
+## Geological ordinary admission and causal offspring API
+
+**New source/tests are authored, not compiled or runtime-qualified for this change.**
+Better Cave Encounters consumes these common APIs; no hard dependency on a creature mod
+or the Director is added here. The pack's complete populations and tuning live in
+[`docs/dimension_ecology.md`](../../better-content-modpack/docs/dimension_ecology.md).
+
+`GeologicalAmbientEligibilityEvent` defaults to no exception. A positive answer can waive
+only native geological habitat selection and the migrated legacy veto, never difficulty,
+darkness, physical suitability, player distance, native caps or independent protection
+results. The exact former twenty-eight selected-mob IDs are pack-owned optional entries in
+`better_compat_fixes:legacy_underground_ambient_denied`; Overworld NATURAL attempts at Y<=62
+remain denied without an eligible answer. Surface reserve/tagged-ground and vanilla zombie/
+skeleton denials remain independent. Compat never forces PositionCheck ALLOW.
+
+`NaturalSpawnContext` marks only vanilla's selection, placement and position-admission calls,
+with nested exception-safe stage restoration. Finalization and native offspring do not inherit
+that authority. External spawners can also use `NATURAL`: notably In Control's pinned lava
+Magma Cube spawner does so, and is deliberately not reclassified. A narrow vanilla membership
+adapter permits fresh geological SpawnerData for an eligible type still present in the final
+post-event list; cancelled/empty lists or independently removed types still reject it.
+Non-MONSTER categories are outside the replacement contract.
+
+`CausalMobSpawns`/`ActorScopes` track the immediate producer through server entity/passenger
+ticks, supported damage/death, vanilla slime removal and conversion. Optional guarded hooks
+cover Ice and Fire Dread kill conversion and TConstruct's separate armored-slime split loop.
+Nested unowned actors mask enclosing owned actors, and every scope unwinds in `finally`.
+Actual insertion runs as the child, so insertion callbacks do not retain its parent's identity.
+There is no proximity/species/reason-based lineage inference.
+
+Cancelable `MobOffspringAdmissionEvent` exposes parent/child and completion callbacks tied
+to actual insertion success, including veto/failure. All subscribers complete even when one
+throws, so one consumer cannot skip another's commit/rollback. The Director owns finite
+prepaid credits, provenance, capacity admission and SavedData; Compat does not rewrite native
+child chance/types, attacks, rewards or terrain. Unowned populations remain unmarked.
+
+Authored tests cover pure scope/callback restoration and nonshipping native insertion/veto,
+unowned-victim and slime paths, plus narrow legacy-veto/surface negative controls. The native
+legacy tag is an exact current-pack fixture copy, with pack contract parity and declared
+verification inputs, not a harvested runtime baseline. The Director's separately declared
+25-pin `verifyWorld` fixture covers the twenty additions and all supported reproductive roster
+actors. Neither these unrun checks nor archive inspection establishes full-pack acceptance.
+The existing Death Worm burrow tag/mixin and natural weight-zero policy are unchanged.
+Prepare the newly verified Compat provider explicitly before compiling the Director consumer;
+no old staged provider is silently replaced by this source work.
 
 ## Common commands
 

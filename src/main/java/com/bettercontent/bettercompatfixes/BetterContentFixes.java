@@ -144,6 +144,9 @@ public final class BetterContentFixes {
         event.register(SleepTimelapseEventGameTests.class);
         if (ModList.get().isLoaded("dynamictrees")) {
             event.register(DynamicTreesUnsupportedTreeGameTests.class);
+            if (ModList.get().isLoaded("tconstruct")) {
+                event.register(com.bettercontent.bettercompatfixes.gametest.DynamicTreesFellingWearGameTests.class);
+            }
         }
         if (ModList.get().isLoaded("sophisticatedstorage")) {
             event.register(SophisticatedBarrelHopperGameTests.class);

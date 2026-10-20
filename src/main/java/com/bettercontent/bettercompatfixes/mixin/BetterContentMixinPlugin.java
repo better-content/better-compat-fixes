@@ -119,6 +119,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.tconstruct.ArmoredSlimeCausalMixin")) {
+            return hasMods(mods, "tconstruct");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.aetherepicfight.")) {
             return hasVersion(mods, "aether", "1.20.1-1.5.2-neoforge")
                     && hasVersion(mods, "curios", "5.14.1+1.20.1")
@@ -270,6 +273,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             return hasVersion(mods, "kubejs", "2001.6.5-build.16");
         }
         if (DYNAMIC_TREES_POISSON_MIXIN.equals(mixinClassName)) {
+            return hasVersion(mods, "dynamictrees", "1.20.1-1.4.10");
+        }
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.dynamictrees.FellingBranchMixin")
+                || mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.dynamictrees.FellingItemStackMixin")) {
             return hasVersion(mods, "dynamictrees", "1.20.1-1.4.10");
         }
         if (DYNAMIC_TREES_BRANCH_HARDNESS_MIXIN.equals(mixinClassName)) {
