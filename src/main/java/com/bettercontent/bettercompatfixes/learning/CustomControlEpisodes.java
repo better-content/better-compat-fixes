@@ -1,6 +1,7 @@
 package com.bettercontent.bettercompatfixes.learning;
 
 import com.bettercontent.bettercompatfixes.api.event.CustomControlEpisodeEvent;
+import com.bettercontent.bettercompatfixes.diagnostics.PlaytestDiagnostics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -25,12 +26,18 @@ final class CustomControlEpisodes {
             case FIRST -> beginEpisode(player, persisted, episode, actionId);
             case REPEAT -> {
                 // A repeated reflex is not evidence of a second learned control.
+                if (PlaytestDiagnostics.LOG.enabled("learning")) PlaytestDiagnostics.LOG.event(
+                        "learning", "control.episode", "server", ControlEpisodeObservation.result(DistinctControlEpisode.Transition.REPEAT),
+                        ControlEpisodeObservation.reason(DistinctControlEpisode.Transition.REPEAT), null);
             }
             case DISTINCT_SECOND -> {
                 persisted.remove(PERSISTED_KEY);
                 player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
                 MinecraftForge.EVENT_BUS.post(new CustomControlEpisodeEvent(
                         player, CustomControlEpisodeEvent.Kind.DISTINCT_SECOND, actionId, firstAction, token));
+                if (PlaytestDiagnostics.LOG.enabled("learning")) PlaytestDiagnostics.LOG.event(
+                        "learning", "control.episode", "server", ControlEpisodeObservation.result(DistinctControlEpisode.Transition.DISTINCT_SECOND),
+                        ControlEpisodeObservation.reason(DistinctControlEpisode.Transition.DISTINCT_SECOND), null);
             }
         }
     }
@@ -48,5 +55,8 @@ final class CustomControlEpisodes {
         player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
         MinecraftForge.EVENT_BUS.post(new CustomControlEpisodeEvent(
                 player, CustomControlEpisodeEvent.Kind.FIRST_ACCEPTED, actionId, actionId, token));
+        if (PlaytestDiagnostics.LOG.enabled("learning")) PlaytestDiagnostics.LOG.event(
+                "learning", "control.episode", "server", ControlEpisodeObservation.result(DistinctControlEpisode.Transition.FIRST),
+                ControlEpisodeObservation.reason(DistinctControlEpisode.Transition.FIRST), null);
     }
 }

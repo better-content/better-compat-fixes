@@ -43,6 +43,7 @@ class DispenserInitializerNativeContractTest {
             var entry = archive.getEntry("com/bettercontent/bettercompatfixes/mixin/minecraft/DispenserBlockMixin.class");
             assertNotNull(entry); new ClassReader(archive.getInputStream(entry)).accept(mixin, 0);
             assertNull(archive.getEntry("com/bettercontent/bettercompatfixes/nativefixture/DispenserRegistryAccessor.class"));
+            assertNull(archive.getEntry("com/bettercontent/bettercompatfixes/nativefixture/FellingConfigReadMixin.class"));
             assertNull(archive.getEntry("com/bettercontent/bettercompatfixes/gametest/DispenserRegistryGameTests.class"));
             assertNull(archive.getEntry("better_compat_fixes.native_fixture.mixins.json"));
         }

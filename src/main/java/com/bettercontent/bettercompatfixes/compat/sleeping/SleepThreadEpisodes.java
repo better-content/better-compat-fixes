@@ -1,6 +1,7 @@
 package com.bettercontent.bettercompatfixes.compat.sleeping;
 
 import com.bettercontent.bettercompatfixes.api.event.SleepTimelapseEvent;
+import com.bettercontent.bettercompatfixes.diagnostics.PlaytestDiagnostics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -87,6 +88,8 @@ public final class SleepThreadEpisodes {
         player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
         if (!alreadyPublished) {
             MinecraftForge.EVENT_BUS.post(event(player, SleepTimelapseEvent.Kind.STARTED, token));
+            if (PlaytestDiagnostics.LOG.enabled("sleep")) PlaytestDiagnostics.LOG.event(
+                    "sleep", "sleep.episode", "server", "published", "started", null);
         }
     }
 
@@ -97,6 +100,8 @@ public final class SleepThreadEpisodes {
         }
         final CompoundTag episode = persisted.getCompound(ROOT);
         if (!sameRespawnContract(player, episode)) {
+            if (PlaytestDiagnostics.LOG.enabled("sleep")) PlaytestDiagnostics.LOG.event(
+                    "sleep", "sleep.episode", "server", "deferred", "respawn_contract_changed", null);
             return;
         }
         final String token = episode.getString(TOKEN);
@@ -106,6 +111,8 @@ public final class SleepThreadEpisodes {
         persisted.remove(ROOT);
         player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
         MinecraftForge.EVENT_BUS.post(event(player, SleepTimelapseEvent.Kind.FINISHED, token));
+        if (PlaytestDiagnostics.LOG.enabled("sleep")) PlaytestDiagnostics.LOG.event(
+                "sleep", "sleep.episode", "server", "published", "finished", null);
     }
 
     private static SleepTimelapseEvent event(

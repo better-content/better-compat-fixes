@@ -5,6 +5,19 @@
 This repository owns its mod-specific behavior and authoring inputs. Read [local instructions](AGENTS.md)
 and the [shared documentation/policy index](../../better-content-modpack/docs/README.md).
 
+## Bounded playtest diagnostics
+
+Loader SLF4J `bc.playtest.better_compat_fixes.*` reports one INFO own-source/version/integration
+status (UNKNOWN without exact own metadata). DEBUG observes actual custom-control episode
+publication versus repeated input and sleep episode start/finish/defer after existing state
+updates/publication. Arbitrary action text, player names, respawn positions, NBT and episode
+UUIDs are not copied; records do not provide per-player cross-process correlation. Unchanged
+sleep ticks, block/worldgen loops and render frames remain silent. One mod-wide 120/minute
+burst20 detail budget, 256 aggregate keys, 2048-character records and 30-second summaries bound
+output; disconnect/server stop clears aggregate state without bucket refill. Native behavior,
+RNG, event contracts and existing failure severity/stacks remain unchanged. Standalone stays
+INFO; the pack selects scoped DEBUG. Logging does not waive native inventory parity acceptance.
+
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
@@ -108,6 +121,12 @@ unchanged. Player/held-stack identity scopes are synchronous, restored in `final
 and never retained across the deferred tick. No saved-world server configuration is rewritten;
 the pack keeps `THICKNESS`. Arithmetic/scope and pinned-bytecode contracts are Minecraft-free;
 transformed-native and full-pack gameplay acceptance require separately authorized runs.
+The native wear fixture isolates copied in-memory Forge configs in a dedicated batch and restores
+exact original objects, effective values and unchanged backing-file bytes. A required nonshipping
+read-only Mixin observes the actual multiplier returned to native calculations; wrong/missing
+observations reject, and deliberately different final temporary values test restoration. All original
+radius/tool/multiplier arithmetic and break/immunity assertions remain intact; production config
+reload policy and production artifacts do not include the observer.
 
 Chopping logs and Dynamic Trees branches emits material chips at a rate increasing linearly
 from 2 to 18 particles per second with actual break completion: `2 + 16 * completion`.
