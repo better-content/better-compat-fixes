@@ -26,6 +26,7 @@
     "createsifter.BrassSifterConfigMixin",
     "createsifter.SifterBlockEntityMixin",
     "complicatedbees.ForgeConfigSpecMixin",
+    "complicatedbees.ColonyActivityMixin",
     "pneumaticcraft.tconhead.JackHammerDrillBitHeadMixin",
     "pneumaticcraft.tconhead.JackhammerSetupSlotHeadMixin",
     "pneumaticcraft.tconhead.JackHammerTconHeadMixin",
@@ -103,6 +104,8 @@
     "weather2.CoroUtilCompatibilityMixin"
   ],
   "client": [
+    "emi.RecipeScreenMixin",
+    "emi.EmiApiMixin",
     "minecraft.DeepVoidCompassMixin",
     "aetherepicfight.GlovesRendererMixin",
     "aetherepicfight.PendantRendererMixin",

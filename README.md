@@ -8,6 +8,50 @@ and the [shared documentation/policy index](../../better-content-modpack/docs/RE
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## Cosmetic colonies and ingredient-first EMI
+
+With pinned Complicated Bees **1.20.1-3.4.6**, occupied native nests (valid species) and working
+native apiaries emit miniature client-only bee particles. Working means a native queen, native
+`isQueenSatisfied()` and an empty output buffer—the same production eligibility, not a new
+simulator. Apiary activity uses one cosmetic boolean in chunk/update packets, sent only when
+activity changes; no inventory, genome or production payload is synchronized. Nests already
+synchronize their species. No bee entities, genetics, yields, storage or production changes.
+
+The original particle/texture implements a short outbound/return excursion. It was informed by
+Forestry's pinned `72e15b0f08daa25d8293cf28b5d5e1da200f9161` `ParticleBeeExplore` /
+`ParticleBeeRoundTrip` behavior and LGPL-3.0 license, without copying code or assets.
+Client `complicatedBees.swarmDensity` is 0–4 (default 2; 0 disables). Minimal particles disables
+emission; Decreased halves the budget. Every ten unpaused client ticks, at most eight emission
+requests are admitted within 24 blocks, with an 80-tick lifetime, an additional 128-outstanding
+request cap, and a 512-iterator-operation scan budget over at most 25 already-loaded chunks.
+Persistent round-robin chunk/entity cursors prevent unrelated dense chunks or >512 colonies
+from permanently starving later sources. Unloaded/replaced chunks lose their cursors; no chunks
+are loaded to find colonies. No continuous flower search, entity pathfinding or per-particle
+network packet is introduced. Emission counters are requests, not proof of rendering.
+
+With pinned EMI **1.1.24+1.20.1+forge**, each new native recipe screen snapshots
+`EmiPlayerInventory.of(player)` and uses its greedy `canCraft(recipe, 1)` matcher. Recipes with
+inputs for one execution come first within each category; categories with any available recipe
+come first, with EMI's category order as the tie-breaker. Both partitions are stable, copied,
+and applied before native pagination. Resizing/browsing does not resnapshot or reshuffle.
+Generic opening starts at the first promoted result instead of restoring the previous category
+or applying the bill-of-materials preferred recipe; explicit recipe/focus requests remain native.
+Workstation/catalyst/process feasibility and native filling/crafting authority are unchanged.
+Native greedy overlap false negatives remain possible; this is not a new exact allocation solver.
+
+Inventory sources are exclusively EMI's existing exposed native sources: vanilla/Curios personal
+inventory (with or without an equipped backpack) and separately opened Sophisticated menus retain
+their independent handlers. There is no unopened/nested-bag search, storage handler, transfer engine,
+or global recipe-manager mutation. Optional absence is inert; unexpected present versions fail
+visibly and require API revalidation. `IngredientOrderSnapshot` exposes immutable observations of
+actual native tab/list/page state, not a mutable screen replacement.
+
+`verifyFast` checks exact upstream archive hashes/API sites and stable partitions/fair bounded scans.
+`verifyFull` adds transformed-native colony tests; `-PcolonyWithoutBees=true` exercises actual optional
+absence. These local gates do not establish the paired native personal-inventory/separate-backpack
+client behavior, rendering, visual density, or representative gameplay performance. Those require
+same-candidate native probes and actual framebuffer review under the shared testing policy.
+
 Nonflower offhand block items cannot be placed through ordinary right-click use. A common-side
 Forge interaction listener denies only that `BlockItem` item-use leg, on client and server.
 Decorative flower blocks in the Cultivars-owned `better_bumblezone_crops:decorative_flowers`

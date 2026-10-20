@@ -119,6 +119,20 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.emi.")) {
+            if (!hasMods(mods, "emi")) return false;
+            if (!hasVersion(mods, "emi", "1.1.24+1.20.1+forge")) {
+                throw new IllegalStateException("Ingredient-first EMI integration requires pinned EMI 1.1.24+1.20.1+forge; revalidate native APIs");
+            }
+            return true;
+        }
+        if (mixinClassName.endsWith("complicatedbees.ColonyActivityMixin")) {
+            if (!hasMods(mods, "complicated_bees")) return false;
+            if (!hasVersion(mods, "complicated_bees", "1.20.1-3.4.6")) {
+                throw new IllegalStateException("Cosmetic colony activity requires pinned Complicated Bees 1.20.1-3.4.6; revalidate native APIs");
+            }
+            return true;
+        }
         if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.tconstruct.ArmoredSlimeCausalMixin")) {
             return hasMods(mods, "tconstruct");
         }

@@ -61,6 +61,7 @@ public final class BetterContentFixes {
         if (ModList.get().isLoaded("thirst")) {
             ThirstLootModifierCompat.register(modEventBus);
         }
+        com.bettercontent.bettercompatfixes.compat.bees.SwarmParticles.TYPES.register(modEventBus);
         VoidWormSpawnRemoval.SERIALIZERS.register(modEventBus);
         com.bettercontent.bettercompatfixes.deepvoid.DeepVoidStructures.register(modEventBus);
         com.bettercontent.bettercompatfixes.deepvoid.DeepVoidCompassNetwork.register();

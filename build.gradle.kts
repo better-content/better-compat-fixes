@@ -18,6 +18,7 @@ val mixinExtrasVersion = "0.5.0"
 // Native optional-absence profile; Ars Nouveau requires Curios and cannot be present in it.
 val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
 val spoilageWithoutHeat = providers.gradleProperty("spoilageWithoutHeat").map(String::toBoolean).getOrElse(false)
+val colonyWithoutBees = providers.gradleProperty("colonyWithoutBees").map(String::toBoolean).getOrElse(false)
 base {
     archivesName.set(property("artifact_name") as String)
 }
@@ -152,6 +153,7 @@ val backpackEquipmentNativePins = configurations.create("backpackEquipmentNative
 val starcatcherNativePins = configurations.create("starcatcherNativePins") { isTransitive = false }
 val heatNativePins = configurations.create("heatNativePins") { isTransitive = false }
 val aetherRenderNativePins = configurations.create("aetherRenderNativePins") { isTransitive = false }
+val colonyEmiNativePins = configurations.create("colonyEmiNativePins") { isTransitive = false }
 
 dependencies {
     add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
@@ -160,6 +162,13 @@ dependencies {
     add(heatNativePins.name, "curse.maven:chemlib-340666:5128632")
     add(backpackEquipmentNativePins.name, "curse.maven:curios-api-309927:6418456")
     add(backpackEquipmentNativePins.name, "curse.maven:sophisticated-backpacks-422301:7916619")
+    add(colonyEmiNativePins.name, "curse.maven:emi-580555:8081375")
+    add(colonyEmiNativePins.name, "curse.maven:complicated-bees-1100137:8277762")
+    compileOnly(fg.deobf("curse.maven:emi-580555:8081375"))
+    testImplementation(fg.deobf("curse.maven:emi-580555:8081375"))
+    compileOnly(fg.deobf("curse.maven:complicated-bees-1100137:8277762"))
+    testImplementation(fg.deobf("curse.maven:complicated-bees-1100137:8277762"))
+    if (!colonyWithoutBees) runtimeOnly(fg.deobf("curse.maven:complicated-bees-1100137:8277762"))
     compileOnly(fg.deobf("curse.maven:quark-243121:6427817"))
     compileOnly(fg.deobf("curse.maven:zeta-968868:7335229"))
     add(quarkSortNativePins.name, "curse.maven:quark-243121:6427817")
@@ -373,6 +382,12 @@ tasks.matching { it.name.startsWith("prepareRunGameTestServer") }.configureEach 
 // gate must actually execute its pinned native regression rather than silently skip registration.
 tasks.matching { it.name == "runGameTestServer" }.configureEach {
     doFirst {
+        val beesPresent = configurations.runtimeClasspath.get().files.any { file ->
+            file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
+                zip.getEntry("com/accbdd/complicated_bees/block/entity/BaseBeeHousing.class") != null
+            }
+        }
+        check(beesPresent != colonyWithoutBees) { "Native colony optional-mod profile does not match requested presence/absence" }
         val heatPresent = configurations.runtimeClasspath.get().files.any { file ->
             file.isFile && file.extension == "jar" && ZipFile(file).use { zip ->
                 zip.getEntry("com/bettercontent/betterindustrialheat/HeatSyncMod.class") != null
@@ -862,9 +877,12 @@ val verifyPneumaticNativePins by tasks.registering {
 tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
     inputs.files(dhDepthNativePins, markerRenderNativePins, parCoolNativePins, epicParCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
-        starcatcherNativePins, aetherRenderNativePins, authoredStarcatcherFillet, authoredSpawnerTier, authoredRespiteOverrides.values)
+        starcatcherNativePins, aetherRenderNativePins, colonyEmiNativePins, authoredStarcatcherFillet, authoredSpawnerTier, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
+        for (native in colonyEmiNativePins.resolve()) {
+            systemProperty(if (native.name.contains("8081375")) "bc.colonyEmi.emi" else "bc.colonyEmi.bees", native.absolutePath)
+        }
         systemProperty("bc.parcool.native", parCoolNativePins.resolve().single().absolutePath)
         systemProperty("bc.epicparcool.native", epicParCoolNativePins.resolve().single().absolutePath)
         systemProperty("bc.aetherRender.native", aetherRenderNativePins.resolve().single().absolutePath)
@@ -1099,6 +1117,37 @@ val verifyRuntimeBackpackEquipment by tasks.registering {
     }
 }
 tasks.named("verifyFast") { dependsOn(verifyRuntimeBackpackEquipment) }
+
+val verifyRuntimeColonyEmi by tasks.registering {
+    group = "verification"
+    dependsOn(stageRuntimeJar)
+    doLast {
+        ZipFile(layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile).use { zip ->
+            fun bytes(path: String) = zip.getInputStream(zip.getEntry(path)
+                ?: throw GradleException("Missing colony/EMI runtime entry $path")).use { it.readBytes() }.toString(Charsets.ISO_8859_1)
+            val root = "com/bettercontent/bettercompatfixes/"
+            val activity = bytes(root + "mixin/complicatedbees/ColonyActivityMixin.class")
+            check(activity.contains("m_5995_") && activity.contains("m_58483_")
+                && activity.contains("handleUpdateTag") && activity.contains("onDataPacket")
+                && activity.contains("better_compat_fixes:colony_active") && activity.contains("tickServer")) {
+                "Cosmetic activity must retain production native BE update override mappings"
+            }
+            val screen = bytes(root + "mixin/emi/RecipeScreenMixin.class")
+            check(screen.contains("m_7856_") && screen.contains("canCraft") && screen.contains("bakePages").not()
+                && screen.contains("Ljava/util/stream/Stream;sorted") && screen.contains("<init>")) {
+                "EMI must retain production init selector and native matcher without replacing pagination"
+            }
+            val api = bytes(root + "mixin/emi/EmiApiMixin.class")
+            check(api.contains("displayRecipes") && api.contains("setPages") && api.contains("focusCategory") && api.contains("focusRecipe"))
+            val swarm = bytes(root + "client/bees/ColonySwarms.class")
+            check(swarm.contains("FairColonyScan") && swarm.contains("ParticleStatus") && swarm.contains("MINIMAL"))
+            bytes("assets/better_compat_fixes/particles/colony_bee.json")
+            check(zip.getEntry("assets/better_compat_fixes/textures/particle/colony_bee.png") != null)
+            check(zip.entries().asSequence().none { it.name.contains("ColonyActivityGameTests") })
+        }
+    }
+}
+tasks.named("verifyFast") { dependsOn(verifyRuntimeColonyEmi) }
 
 jacoco {
     toolVersion = "0.8.12"
