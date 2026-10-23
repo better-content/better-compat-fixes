@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.bettercontent.bettercompatfixes.mixin.oc2r",
+  "plugin": "com.bettercontent.bettercompatfixes.mixin.oc2r.Oc2rMixinPlugin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": ["EchoPayloadMixin"],
+  "injectors": {"defaultRequire": 1}
+}

@@ -21,6 +21,25 @@ INFO; the pack selects scoped DEBUG. Logging does not waive native inventory par
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## OC2R fallback echo payload ownership
+
+With OC2R **2.2.12**, the native session method consumes its caller buffer into an owned
+byte array before choosing native ICMP or JVM reachability. Upstream accidentally captures
+the exhausted, reusable caller buffer in its asynchronous JVM branch, losing the echo
+payload. A required, exactly-one-site Mixin substitutes only the local buffer reference
+with a read-only view of that already-owned array after original consumption. Caller
+position/limit, the native byte-array/length path, original executor, TTL/timeout, actual
+reachability result, response publication and diagnostics remain native. No caller storage
+survives the synchronous method. Optional absence is inert; a loaded unsupported version or
+actual target-class hash fails closed, including in development (the pinned class bytes
+are unchanged by ForgeGradle mapping).
+
+Pure snapshot/compiled-injection controls live here. The Controls repository owns the
+nonshipping transformed-native regression fixture and declares the canonical Compat
+provider input: held-original-task/caller-reuse echo assertions, native TCP/UDP loopback,
+and complete native filesystem-load proof. No upstream archive or logger is changed.
+The source is authored but uncompiled/unrun; pinned source checks are not native acceptance.
+
 ## Exact Born in Chaos caravan jigsaw anchor repair
 
 With pinned Born in Chaos **1.7.5**, only the LEFT resource key

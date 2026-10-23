@@ -336,7 +336,7 @@ dependencies {
 tasks.named<Jar>("jar") {
     from(choppingMixins.output)
     from(caravanMixins.output)
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json")
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json")
     filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
@@ -480,6 +480,7 @@ tasks.processResources {
 mixin {
     add(choppingMixins, "better_compat_fixes.chopping.refmap.json")
     add(caravanMixins, "better_compat_fixes.caravan.refmap.json")
+    config("better_compat_fixes.oc2r.mixins.json")
     config("better_compat_fixes.caravan.mixins.json")
     config("better_compat_fixes.mixins.json")
     config("better_compat_fixes.chopping.mixins.json")
