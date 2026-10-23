@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "DispenserRegistryAccessor",
-    "FellingConfigReadMixin"
+    "FellingConfigReadMixin",
+    "RootySpeciesWitnessMixin",
+    "RootyJoCodeWitnessMixin"
   ],
   "injectors": {
     "defaultRequire": 1

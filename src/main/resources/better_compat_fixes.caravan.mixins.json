@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.bettercontent.bettercompatfixes.mixin",
+  "plugin": "com.bettercontent.bettercompatfixes.mixin.BetterContentMixinPlugin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "better_compat_fixes.caravan.refmap.json",
+  "mixins": ["caravan.SinglePoolElementMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

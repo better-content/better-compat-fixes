@@ -21,18 +21,37 @@ INFO; the pack selects scoped DEBUG. Logging does not waive native inventory par
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## Exact Born in Chaos caravan jigsaw anchor repair
+
+With pinned Born in Chaos **1.7.5**, only the LEFT resource key
+`born_in_chaos_v1:clown_caravan` in vanilla `SinglePoolElement.getSettings` receives an appended,
+registered unit-codec entity processor on a settings copy. Existing settings/processors/order/RNG
+and original resources remain unchanged. Only an actual `minecraft:item_frame` with three typed
+INT TileXYZ anchors gets copied NBT anchors set from its already-processed WORLD block position.
+Other NBT/positions/entities are untouched. Inline templates and other resource keys do not match.
+The separate native caravan item-use procedure is **not covered**. Source/API/NBT and generated
+mapping controls do not establish transformed placement, hanging-frame survival, or rendering.
+
 ## Cosmetic colonies and ingredient-first EMI
 
 With pinned Complicated Bees **1.20.1-3.4.6**, occupied native nests (valid species) and working
 native apiaries emit miniature client-only bee particles. Working means a native queen, native
 `isQueenSatisfied()` and an empty output buffer—the same production eligibility, not a new
-simulator. Apiary activity uses one cosmetic boolean in chunk/update packets, sent only when
-activity changes; no inventory, genome or production payload is synchronized. Nests already
-synchronize their species. No bee entities, genetics, yields, storage or production changes.
+simulator. Apiaries retain the legacy activity bit and add strictly versioned primitive
+active/known/body-RGB metadata, sent only on effective transitions. The existing expressed-effect
+chromosome return supplies body color through pinned pure field/map getters: no extra genetic
+decode, inventory/world query, or retained native object. Native queen-change notifications and
+removal clear appearance. Nests use their already-synchronized native `Species.getColor()`, never
+nest/honey tint. Unknown appearance does not invent a color. No inventory/genome/production
+payload, bee entities, genetics, yields, storage or production changes.
 
 The original particle/texture implements a short outbound/return excursion. It was informed by
 Forestry's pinned `72e15b0f08daa25d8293cf28b5d5e1da200f9161` `ParticleBeeExplore` /
 `ParticleBeeRoundTrip` behavior and LGPL-3.0 license, without copying code or assets.
+The legacy `colony_bee` SimpleParticleType remains unchanged. New `colony_bee_tinted_v1` options
+carry strict versioned RGB24. One particle renders a white four-pixel body mask plus the unchanged
+11 brown-marking and nine wing pixels as two quads, preserving the original silhouette/path/RNG
+and lifetime. Source/pixel controls are not actual-frame acceptance.
 Client `complicatedBees.swarmDensity` is 0–4 (default 2; 0 disables). Minimal particles disables
 emission; Decreased halves the budget. Every ten unpaused client ticks, at most eight emission
 requests are admitted within 24 blocks, with an 80-tick lifetime, an additional 128-outstanding
@@ -156,7 +175,43 @@ A resources-only `nativeFixture` mirrors the pack's existing authored disabled
 optional Miner's Delight cup recipes, kettle loot function and tea-bush advancement trigger).
 Exact fixture/pack byte parity and native dependency hashes are checked; every override is excluded
 from this mod's production JAR. No diagnostic is suppressed or allowlisted by these repairs.
-Previous source worlds, mods and logs move to `run-gametest/retained/` before each fresh native run.
+Each source native invocation binds one fresh `build/gametest/<UUID>` directly to Forge's
+RunConfig, structures, setup and audited sink. Legacy fixtures and ordinary/visual runs stay
+untouched. Absent-only CREATE_NEW settings preserve any existing property bytes exactly. The
+full gate requires one completed/passed native count (default76, no-Bees74, no-Heat76,
+no-Curios73) and rejects ERROR/FATAL or mixin failure in actual latest/debug logs. Pure negative
+controls reject missing/stale-count/duplicate/failed sinks; source passes still require an admitted
+full invocation for each profile, default last. Build-tree retention is required before `clean`.
+The native preparation also uses an immutable outside-build snapshot in
+`gradle/native-default-configs/` of exactly two tracked pack inputs: `config/adpother-common.toml`
+and `config/forgeendertech-common.toml`. Their pinned SHA256/HEAD-blob provenance is checked against
+`../../better-content-modpack` before launch. Original Root HEAD is provenance, not a whole-repository
+version lock: unrelated Root commits are accepted when both tracked blobs and working bytes remain
+exactly approved; a changed committed config still fails. Both match the SDK's supported generated defaults
+byte-for-byte; no Sources.cfg/emission settings or warm generated inputs are imported. Missing,
+untracked, modified, extra or mismatched inputs fail closed. CREATE_NEW never overwrites existing
+bytes; differing existing destinations are retained and rejected. A source/destination before/after
+receipt is written to the actual UUID root as `native-default-config-inputs.json` before native
+launch. `verifyNativeDefaultConfigInputs` runs the retained Minecraft-free Python controls before
+`runGameTestServer`. These authored inputs complete first-start configuration without disabling
+watchers, masking diagnostics, changing production code or claiming a cure before all four fresh
+gates pass. Neither the snapshot nor its preparation script is part of the production JAR.
+
+A separate default-off, nonshipping Rooty-soil witness is prepared under `src/nativeFixture`.
+Only an explicitly admitted source `gameTestServer` invocation may opt in with
+`-PnativeRootySoilWitness=true`; ordinary client/server/visual/data runs are unchanged. It observes
+actual DT1.4.10 unsupported-soil locals and original fallback `setBlock` arguments/result once,
+without world/biome queries, RNG, branch logs, NBT or retained native objects. It preserves the
+WARN, fallback and original false return/caller continuation; it is not a soil repair. Bounded
+scalar evidence is CREATE_NEW-written after server stop in the actual `build/gametest/<UUID>`.
+After JVM exit, `python3 -B scripts/rooty_witness.py --witness <UUID>/rooty-soil-witness-v1.json
+--debug <UUID>/logs/debug.log --latest <UUID>/logs/latest.log` reconciles complete original logs.
+Missing locals/context, overflow, double-forwarding, unfinished calls or mismatched warnings fail
+closed. Its result is diagnostic-only: actual failed soil operations still reject qualification,
+even when Native counts are green. All archive tasks exclude/check both runtime and source
+fixture paths. Source/API controls are not transformed-Mixin/Native/feature acceptance; a new
+explicit grant, retention, exact closure and all-severity/manual review remain required.
+
 The same nonshipping fixture gives the two unused Deep Void dimensions empty flat generators while
 retaining their exact native dimension-type IDs. This isolates incidental upstream `flesh_stuff` /
 `giant_skulls` far-chunk placement failures during dimension startup; it is not an error exemption.

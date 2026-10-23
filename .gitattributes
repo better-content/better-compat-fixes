@@ -1,0 +1,3 @@
+# Hash-pinned native fixture copies retain the canonical files' final blank lines.
+gradle/native-default-configs/config/adpother-common.toml whitespace=-blank-at-eof
+gradle/native-default-configs/config/forgeendertech-common.toml whitespace=-blank-at-eof

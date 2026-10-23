@@ -61,6 +61,9 @@ public final class BetterContentFixes {
         if (ModList.get().isLoaded("thirst")) {
             ThirstLootModifierCompat.register(modEventBus);
         }
+        if (ModList.get().isLoaded("born_in_chaos_v1")) {
+            com.bettercontent.bettercompatfixes.compat.caravan.CaravanProcessors.register(modEventBus);
+        }
         com.bettercontent.bettercompatfixes.compat.bees.SwarmParticles.TYPES.register(modEventBus);
         VoidWormSpawnRemoval.SERIALIZERS.register(modEventBus);
         com.bettercontent.bettercompatfixes.deepvoid.DeepVoidStructures.register(modEventBus);

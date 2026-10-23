@@ -119,6 +119,13 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         final LoadingModList mods = FMLLoader.getLoadingModList();
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.caravan.")) {
+            if (!hasMods(mods, "born_in_chaos_v1")) return false;
+            if (!hasVersion(mods, "born_in_chaos_v1", "1.7.5")) {
+                throw new IllegalStateException("Caravan jigsaw anchor normalization requires pinned Born in Chaos 1.7.5; revalidate template/settings APIs");
+            }
+            return true;
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.emi.")) {
             if (!hasMods(mods, "emi")) return false;
             if (!hasVersion(mods, "emi", "1.1.24+1.20.1+forge")) {
@@ -126,7 +133,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             }
             return true;
         }
-        if (mixinClassName.endsWith("complicatedbees.ColonyActivityMixin")) {
+        if (mixinClassName.endsWith("complicatedbees.ColonyActivityMixin")
+                || mixinClassName.endsWith("complicatedbees.DecodedChromosomeColorMixin")
+                || mixinClassName.endsWith("complicatedbees.QueenColorInvalidationMixin")) {
             if (!hasMods(mods, "complicated_bees")) return false;
             if (!hasVersion(mods, "complicated_bees", "1.20.1-3.4.6")) {
                 throw new IllegalStateException("Cosmetic colony activity requires pinned Complicated Bees 1.20.1-3.4.6; revalidate native APIs");

@@ -30,11 +30,24 @@ public final class ColonyActivityGameTests {
         var before = apiary.saveWithoutMetadata();
         helper.assertTrue(!((ColonyActivity) apiary).betterCompat$colonyActive(), "Empty apiary cannot advertise work");
         var tag = apiary.getUpdateTag();
-        helper.assertTrue(tag.getAllKeys().equals(java.util.Set.of("better_compat_fixes:colony_active")), "Only cosmetic bit may be synchronized, never native inventory/genetics");
+        helper.assertTrue(minimalInactiveCosmeticPacket(tag), "Only exact legacy/typed cosmetics may be synchronized, never native inventory/genetics");
         helper.assertTrue(!tag.getBoolean("better_compat_fixes:colony_active"), "Inactive packet bit");
         helper.assertTrue(apiary.getUpdatePacket() != null, "Native block update packet must exist");
         helper.assertTrue(before.equals(apiary.saveWithoutMetadata()), "Cosmetic observation must not change production state");
         helper.succeed();
+    }
+
+    private static boolean minimalInactiveCosmeticPacket(net.minecraft.nbt.CompoundTag tag) {
+        if (!tag.getAllKeys().equals(java.util.Set.of("better_compat_fixes:colony_active", "better_compat_fixes:colony_appearance_v1"))
+                || !tag.contains("better_compat_fixes:colony_active", net.minecraft.nbt.Tag.TAG_BYTE)
+                || tag.getByte("better_compat_fixes:colony_active") != 0
+                || !tag.contains("better_compat_fixes:colony_appearance_v1", net.minecraft.nbt.Tag.TAG_COMPOUND)) return false;
+        var data = tag.getCompound("better_compat_fixes:colony_appearance_v1");
+        return data.getAllKeys().equals(java.util.Set.of("version", "active", "known", "rgb"))
+                && data.contains("version", net.minecraft.nbt.Tag.TAG_INT) && data.getInt("version") == 1
+                && data.contains("active", net.minecraft.nbt.Tag.TAG_BYTE) && data.getByte("active") == 0
+                && data.contains("known", net.minecraft.nbt.Tag.TAG_BYTE) && data.getByte("known") == 0
+                && data.contains("rgb", net.minecraft.nbt.Tag.TAG_INT) && data.getInt("rgb") == 0;
     }
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty")

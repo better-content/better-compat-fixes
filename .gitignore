@@ -27,6 +27,8 @@ hs_err_pid*
 replay_pid*
 .DS_Store
 Thumbs.db
+__pycache__/
+*.py[cod]
 /.cache/
 /.codex/
 /libs/*.jar

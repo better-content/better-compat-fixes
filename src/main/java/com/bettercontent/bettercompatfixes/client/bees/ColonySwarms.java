@@ -3,7 +3,8 @@ package com.bettercontent.bettercompatfixes.client.bees;
 import com.bettercontent.bettercompatfixes.BetterContentFixes;
 import com.bettercontent.bettercompatfixes.compat.bees.ColonyActivity;
 import com.bettercontent.bettercompatfixes.compat.bees.FairColonyScan;
-import com.bettercontent.bettercompatfixes.compat.bees.SwarmParticles;
+import com.bettercontent.bettercompatfixes.compat.bees.DecodedColorScope;
+import com.bettercontent.bettercompatfixes.compat.bees.TintedBeeOptions;
 import com.bettercontent.bettercompatfixes.config.BcFixesClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
@@ -39,6 +40,11 @@ public final class ColonySwarms {
         return ModList.get().isLoaded("complicated_bees") && NativeColonies.occupied(entity);
     }
 
+    /** Primitive native body appearance only; unknown never falls back to invented yellow/nest tint. */
+    public static DecodedColorScope.Sample bodyColor(BlockEntity entity) {
+        return ModList.get().isLoaded("complicated_bees") ? NativeColonies.bodyColor(entity) : DecodedColorScope.Sample.UNKNOWN;
+    }
+
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
@@ -62,8 +68,10 @@ public final class ColonySwarms {
                 entity -> !entity.isRemoved() && entity.getBlockPos().distToCenterSqr(mc.player.position()) <= RANGE * RANGE && occupied(entity),
                 Math.min(budget, MAX_ALIVE - expiry.size()));
         for (BlockEntity entity : sources) {
+            DecodedColorScope.Sample appearance = bodyColor(entity);
+            if (!appearance.known()) continue;
             BlockPos pos = entity.getBlockPos();
-            mc.level.addParticle(SwarmParticles.BEE.get(), pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 0, 0, 0);
+            mc.level.addParticle(new TintedBeeOptions(appearance.rgb()), pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 0, 0, 0);
             expiry.addLast(time + ColonyBeeParticle.LIFETIME + 1);
             emissions++;
         }
@@ -71,6 +79,14 @@ public final class ColonySwarms {
 
     /** Loaded only after optional-mod admission; absence never links native bee classes. */
     private static final class NativeColonies {
+        static DecodedColorScope.Sample bodyColor(BlockEntity entity) {
+            if (entity instanceof com.accbdd.complicated_bees.block.entity.BeeNestBlockEntity nest)
+                return com.bettercontent.bettercompatfixes.compat.bees.NativeBeeColors.fromSpecies(nest.getSpecies());
+            if (entity instanceof com.accbdd.complicated_bees.block.entity.ApiaryBlockEntity && entity instanceof ColonyActivity activity
+                    && activity.betterCompat$colonyActive() && activity.betterCompat$colonyColorKnown())
+                return new DecodedColorScope.Sample(true, activity.betterCompat$colonyColor());
+            return DecodedColorScope.Sample.UNKNOWN;
+        }
         static boolean occupied(BlockEntity entity) {
             if (entity instanceof com.accbdd.complicated_bees.block.entity.BeeNestBlockEntity nest) {
                 return nest.getSpecies() != com.accbdd.complicated_bees.bees.Species.INVALID;

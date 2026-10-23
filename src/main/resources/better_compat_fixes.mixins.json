@@ -27,6 +27,8 @@
     "createsifter.SifterBlockEntityMixin",
     "complicatedbees.ForgeConfigSpecMixin",
     "complicatedbees.ColonyActivityMixin",
+    "complicatedbees.DecodedChromosomeColorMixin",
+    "complicatedbees.QueenColorInvalidationMixin",
     "pneumaticcraft.tconhead.JackHammerDrillBitHeadMixin",
     "pneumaticcraft.tconhead.JackhammerSetupSlotHeadMixin",
     "pneumaticcraft.tconhead.JackHammerTconHeadMixin",

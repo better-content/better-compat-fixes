@@ -2,6 +2,8 @@ import java.util.zip.ZipFile
 import java.security.MessageDigest
 import java.time.Instant
 import java.nio.file.Files
+import org.objectweb.asm.Opcodes
+import org.objectweb.asm.tree.*
 
 plugins {
     idea
@@ -19,12 +21,15 @@ val mixinExtrasVersion = "0.5.0"
 val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
 val spoilageWithoutHeat = providers.gradleProperty("spoilageWithoutHeat").map(String::toBoolean).getOrElse(false)
 val colonyWithoutBees = providers.gradleProperty("colonyWithoutBees").map(String::toBoolean).getOrElse(false)
+// Explicit diagnostic opt-in, forwarded ONLY to gameTestServer; ordinary/visual/data runs are untouched.
+val nativeRootySoilWitness = providers.gradleProperty("nativeRootySoilWitness").map(String::toBooleanStrict).getOrElse(false)
 base {
     archivesName.set(property("artifact_name") as String)
 }
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    withSourcesJar()
 }
 
 // Process only the two chopping hooks with Mixin AP; all other production hooks retain
@@ -36,7 +41,8 @@ val choppingPaths = listOf(
 val choppingMixins by sourceSets.creating {
     java.setSrcDirs(listOf("src/main/java"))
     java.setIncludes(choppingPaths)
-    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    // Preserve compileJava's typed producer, but do not read either refmap writer's resources.
+    compileClasspath += sourceSets.main.get().output.classesDirs + sourceSets.main.get().compileClasspath
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
 sourceSets.main { java.exclude(choppingPaths) }
@@ -49,11 +55,40 @@ tasks.named<JavaCompile>(choppingMixins.compileJavaTaskName) {
     doLast { check(refmap.get().asFile.isFile) { "Chopping annotation processor did not produce its refmap" } }
 }
 
+// Isolate the new vanilla caravan hook's AP/refmap from all historical unprocessed hooks.
+val caravanPaths = listOf("com/bettercontent/bettercompatfixes/mixin/caravan/SinglePoolElementMixin.java")
+val caravanMixins by sourceSets.creating {
+    java.setSrcDirs(listOf("src/main/java"))
+    java.setIncludes(caravanPaths)
+    compileClasspath += sourceSets.main.get().output.classesDirs + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+sourceSets.main { java.exclude(caravanPaths) }
+tasks.named<JavaCompile>(caravanMixins.compileJavaTaskName) {
+    options.isIncremental = false
+    val refmap = layout.buildDirectory.file("tmp/compileCaravanMixinsJava/compileCaravanMixinsJava-refmap.json")
+    outputs.file(refmap)
+    doLast { check(refmap.get().asFile.isFile) { "Caravan annotation processor did not produce its refmap" } }
+}
+
 // Mirror the pack's authored disabled optional fillet recipe only in source GameTests.
 // This source set is never included in the production JAR.
 val nativeFixture by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+// Defense in depth for production, jarJar and any current/future sources archives.
+// The fixture is attached only as gameTestServer source directories, never an archive.
+tasks.withType<Jar>().configureEach {
+    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "better_compat_fixes.native_fixture.mixins.json")
+    doLast {
+        ZipFile(archiveFile.get().asFile).use { archive ->
+            check(archive.entries().asSequence().none {
+                it.name.contains("/nativefixture/") || it.name.contains("/nativeFixture/") || it.name.contains("/nativewitness/")
+                    || it.name == "better_compat_fixes.native_fixture.mixins.json"
+            }) { "Nonshipping Native witness/fixture leaked into archive" }
+        }
+    }
 }
 val authoredStarcatcherFillet = file("../../better-content-modpack/kubejs/data/starcatcher/recipes/aquaculture_fillet.json")
 // Exercise the exact pack-owned harvest classification without shipping it in this mod.
@@ -88,6 +123,7 @@ minecraft {
                 create(property("mod_id") as String) {
                     source(sourceSets.main.get())
                     source(choppingMixins)
+                    source(caravanMixins)
                 }
             }
         }
@@ -97,6 +133,7 @@ minecraft {
             workingDirectory(project.file("run-gametest"))
             property("forge.enableGameTest", "true")
             property("forge.gameTestServer", "true")
+            property("better_compat_fixes.nativeRootySoilWitness", nativeRootySoilWitness.toString())
             property("forge.enabledGameTestNamespaces", property("mod_id") as String)
             property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
             property("better_compat_fixes.expectHeatAbsent", spoilageWithoutHeat.toString())
@@ -157,6 +194,7 @@ val colonyEmiNativePins = configurations.create("colonyEmiNativePins") { isTrans
 
 dependencies {
     add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
+    add(caravanMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(aetherRenderNativePins.name, "curse.maven:the-aether-255308:6134920")
     add(heatNativePins.name, "curse.maven:kotlin-for-forge-351264:7291067")
     add(heatNativePins.name, "curse.maven:chemlib-340666:5128632")
@@ -279,9 +317,12 @@ dependencies {
     runtimeOnly(fg.deobf("curse.maven:patchouli-306770:7731017"))
     compileOnly(fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.20.1:1.4.10"))
     runtimeOnly(fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.20.1:1.4.10"))
+    testImplementation(fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.20.1:1.4.10"))
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:[$mixinExtrasVersion,0.6.0)")!!)
     testImplementation("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
+    // Pure scalar-ledger tests reuse its actual nonshipping source output; no Native engine starts.
+    testImplementation(files(nativeFixture.output))
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("com.google.code.gson:gson:2.10.1")
     testImplementation(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
@@ -294,9 +335,16 @@ dependencies {
 
 tasks.named<Jar>("jar") {
     from(choppingMixins.output)
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json")
-    filesMatching("better_compat_fixes.chopping.refmap.json") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+    from(caravanMixins.output)
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json")
+    filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json")) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
     finalizedBy("reobfJar")
+}
+
+tasks.withType<Jar>().matching { it.name == "sourcesJar" }.configureEach {
+    from(choppingMixins.allSource, caravanMixins.allSource)
 }
 
 val stageRuntimeJar by tasks.registering(Copy::class) {
@@ -339,7 +387,7 @@ val verifyNativeDiagnostics by tasks.registering {
     group = "verification"
     dependsOn(tasks.named("headlessGameTest"))
     doLast {
-        val nativeLog = file("run-gametest/logs/latest.log")
+        val nativeLog = (project.extra["bcNativeGameTestDirectory"] as java.io.File).resolve("logs/latest.log")
         check(nativeLog.isFile) { "Missing current native GameTest diagnostics" }
         val errors = nativeLog.readLines().filter { line ->
             listOf("/ERROR]", "/FATAL]", "[ERROR]", "[FATAL]", "Mixin apply failed").any(line::contains)
@@ -356,14 +404,8 @@ tasks.register("verifyFull") {
 
 val resetGameTestMods = tasks.register("resetGameTestMods") {
     doLast {
-        val retained = file("run-gametest/retained/${Instant.now().toEpochMilli()}")
-        for (name in listOf("mods", "world", "logs")) {
-            val previous = file("run-gametest/$name")
-            if (previous.exists()) {
-                retained.mkdirs()
-                Files.move(previous.toPath(), retained.resolve(name).toPath())
-            }
-        }
+        // Each invocation has a fresh directory; legacy fixtures/operator inputs remain untouched.
+        (project.extra["bcNativeGameTestDirectory"] as java.io.File).mkdirs()
     }
 }
 
@@ -437,6 +479,8 @@ tasks.processResources {
 
 mixin {
     add(choppingMixins, "better_compat_fixes.chopping.refmap.json")
+    add(caravanMixins, "better_compat_fixes.caravan.refmap.json")
+    config("better_compat_fixes.caravan.mixins.json")
     config("better_compat_fixes.mixins.json")
     config("better_compat_fixes.chopping.mixins.json")
 }
@@ -452,13 +496,23 @@ val syncChoppingRefmap by tasks.registering(Copy::class) {
         }
     }
 }
-tasks.withType<JavaCompile>().configureEach {
-    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName) dependsOn(syncChoppingRefmap)
+val syncCaravanRefmap by tasks.registering(Copy::class) {
+    dependsOn(tasks.named(caravanMixins.compileJavaTaskName), tasks.named("processResources"))
+    from(layout.buildDirectory.file("tmp/compileCaravanMixinsJava/compileCaravanMixinsJava-refmap.json"))
+    rename { "better_compat_fixes.caravan.refmap.json" }
+    into(layout.buildDirectory.dir("resources/main"))
+    doLast { check(layout.buildDirectory.file("resources/main/better_compat_fixes.caravan.refmap.json").get().asFile.isFile) }
 }
-tasks.withType<Test>().configureEach { dependsOn(syncChoppingRefmap) }
-tasks.withType<Jar>().configureEach { dependsOn(syncChoppingRefmap) }
-tasks.matching { it.name == "addMixinsToJar" || it.name.startsWith("prepareRun") }
-    .configureEach { dependsOn(syncChoppingRefmap) }
+tasks.withType<JavaCompile>().configureEach {
+    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName && name != caravanMixins.compileJavaTaskName) {
+        dependsOn(syncChoppingRefmap, syncCaravanRefmap)
+    }
+}
+tasks.named("jar") { dependsOn(syncCaravanRefmap) }
+tasks.withType<Test>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap) }
+tasks.withType<Jar>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap) }
+tasks.matching { it.name == "addMixinsToJar" || it.name == "addMixinsToSourcesJar" || it.name.startsWith("prepareRun") }
+    .configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap) }
 
 val verifyRuntimeDispenserAlias by tasks.registering {
     group = "verification"
@@ -1039,6 +1093,7 @@ val verifyRuntimeChoppingSpoilage by tasks.registering {
         ZipFile(layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile).use { zip ->
             check(zip.entries().asSequence().none {
                 it.name.startsWith("com/bettercontent/bettercompatfixes/nativefixture/")
+                    || it.name.startsWith("com/bettercontent/bettercompatfixes/nativewitness/")
                     || it.name == "com/bettercontent/bettercompatfixes/gametest/DispenserRegistryGameTests.class"
                     || it.name == "better_compat_fixes.native_fixture.mixins.json"
             }) { "Source-only native registry accessor/test/config leaked into production" }
@@ -1118,6 +1173,43 @@ val verifyRuntimeBackpackEquipment by tasks.registering {
 }
 tasks.named("verifyFast") { dependsOn(verifyRuntimeBackpackEquipment) }
 
+// Archive-only legacy contract: no class loading, reflection, game queries or production mutation.
+fun checkLegacyAppearance(activity: ClassNode, helper: ClassNode?) {
+    val owner = "com/bettercontent/bettercompatfixes/compat/bees/ColonyAppearance"
+    val tag = "net/minecraft/nbt/CompoundTag"
+    val legacy = "better_compat_fixes:colony_active"
+    check(helper != null && helper.name == owner) { "Missing actual colony appearance helper" }
+    fun method(node: ClassNode, name: String, desc: String): MethodNode =
+        checkNotNull(node.methods.singleOrNull { it.name == name && it.desc == desc }) { "Missing colony method $name$desc" }
+    fun call(n: AbstractInsnNode, opcode: Int, target: String, name: String, desc: String): Boolean =
+        n is MethodInsnNode && n.opcode == opcode && n.owner == target && n.name == name && n.desc == desc
+    fun sequence(method: MethodNode, vararg predicates: (AbstractInsnNode) -> Boolean): Boolean {
+        val code = method.instructions.toArray().filter { it.opcode >= 0 }
+        return (0..(code.size - predicates.size)).any { offset -> predicates.indices.all { predicates[it](code[offset + it]) } }
+    }
+    fun aload(n: AbstractInsnNode, slot: Int) = n is VarInsnNode && n.opcode == Opcodes.ALOAD && n.`var` == slot
+    fun key(n: AbstractInsnNode) = n is LdcInsnNode && n.cst == legacy
+    val update = method(activity, "m_5995_", "()L$tag;")
+    check(activity.methods.any { it.name == "m_58483_" }) { "Missing native BE packet override mapping" }
+    val receive = method(activity, "handleUpdateTag", "(L$tag;)V")
+    val packet = method(activity, "onDataPacket", "(Lnet/minecraft/network/Connection;Lnet/minecraft/network/protocol/game/ClientboundBlockEntityDataPacket;)V")
+    check(update.instructions.toArray().count { call(it, Opcodes.INVOKEVIRTUAL, owner, "write", "(L$tag;)V") } == 1) { "BE update tag must invoke actual helper write once" }
+    check(receive.instructions.toArray().count { call(it, Opcodes.INVOKESTATIC, owner, "read", "(L$tag;)L$owner;") } == 1) { "BE receive tag must invoke actual helper read once" }
+    check(packet.instructions.toArray().any { call(it, Opcodes.INVOKEVIRTUAL, activity.name, "handleUpdateTag", "(L$tag;)V") }) { "BE packet must reach actual receive callback" }
+    val write = method(helper, "write", "(L$tag;)V")
+    check(sequence(write, { aload(it, 1) }, ::key, { aload(it, 0) },
+        { it is FieldInsnNode && it.opcode == Opcodes.GETFIELD && it.owner == owner && it.name == "active" && it.desc == "Z" },
+        { call(it, Opcodes.INVOKEVIRTUAL, tag, "m_128379_", "(Ljava/lang/String;Z)V") })) { "Same legacy key must serialize actual active boolean via native putBoolean" }
+    val read = method(helper, "read", "(L$tag;)L$owner;")
+    check(sequence(read, { aload(it, 0) }, ::key, { it.opcode == Opcodes.ICONST_1 },
+        { call(it, Opcodes.INVOKEVIRTUAL, tag, "m_128425_", "(Ljava/lang/String;I)Z") })) { "Legacy read must validate native boolean BYTE type on same key" }
+    // Existing strict reader uses getByte==1, preserving putBoolean's canonical0/1 behavior;
+    // do not rewrite production to introduce getBoolean's broader noncanonical-nonzero acceptance.
+    check(sequence(read, { aload(it, 0) }, ::key,
+        { call(it, Opcodes.INVOKEVIRTUAL, tag, "m_128445_", "(Ljava/lang/String;)B") },
+        { it.opcode == Opcodes.ICONST_1 }, { it is JumpInsnNode && it.opcode == Opcodes.IF_ICMPNE })) { "Legacy read must consume canonical boolean value, not a dummy key or filename" }
+}
+
 val verifyRuntimeColonyEmi by tasks.registering {
     group = "verification"
     dependsOn(stageRuntimeJar)
@@ -1129,9 +1221,16 @@ val verifyRuntimeColonyEmi by tasks.registering {
             val activity = bytes(root + "mixin/complicatedbees/ColonyActivityMixin.class")
             check(activity.contains("m_5995_") && activity.contains("m_58483_")
                 && activity.contains("handleUpdateTag") && activity.contains("onDataPacket")
-                && activity.contains("better_compat_fixes:colony_active") && activity.contains("tickServer")) {
+                && activity.contains("tickServer")) {
                 "Cosmetic activity must retain production native BE update override mappings"
             }
+            fun node(path: String): ClassNode = ClassNode().also {
+                org.objectweb.asm.ClassReader(zip.getInputStream(zip.getEntry(path)
+                    ?: throw GradleException("Missing colony runtime helper $path")).use { input -> input.readBytes() })
+                    .accept(it, org.objectweb.asm.ClassReader.SKIP_DEBUG or org.objectweb.asm.ClassReader.SKIP_FRAMES)
+            }
+            checkLegacyAppearance(node(root + "mixin/complicatedbees/ColonyActivityMixin.class"),
+                node(root + "compat/bees/ColonyAppearance.class"))
             val screen = bytes(root + "mixin/emi/RecipeScreenMixin.class")
             check(screen.contains("m_7856_") && screen.contains("canCraft") && screen.contains("bakePages").not()
                 && screen.contains("Ljava/util/stream/Stream;sorted") && screen.contains("<init>")) {
@@ -1148,6 +1247,8 @@ val verifyRuntimeColonyEmi by tasks.registering {
     }
 }
 tasks.named("verifyFast") { dependsOn(verifyRuntimeColonyEmi) }
+
+apply(from = "gradle/native-gametest-fixture.gradle")
 
 jacoco {
     toolVersion = "0.8.12"
