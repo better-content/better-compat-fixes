@@ -1,0 +1,76 @@
+// Declared immutable upstream inputs. No source/native observation is borrowed from old build outputs.
+def oracleDirectory = layout.buildDirectory.dir('generated/urn-oracle').get().asFile
+def sourceSdk = providers.provider {
+    def matches = configurations.compileClasspath.files.findAll { candidate ->
+        candidate.isFile() && candidate.name.endsWith('.jar') && new java.util.zip.ZipFile(candidate).withCloseable { zip ->
+            zip.getEntry('net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase.class') != null
+        }
+    }
+    if (matches.size() != 1) throw new GradleException('Expected exactly one actual Forge source SDK')
+    matches[0]
+}
+def srgSdk = providers.provider {
+    def coordinate = project.property('minecraft_version') + '-' + project.property('forge_version')
+    def sdk = new File(sourceSdk.get().parentFile.parentFile, coordinate + '/forge-' + coordinate + '-injected.jar')
+    if (!sdk.isFile()) throw new GradleException('Missing canonical Forge-generated SRG ABI input: ' + sdk)
+    sdk
+}
+def verifyInputs = tasks.register('verifyTreasureUrnInputs', Exec) {
+    group = 'verification'
+    dependsOn('compileJava')
+    inputs.files(configurations.urnNativePins, configurations.urnMappedOracle, sourceSdk, srgSdk)
+    inputs.file('scripts/verify_treasure_urn.py')
+    doFirst {
+        commandLine('python3', '-B', project.file('scripts/verify_treasure_urn.py'),
+            '--raw', configurations.urnNativePins.singleFile, '--mapped', configurations.urnMappedOracle.singleFile,
+            '--sdk-mapped', sourceSdk.get(), '--sdk-srg', srgSdk.get())
+    }
+}
+def prepareOracle = tasks.register('prepareTreasureUrnNativeOracle') {
+    dependsOn(verifyInputs)
+    inputs.files(configurations.urnNativePins, configurations.urnMappedOracle)
+    outputs.dir(oracleDirectory)
+    doLast {
+        def oldName = 'net/mehvahdjukaar/supplementaries/common/block/blocks/UrnBlock'
+        def newName = 'com/bettercontent/bettercompatfixes/nativefixture/oracle/PinnedUrnOracle'
+        new java.util.zip.ZipFile(configurations.urnMappedOracle.singleFile).withCloseable { zip ->
+            def bytes = zip.getInputStream(zip.getEntry(oldName + '.class')).withCloseable { it.readAllBytes() }
+            def writer = new org.objectweb.asm.ClassWriter(0)
+            new org.objectweb.asm.ClassReader(bytes).accept(new org.objectweb.asm.commons.ClassRemapper(writer,
+                    new org.objectweb.asm.commons.SimpleRemapper(oldName, newName)), 0)
+            def destination = new File(oracleDirectory, newName + '.class')
+            destination.parentFile.mkdirs()
+            java.nio.file.Files.write(destination.toPath(), writer.toByteArray())
+        }
+        new java.util.zip.ZipFile(configurations.urnNativePins.singleFile).withCloseable { zip ->
+            zip.entries().findAll { entry -> !entry.directory && (entry.name == 'data/supplementaries/loot_tables/blocks/urn.json' ||
+                    entry.name.startsWith('data/supplementaries/loot_tables/blocks/urn_loot/')) }.each { entry ->
+                def destination = new File(oracleDirectory, 'urn-oracle/' + entry.name)
+                destination.parentFile.mkdirs()
+                zip.getInputStream(entry).withCloseable { input -> java.nio.file.Files.write(destination.toPath(), input.readAllBytes()) }
+            }
+        }
+    }
+}
+sourceSets.nativeFixture.output.dir([builtBy:prepareOracle], oracleDirectory)
+sourceSets.nativeFixture.compileClasspath += files(oracleDirectory)
+tasks.named('compileNativeFixtureJava').configure { dependsOn(prepareOracle) }
+tasks.named('test').configure {
+    dependsOn(prepareOracle)
+    inputs.files(configurations.urnNativePins, configurations.urnMappedOracle)
+    doFirst {
+        systemProperty('bc.urn.raw', configurations.urnNativePins.singleFile.absolutePath)
+        systemProperty('bc.urn.mapped', configurations.urnMappedOracle.singleFile.absolutePath)
+        systemProperty('bc.urn.oracle', oracleDirectory.absolutePath)
+    }
+}
+tasks.named('verifyFast').configure { dependsOn(verifyInputs) }
+tasks.withType(org.gradle.api.tasks.bundling.Jar).configureEach {
+    exclude('urn-oracle/**', '**/TreasureUrnGameTests*', '**/UrnOracleRegistration*')
+    doLast {
+        new java.util.zip.ZipFile(archiveFile.get().asFile).withCloseable { zip ->
+            if (zip.entries().any { it.name.startsWith('urn-oracle/') || it.name.contains('TreasureUrnGameTests') || it.name.contains('UrnOracleRegistration') })
+                throw new GradleException('Nonshipping urn oracle/control leaked into archive')
+        }
+    }
+}

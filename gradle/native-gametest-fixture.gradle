@@ -6,8 +6,8 @@ minecraft.runs.gameTestServer.workingDirectory(nativeDirectory)
 def expected = project.name == 'better-block-placement-preview' ? 6 :
         project.name == 'better-rehooked-grappling' ? 4 :
         project.name == 'better-rpg-progression' ? 6 :
-        project.findProperty('colonyWithoutBees') == 'true' ? 74 :
-        project.findProperty('backpackWithoutCurios') == 'true' ? 73 : 76
+        project.findProperty('colonyWithoutBees') == 'true' ? 77 :
+        project.findProperty('backpackWithoutCurios') == 'true' ? 76 : 79
 
 def ensureNativeProperties = { File directory ->
     java.nio.file.Files.createDirectories(directory.toPath())
@@ -22,7 +22,12 @@ def ensureNativeProperties = { File directory ->
 def validateNativeLog = { File log, int required ->
     if (!log.isFile()) throw new GradleException("Missing current native log: ${log}")
     def text = log.getText('UTF-8')
-    def errors = text.readLines().findAll { (it =~ /^(?:\[[^\]\r\n]+\]\s+)?\[(?:[^\]\r\n]+\/)?(?:ERROR|FATAL)\](?:\s|$)/) || it.contains('Mixin apply failed') }
+    def errors = text.readLines().findAll { line ->
+        (line =~ /^(?:\[[^\]\r\n]+\]\s+)?\[(?:[^\]\r\n]+\/)?(?:ERROR|FATAL)\](?:\s|$)/) ||
+            line.contains('Mixin apply failed') || (line.contains('LevelChunk') && line.contains('Tried to load') &&
+                (line.contains('but failed at location') || line.contains('but found not block entity block'))) ||
+            (line.contains('WorldGenRegion') && line.contains('Tried to access a block entity before it was created.'))
+    }
     if (errors) throw new GradleException("Native failed-operation/ERROR/FATAL: ${errors.take(8)}")
     def complete = (text =~ /(?m)^.*\[[^\]\r\n]*GameTestServer[^\]\r\n]*\]: =+ ([0-9]+) GAME TESTS COMPLETE =+\s*$/).collect { it[1].toInteger() }
     def passed = (text =~ /(?m)^.*\[[^\]\r\n]*GameTestServer[^\]\r\n]*\]: All ([0-9]+) required tests passed :\)\s*$/).collect { it[1].toInteger() }
@@ -71,7 +76,10 @@ def guard = tasks.register('verifyColdNativeFixtureGuard') {
         def invalid = ['', line + 'All ' + expected + ' required tests passed :)\n',
                 valid.replace('All ' + expected, 'All ' + (expected + 1)), valid + valid,
                 valid + '[main/ERROR] real failure\n', valid + '[Server thread/FATAL] real failure\n',
-                valid + '[main/INFO] Mixin apply failed\n']
+                valid + '[main/INFO] Mixin apply failed\n',
+                valid + '[Server thread/WARN] [net.minecraft.world.level.chunk.LevelChunk/]: Tried to load a block entity for block Block{supplementaries:urn} but failed at location BlockPos{x=1, y=2, z=3}\n',
+                valid + '[Server thread/WARN] [net.minecraft.world.level.chunk.LevelChunk/]: Tried to load a DUMMY block entity @ BlockPos{x=1, y=2, z=3} but found not block entity block Block{supplementaries:urn} at location\n',
+                valid + '[Worker-Main-1/WARN] [net.minecraft.server.level.WorldGenRegion/]: Tried to access a block entity before it was created. BlockPos{x=1, y=2, z=3}\n']
         invalid.eachWithIndex { text, index ->
             def candidate = new File(root, 'invalid-' + index + '.log'); candidate.setText(text, 'UTF-8')
             boolean rejected = false

@@ -7,7 +7,10 @@
     "DispenserRegistryAccessor",
     "FellingConfigReadMixin",
     "RootySpeciesWitnessMixin",
-    "RootyJoCodeWitnessMixin"
+    "RootyJoCodeWitnessMixin",
+    "UrnLootRandomMixin",
+    "UrnSpawnObservationMixin",
+    "UrnHiddenItemsAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.bettercontent.bettercompatfixes.mixin.supplementaries",
+  "plugin": "com.bettercontent.bettercompatfixes.mixin.supplementaries.TreasureUrnMixinPlugin",
+  "refmap": "better_compat_fixes.urn.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": ["TreasureUrnWorldGenLookupMixin", "TreasureUrnLookupMixin"],
+  "injectors": {"defaultRequire": 1}
+}

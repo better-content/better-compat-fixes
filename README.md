@@ -21,6 +21,69 @@ INFO; the pack selects scoped DEBUG. Logging does not waive native inventory par
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## Supplementaries treasure urn source contract
+
+Supplementaries **1.20-3.1.43** deliberately returns no `UrnBlockTile` for `treasure=true`.
+The native `WorldGenRegion` producer treats every `EntityBlock` state as a BE state and writes
+a synthetic pending `DUMMY` into protochunks. Promotion/access then calls the null factory and
+warns. The candidate guards **only** `LevelChunk.getBlockEntity` and
+`WorldGenRegion.getBlockEntity`, using dedicated required typed Mixins and a generated refmap,
+exact registered urn identity plus its actual `TREASURE` property, and pure lookup admission.
+The original global `hasBlockEntity()` predicate stays **true**, the original producer still
+writes its DUMMY, and the original treasure factory still returns null. This avoids invalid
+synthetic promotion without breaking real authored BE registration or later state transitions.
+Ordinary `treasure=false` urns and unrelated native BE blocks keep their original results.
+No extra inventory tile, alternate loot implementation, logger change, or diagnosis exemption
+is part of this candidate. Optional absence is inert; a loaded unreviewed Supplementaries
+version or raw/mapped urn-class pair fails closed.
+
+Both nonmutating lookup guards admit only an exact factory-stateless treasure urn with **no
+existing live-map entry** and either absent pending data or keys exactly `id,x,y,z`, optionally
+`keepPacked`: STRING `id=DUMMY`, matching INT coordinates, optional BYTE `keepPacked=1`.
+They return null without writing/removing NBT. Exact `ProtoChunk` and `LevelChunk` direct map
+accessors and the exact native `ImposterProtoChunk.getWrapped()` field read are independently
+bytecode-pinned; wrappers are admitted only around an exact `LevelChunk`. No materializing
+`LevelChunk.getBlockEntity` is called inside a guard. Unknown chunk subclasses and region subclasses keep the native path.
+The region guard uses the same cached native chunk lookup and does not catch its exceptions.
+Real IDs, extra fields, inventory/loot/owner data, missing/wrong-type/wrong-position coordinates,
+and other packed values decline interception. The original decoder/diagnostics remain intact.
+Do not interpret declining interception as a migration or arbitrary authored-data guarantee.
+
+**Lifecycle boundary:** independently pinned vanilla lookup removes pending NBT **before**
+promotion and its failure warning. The guard instead preserves the exact minimal marker
+through repeated lookups; native ordinary save copies it and adds `keepPacked=1`, without
+changing the pending original. Native packed reload preserves that marker. Original
+`postProcessGeneration` performs lookups and then clears its pending map unconditionally;
+that original consumption remains unchanged. There is no restore, deletion pass, postprocess
+hook, hidden saved data, or retention promise beyond this native lifecycle boundary.
+Although native worldgen treasure urns have no BE, genuine authored treasure BE/inventory tags
+must still load/register/save through the original native decoder. The global state predicate
+is deliberately **not** repaired: making it false would reject those formerly loadable tiles.
+Native controls cover authored treasure inventory loading, full/proto save and reload, both
+lookup paths, live-map retention and treasure/ordinary state transitions. Malformed/extra-field
+inputs are rejected by the pure admission tests, not decoded with silenced expected warnings.
+
+`verifyTreasureUrnInputs` checks the declared raw pin, FG-mapped original class pair, original
+null factory, native loot/Silk Touch/hidden/Fortune branches, producer resources, and real
+source/production-SRG SDK selectors and lookup/save/reload/postprocess bytecode. Relevant
+SDK classes were also compared independently for Forge 47.4.13 and 47.4.22. The nonshipping
+oracle is the pinned FG-mapped upstream class with **only its self name remapped**, plus raw
+loot resource bytes. Method-by-method instruction/operand controls reject oracle rewrites.
+Three required native cases cover the actual protochunk producer/lookup with unchanged markers
+and unsupported-accessor exception forwarding; legacy minimal marker lookup/save/reload/native
+consumption plus authored treasure inventory and ordinary inventory save/drop; and seeded
+original-versus-actual native loot/Fortune/hidden reroll/Silk Touch/use/comparator/spawn.
+Scoped deterministic RNG inputs and actual spawn observation forward the original algorithms;
+temporary hidden membership, game rule and spawned entities are restored in `finally`/scope
+closure. No test or accessor/oracle class/resource ships. Expected required populations are
+79 default/no-Heat, 77 no-Bees, 76 no-Curios. Actual native failed BE promotion remains fatal
+to the native-log guard, including its WARN forms; no new acceptable-operation category exists.
+
+**Validation status:** source candidate only. The small in-memory JDK-only predicate/admission
+positive/negative controls and independent raw/mapped + SDK bytecode checks passed. Gradle,
+AP/refmap generation, compiled-hook/NBT/oracle JUnit and all three native cases remain for
+the lead's canonical build and runtime validation; none are claimed as executed acceptance.
+
 ## OC2R fallback echo payload ownership
 
 With OC2R **2.2.12**, the native session method consumes its caller buffer into an owned
@@ -197,8 +260,8 @@ from this mod's production JAR. No diagnostic is suppressed or allowlisted by th
 Each source native invocation binds one fresh `build/gametest/<UUID>` directly to Forge's
 RunConfig, structures, setup and audited sink. Legacy fixtures and ordinary/visual runs stay
 untouched. Absent-only CREATE_NEW settings preserve any existing property bytes exactly. The
-full gate requires one completed/passed native count (default76, no-Bees74, no-Heat76,
-no-Curios73) and rejects ERROR/FATAL or mixin failure in actual latest/debug logs. Pure negative
+full gate requires one completed/passed native count (default79, no-Bees77, no-Heat79,
+no-Curios76) and rejects ERROR/FATAL or mixin failure in actual latest/debug logs. Pure negative
 controls reject missing/stale-count/duplicate/failed sinks; source passes still require an admitted
 full invocation for each profile, default last. Build-tree retention is required before `clean`.
 The native preparation also uses an immutable outside-build snapshot in

@@ -71,6 +71,25 @@ tasks.named<JavaCompile>(caravanMixins.compileJavaTaskName) {
     doLast { check(refmap.get().asFile.isFile) { "Caravan annotation processor did not produce its refmap" } }
 }
 
+// Typed vanilla urn hooks have their own AP/refmap, independent of historical no-refmap hooks.
+val urnPaths = listOf(
+    "com/bettercontent/bettercompatfixes/mixin/supplementaries/TreasureUrnWorldGenLookupMixin.java",
+    "com/bettercontent/bettercompatfixes/mixin/supplementaries/TreasureUrnLookupMixin.java"
+)
+val urnMixins by sourceSets.creating {
+    java.setSrcDirs(listOf("src/main/java"))
+    java.setIncludes(urnPaths)
+    compileClasspath += sourceSets.main.get().output.classesDirs + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+sourceSets.main { java.exclude(urnPaths) }
+tasks.named<JavaCompile>(urnMixins.compileJavaTaskName) {
+    options.isIncremental = false
+    val refmap = layout.buildDirectory.file("tmp/compileUrnMixinsJava/compileUrnMixinsJava-refmap.json")
+    outputs.file(refmap)
+    doLast { check(refmap.get().asFile.isFile) { "Urn AP did not produce its refmap" } }
+}
+
 // Mirror the pack's authored disabled optional fillet recipe only in source GameTests.
 // This source set is never included in the production JAR.
 val nativeFixture by sourceSets.creating {
@@ -124,6 +143,7 @@ minecraft {
                     source(sourceSets.main.get())
                     source(choppingMixins)
                     source(caravanMixins)
+                    source(urnMixins)
                 }
             }
         }
@@ -191,10 +211,19 @@ val starcatcherNativePins = configurations.create("starcatcherNativePins") { isT
 val heatNativePins = configurations.create("heatNativePins") { isTransitive = false }
 val aetherRenderNativePins = configurations.create("aetherRenderNativePins") { isTransitive = false }
 val colonyEmiNativePins = configurations.create("colonyEmiNativePins") { isTransitive = false }
+val urnNativePins = configurations.create("urnNativePins") { isTransitive = false }
+val urnMappedOracle = configurations.create("urnMappedOracle") { isTransitive = false }
 
 dependencies {
     add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(caravanMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
+    add(urnMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
+    add(urnNativePins.name, "curse.maven:supplementaries-412082:7884611")
+    add(urnMappedOracle.name, fg.deobf("curse.maven:supplementaries-412082:7884611"))
+    compileOnly(fg.deobf("curse.maven:supplementaries-412082:7884611"))
+    compileOnly(fg.deobf("curse.maven:selene-499980:8261419"))
+    runtimeOnly(fg.deobf("curse.maven:supplementaries-412082:7884611"))
+    runtimeOnly(fg.deobf("curse.maven:selene-499980:8261419"))
     add(aetherRenderNativePins.name, "curse.maven:the-aether-255308:6134920")
     add(heatNativePins.name, "curse.maven:kotlin-for-forge-351264:7291067")
     add(heatNativePins.name, "curse.maven:chemlib-340666:5128632")
@@ -336,15 +365,16 @@ dependencies {
 tasks.named<Jar>("jar") {
     from(choppingMixins.output)
     from(caravanMixins.output)
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json")
-    filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json")) {
+    from(urnMixins.output)
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json")
+    filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
     finalizedBy("reobfJar")
 }
 
 tasks.withType<Jar>().matching { it.name == "sourcesJar" }.configureEach {
-    from(choppingMixins.allSource, caravanMixins.allSource)
+    from(choppingMixins.allSource, caravanMixins.allSource, urnMixins.allSource)
 }
 
 val stageRuntimeJar by tasks.registering(Copy::class) {
@@ -480,6 +510,8 @@ tasks.processResources {
 mixin {
     add(choppingMixins, "better_compat_fixes.chopping.refmap.json")
     add(caravanMixins, "better_compat_fixes.caravan.refmap.json")
+    add(urnMixins, "better_compat_fixes.urn.refmap.json")
+    config("better_compat_fixes.urn.mixins.json")
     config("better_compat_fixes.oc2r.mixins.json")
     config("better_compat_fixes.caravan.mixins.json")
     config("better_compat_fixes.mixins.json")
@@ -504,16 +536,23 @@ val syncCaravanRefmap by tasks.registering(Copy::class) {
     into(layout.buildDirectory.dir("resources/main"))
     doLast { check(layout.buildDirectory.file("resources/main/better_compat_fixes.caravan.refmap.json").get().asFile.isFile) }
 }
+val syncUrnRefmap by tasks.registering(Copy::class) {
+    dependsOn(tasks.named(urnMixins.compileJavaTaskName), tasks.named("processResources"))
+    from(layout.buildDirectory.file("tmp/compileUrnMixinsJava/compileUrnMixinsJava-refmap.json"))
+    rename { "better_compat_fixes.urn.refmap.json" }
+    into(layout.buildDirectory.dir("resources/main"))
+    doLast { check(layout.buildDirectory.file("resources/main/better_compat_fixes.urn.refmap.json").get().asFile.isFile) }
+}
 tasks.withType<JavaCompile>().configureEach {
-    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName && name != caravanMixins.compileJavaTaskName) {
-        dependsOn(syncChoppingRefmap, syncCaravanRefmap)
+    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName && name != caravanMixins.compileJavaTaskName && name != urnMixins.compileJavaTaskName) {
+        dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap)
     }
 }
-tasks.named("jar") { dependsOn(syncCaravanRefmap) }
-tasks.withType<Test>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap) }
-tasks.withType<Jar>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap) }
+tasks.named("jar") { dependsOn(syncCaravanRefmap, syncUrnRefmap) }
+tasks.withType<Test>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap) }
+tasks.withType<Jar>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap) }
 tasks.matching { it.name == "addMixinsToJar" || it.name == "addMixinsToSourcesJar" || it.name.startsWith("prepareRun") }
-    .configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap) }
+    .configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap) }
 
 val verifyRuntimeDispenserAlias by tasks.registering {
     group = "verification"
@@ -1250,6 +1289,7 @@ val verifyRuntimeColonyEmi by tasks.registering {
 tasks.named("verifyFast") { dependsOn(verifyRuntimeColonyEmi) }
 
 apply(from = "gradle/native-gametest-fixture.gradle")
+apply(from = "gradle/treasure-urn-contract.gradle")
 
 jacoco {
     toolVersion = "0.8.12"

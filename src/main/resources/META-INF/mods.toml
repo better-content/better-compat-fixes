@@ -239,3 +239,10 @@ versionRange="[0.1.0,)"
     versionRange="[1.20-7.4.11]"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="supplementaries"
+    mandatory=false
+    versionRange="[1.20-3.1.43]"
+    ordering="AFTER"
+    side="BOTH"
