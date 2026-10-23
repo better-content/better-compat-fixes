@@ -81,7 +81,16 @@ These source controls are **not** actual transformed Mixins or native acceptance
 run the documented fixture-enabled and fixture-disabled/other required profiles after reviewing source;
 actual MixinExtras WrapMethod/Inject composition and native fixture gates remain pending.
 Production Registrate config is registered in both the archive manifest and global source Mixin
-configuration; exact effective JavaExec launcher config counts are asserted before all source runs.
+configuration. Local qualification retained in Root fresh-fixes20261023: actual registry-present81,
+without-bees77, without-heat79, without-Curios76 and default79 all passed with strict audits.
+The authored inventory controls preserve imported five/three-item NBT and separately prove the
+pinned Moonlight one-item insertion policy; malformed-tag controls bind the original native
+coordinate decoder before asserting lookup preservation. These are owning SOURCE gates, not
+historical-cause proof, deployment, Dist or paired native inventory GUI acceptance.
+After each successful source launcher, its latest-launch file-backed Mixin
+selection/preparation must contain the production config exactly once and the fixture config
+exactly once iff requested on gameTestServer. A pre-launch JavaExec.args snapshot is not the
+assembled ForgeGradle/MixinGradle argument stream; engine failure remains an original failure.
 
 All eight Mixin configs reserve their complete package descendant union. Plugins and ordinary
 helpers live outside it, including urn registration/random scope/generated oracle and ordinary
@@ -89,9 +98,11 @@ JUnit controls. `verifyMixinNamespaces` admits only configured classes with actu
 Mixin annotations under those prefixes, rejects nested/anonymous helpers, and requires explicit
 source/compiled output roles. It never treats a constant-pool descriptor string as an annotation.
 The generated oracle root is a builtBy nativeFixture classesDirs entry, not merely output.dir:
-ForgeGradle08 actually omitted that latter root from MOD_CLASSES (log442–443). Pre-launch checks
-now require its exact coordinate in actual native JavaExec MOD_CLASSES and reject ordinary-run
-source exposure. Runtime/source archive guards reject the complete urnfixture tree and oracle
+ForgeGradle08 actually omitted that latter root from MOD_CLASSES (log442–443). The native
+registration callback now requires its exact coordinate in the actual JVM MOD_CLASSES environment
+and emits one file-backed witness; post-run validation requires that witness exactly once.
+Gradle's pre-launch environment snapshot was null and is not authoritative. Pre-launch RunConfig
+checks still reject ordinary-run source exposure. Runtime/source archive guards reject the complete urnfixture tree and oracle
 resources. Namespace/module/config wiring remains source-qualified until the next lead native gate.
 
 ## Supplementaries treasure urn source contract

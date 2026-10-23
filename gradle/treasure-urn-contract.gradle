@@ -63,18 +63,20 @@ def prepareOracle = tasks.register('prepareTreasureUrnNativeOracle') {
 // FG builds MOD_CLASSES from classesDirs/resourcesDir, not arbitrary output.dir roots.
 sourceSets.nativeFixture.output.dir([builtBy:prepareOracle], oracleDirectory)
 sourceSets.nativeFixture.output.classesDirs.from(files(oracleDirectory).builtBy(prepareOracle))
-tasks.named('runGameTestServer').configure {
+minecraft.runs.getByName('gameTestServer').property('bc.urn.oracle.directory', oracleDirectory.absolutePath)
+tasks.matching { it.name == 'runGameTestServer' }.configureEach {
     dependsOn(prepareOracle)
     doFirst {
-        def actual = environment.get('MOD_CLASSES')?.toString()
-        def coordinate = project.property('mod_id') + '%%' + oracleDirectory.absolutePath
-        if (actual == null || !actual.split(java.util.regex.Pattern.quote(File.pathSeparator)).contains(coordinate))
-            throw new GradleException('Generated urn oracle absent from actual JavaExec MOD_CLASSES: ' + actual)
         minecraft.runs.each { run ->
             if (run.name != 'gameTestServer' && run.allSources.any { it.output.classesDirs.files.contains(oracleDirectory) })
                 throw new GradleException('Native urn oracle leaked into ordinary RunConfig ' + run.name)
         }
-        logger.lifecycle('BC_URN_ORACLE_MODULE_V1 nativeOnly=true coordinate=' + coordinate)
+    }
+    doLast {
+        def log = new File(project.ext.bcNativeGameTestDirectory, 'logs/debug.log')
+        def marker = 'BC_URN_ORACLE_MODULE_V1 nativeOnly=true coordinate=' + project.property('mod_id') + '%%' + oracleDirectory.absolutePath
+        if (!log.isFile() || log.readLines('UTF-8').count { it.contains(marker) } != 1)
+            throw new GradleException('Missing/duplicate actual JVM urn module witness')
     }
 }
 sourceSets.nativeFixture.compileClasspath += files(oracleDirectory)

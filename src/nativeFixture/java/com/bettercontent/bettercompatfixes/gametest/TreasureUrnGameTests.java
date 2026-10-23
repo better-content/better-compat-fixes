@@ -72,6 +72,27 @@ public final class TreasureUrnGameTests {
         tag.putInt("x", pos.getX()); tag.putInt("y", pos.getY()); tag.putInt("z", pos.getZ()); return tag;
     }
 
+    /** Preserve authored multi-count NBT separately from the native one-item insertion policy. */
+    private static CompoundTag authoredInventory(UrnBlockTile tile, ItemStack requested) {
+        // Pinned Moonlight ItemDisplayTile.getMaxStackSize() is 1; native setItem clamps a copy.
+        // Prove that baseline rather than incorrectly expecting setItem(5/3) to store 5/3.
+        require(tile.getMaxStackSize() == 1, "Pinned native urn insertion capacity changed");
+        tile.setItem(0, requested.copy());
+        require(tile.getItem(0).is(requested.getItem()) && tile.getItem(0).getCount() == 1,
+                "Native one-item insertion policy changed");
+        CompoundTag tag = tile.saveWithFullMetadata();
+        BlockEntity baseline = BlockEntity.loadStatic(tile.getBlockPos(), tile.getBlockState(), tag.copy());
+        require(baseline instanceof UrnBlockTile && ((UrnBlockTile) baseline).getItem(0).is(requested.getItem())
+                        && ((UrnBlockTile) baseline).getItem(0).getCount() == 1,
+                "Legally inserted one-item native roundtrip failed");
+        // Author/import data using the actual native NBT encoder, not the player insertion API.
+        // The original five/three-item preservation/drop assertions below remain unchanged.
+        var contents = net.minecraft.core.NonNullList.withSize(tile.getContainerSize(), ItemStack.EMPTY);
+        contents.set(0, requested.copy());
+        net.minecraft.world.ContainerHelper.saveAllItems(tag, contents);
+        return tag;
+    }
+
     private static final class NativeAccessProbe extends ProtoChunk {
         boolean nativeLookup;
         NativeAccessProbe(ServerLevel level, ChunkPos pos) {
@@ -174,8 +195,8 @@ public final class TreasureUrnGameTests {
         require(loaded.getBlockEntity(pos) == null && loaded.getBlockEntityNbt(pos) == null, "Native postprocessing did not consume synthetic marker normally");
         require(loaded.getBlockState(pos).equals(urn(true, false)), "Native postprocessing changed treasure state");
         // Genuine authored treasure inventories MUST continue through the actual native decoder, save, and state transitions.
-        UrnBlockTile authored = new UrnBlockTile(pos, urn(true, false)); authored.setItem(0, new ItemStack(Items.EMERALD, 5));
-        CompoundTag authoredTag = authored.saveWithFullMetadata();
+        UrnBlockTile authored = new UrnBlockTile(pos, urn(true, false));
+        CompoundTag authoredTag = authoredInventory(authored, new ItemStack(Items.EMERALD, 5));
         legacy.setBlockEntityNbt(authoredTag.copy());
         require(legacy.getBlockEntity(pos) instanceof UrnBlockTile, "Real treasure BE was intercepted or rejected");
         UrnBlockTile liveAuthored = (UrnBlockTile) legacy.getBlockEntity(pos);
@@ -208,16 +229,22 @@ public final class TreasureUrnGameTests {
         require(legacy.getBlockState(pos).hasBlockEntity() && legacy.getBlockEntity(pos) == liveAuthored
                 && real.equals(legacy.getBlockEntityNbt(pos)), "Existing live BE/state query changed native predicate/authored data");
         CompoundTag malformed = dummy(pos); malformed.putString("x", Integer.toString(pos.getX())); legacy.setBlockEntityNbt(malformed);
+        // Native setBlockEntityNbt itself decodes malformed numeric x as0 BEFORE lookup.
+        // Bind that original insertion result; do not misattribute its coordinate coercion to our guard.
+        BlockPos nativeKey = BlockEntity.getPosFromTag(malformed);
+        require(nativeKey.equals(new BlockPos(0, pos.getY(), pos.getZ())) && !nativeKey.equals(pos)
+                        && malformed.equals(legacy.getBlockEntityNbt(nativeKey)) && real.equals(legacy.getBlockEntityNbt(pos)),
+                "Native malformed-tag insertion/key behavior changed");
         require(!TreasureUrnPending.minimalDummy(malformed, pos) && legacy.getBlockEntity(pos) == liveAuthored
-                && malformed.equals(legacy.getBlockEntityNbt(pos)), "Malformed pending tag/live BE was coerced/deleted/intercepted");
+                        && real.equals(legacy.getBlockEntityNbt(pos)) && malformed.equals(legacy.getBlockEntityNbt(nativeKey)),
+                "Lookup changed native malformed-tag placement, pending data or existing live BE");
         // Normal inventory persistence uses actual registered native tile and chunk serializer, not an empty replacement.
         BlockPos normal = helper.absolutePos(new BlockPos(2, 2, 2));
         level.setBlock(normal.below(), Blocks.STONE.defaultBlockState(), 3);
         level.setBlock(normal, urn(false, false), 3);
         require(level.getBlockEntity(normal) instanceof UrnBlockTile, "Normal urn has no inventory tile");
         UrnBlockTile tile = (UrnBlockTile) level.getBlockEntity(normal);
-        tile.setItem(0, new ItemStack(Items.DIAMOND, 3));
-        CompoundTag saved = tile.saveWithFullMetadata();
+        CompoundTag saved = authoredInventory(tile, new ItemStack(Items.DIAMOND, 3));
         BlockEntity restored = BlockEntity.loadStatic(normal, urn(false, false), saved);
         require(restored instanceof UrnBlockTile && ((UrnBlockTile) restored).getItem(0).getCount() == 3, "Native inventory save/reload lost items");
         level.removeBlockEntity(normal); level.setBlockEntity(restored);
