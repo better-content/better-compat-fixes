@@ -11,16 +11,16 @@ import org.spongepowered.asm.mixin.injection.Group;
 /** Ice and Fire tests the sand tag directly in this part of death worm movement. */
 @Mixin(targets = "com.github.alexthe666.iceandfire.entity.EntityDeathWorm", remap = false)
 public abstract class DeathWormTerrainMixin {
-    @Group(name = "wormTerrain", min = 1)
-    @ModifyExpressionValue(method = {"getCanSpawnHere", "m_20314_", "isSandBelow", "isInSandStrict", "canPassThrough"},
+    @Group(name = "wormTerrain", min = 6, max = 6)
+    @ModifyExpressionValue(method = {"getCanSpawnHere()Z", "m_20314_(DDD)V", "moveTowardsClosestSpace(DDD)V", "isSandBelow()Z", "isInSandStrict()Z", "canPassThrough(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/phys/shapes/VoxelShape;)Z"},
         at = @At(value = "FIELD", target = "Lnet/minecraft/tags/BlockTags;SAND:Lnet/minecraft/tags/TagKey;", remap = false),
         remap = false, require = 0)
     private TagKey<Block> betterContentFixes$allTerrain(final TagKey<Block> original) {
         return DeathWormTerrain.BURROWABLE;
     }
 
-    @Group(name = "wormTerrain", min = 1)
-    @ModifyExpressionValue(method = {"getCanSpawnHere", "m_20314_", "isSandBelow", "isInSandStrict", "canPassThrough"},
+    @Group(name = "wormTerrain", min = 6, max = 6)
+    @ModifyExpressionValue(method = {"getCanSpawnHere()Z", "m_20314_(DDD)V", "moveTowardsClosestSpace(DDD)V", "isSandBelow()Z", "isInSandStrict()Z", "canPassThrough(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/phys/shapes/VoxelShape;)Z"},
         at = @At(value = "FIELD", target = "Lnet/minecraft/tags/BlockTags;f_13029_:Lnet/minecraft/tags/TagKey;", remap = false),
         remap = false, require = 0)
     private TagKey<Block> betterContentFixes$allTerrainObfuscated(final TagKey<Block> original) {

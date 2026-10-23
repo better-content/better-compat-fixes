@@ -1,0 +1,60 @@
+{
+  "raw": {
+    "sha256": "2b80245fc9b7d6fdc61d71f9892f4c6114eb7f303f65634845aaab25f84d1e82",
+    "classes": {
+      "com.github.alexthe666.iceandfire.pathfinding.NodeProcessorDeathWorm": "66faf310ea4986fd599523b4eede8464016fbcadd19d6b93589cfe3ad1ea0bc8",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIJump": "f613134b5558419348b7621d1f77ce07f460faa8be9d39b76280df3b1f1c879d",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIFindSandTarget": "390733f9ccc0fd02433cd72123c58f4a0b294d8639b789b311c2a0e0c4a55414",
+      "com.github.alexthe666.iceandfire.entity.EntityDeathWorm": "9331890321eb3235bf029f92fbe0cc1f00913ab4bc4028de4619579bf4e69b88",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIGetInSand": "3c07e1ac2a1b0be1842dd80c65830667fa11dc56b5cbccf6c46596afa005a133",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIAttack": "96423bac884d8cf84983fea56817b42341288efc3818d50f0e03e7039aeabbf3",
+      "com.github.alexthe666.iceandfire.pathfinding.PathNavigateDeathWormSand": "e977fa3d6b8ec1a90aa1d90d0dd29135ab0acc4e4f676482cae60a1bfb2201eb"
+    }
+  },
+  "mapped": {
+    "sha256": "ab736d895a4bd71ddcdefae125af7a80fa94f753be7c2e3192be03f315742036",
+    "classes": {
+      "com.github.alexthe666.iceandfire.pathfinding.NodeProcessorDeathWorm": "849a955a8755603c588704a77a575905bbcf177da89352a7a7eb134d939ccdb9",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIJump": "260a54c6d0217b5b4bb489e40980d4412e89f49eb5ecb1fe1288cb8c214e26cb",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIFindSandTarget": "254c9155a63f856148d460f424ac3c6a965e06dd6ae715dc7c06b7f9e208c593",
+      "com.github.alexthe666.iceandfire.entity.EntityDeathWorm": "562bf89a7205eac18f766679afcc48b1486f4fc75a0060b40cf961a6dbfd62ca",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIGetInSand": "cd58659c5ab9fc3e7b312f50aeddf31e3814662d3e47f9abf1fa6a6049922f8a",
+      "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIAttack": "e6674ce6730dd2fa84b45a6c348f23483d61d3783c7a47df646ff67f9de3c56f",
+      "com.github.alexthe666.iceandfire.pathfinding.PathNavigateDeathWormSand": "1701c911d7a1254b7921abcb8c75cc155dfddb0682f50213bfd4aa30d2bcec0a"
+    }
+  },
+  "targets": {
+    "DeathWormNodeTerrainMixin": {
+      "target": "com.github.alexthe666.iceandfire.pathfinding.NodeProcessorDeathWorm",
+      "sites": 2
+    },
+    "DeathWormJumpTerrainMixin": {
+      "target": "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIJump",
+      "sites": 2,
+      "officialAlias": "tick"
+    },
+    "DeathWormFindTerrainMixin": {
+      "target": "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIFindSandTarget",
+      "sites": 2
+    },
+    "DeathWormTerrainMixin": {
+      "target": "com.github.alexthe666.iceandfire.entity.EntityDeathWorm",
+      "sites": 6,
+      "officialAlias": "moveTowardsClosestSpace"
+    },
+    "DeathWormShelterTerrainMixin": {
+      "target": "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIGetInSand",
+      "sites": 1
+    },
+    "DeathWormAttackTerrainMixin": {
+      "target": "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIAttack",
+      "sites": 1,
+      "officialAlias": "start"
+    },
+    "DeathWormNavigateTerrainMixin": {
+      "target": "com.github.alexthe666.iceandfire.pathfinding.PathNavigateDeathWormSand",
+      "sites": 1,
+      "officialAlias": "canMoveDirectly"
+    }
+  }
+}

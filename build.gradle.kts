@@ -1308,6 +1308,7 @@ apply(from = "gradle/native-gametest-fixture.gradle")
 apply(from = "gradle/treasure-urn-contract.gradle")
 apply(from = "gradle/registrate-contract.gradle")
 apply(from = "gradle/mixin-namespace-contract.gradle")
+apply(from = "gradle/death-worm-contract.gradle")
 
 jacoco {
     toolVersion = "0.8.12"

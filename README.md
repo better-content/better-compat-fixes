@@ -21,6 +21,20 @@ INFO; the pack selects scoped DEBUG. Logging does not waive native inventory par
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## Death worm terrain aliases (source candidate)
+
+Ice and Fire file5633453 has both SRG and official-mapped override names. The terrain replacements
+bind exact descriptors for navigation `m_183431_`/`canMoveDirectly`, attack `m_8056_`/`start`,
+jump `m_8037_`/`tick` and entity `m_20314_`/`moveTowardsClosestSpace`; the remaining custom method
+names and overloaded node paths are also audited. Each of the seven paired field-alias groups
+requires exactly its pinned number of sites (15 total per graph), rather than accepting a partial
+mapped override subset. Handlers still only return the original intended `BURROWABLE` tag; no
+native method body, call/result/order, RNG or terrain-layout algorithm is replaced.
+`verifyDeathWormTerrainAbi`, included in `verifyFast`, pins the actual raw/mapped SDK JAR/class
+bytes and inspects compiled annotations/handler bodies with ASM, including missing-mapped-alias
+and unknown-class negatives. Its two nonshipping ABI configurations add no runtime provider.
+Cached JDK/Mixin-AP/ASM controls are not actual native Mixin composition or pack acceptance.
+
 ## Registrate construction transactions (source candidate)
 
 The optional production repair targets exact raw/official-mapped **Registrate1.3.3** Base and

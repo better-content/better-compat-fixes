@@ -1,0 +1,26 @@
+// Nonshipping exact raw/mapped Ice and Fire ABI controls; no runtime provider/profile added.
+def rawWorm = configurations.create('deathWormRawAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+def mappedWorm = configurations.create('deathWormMappedAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+dependencies.add(rawWorm.name, 'curse.maven:ice-and-fire-dragons-264231:5633453')
+dependencies.add(mappedWorm.name, fg.deobf('curse.maven:ice-and-fire-dragons-264231:5633453'))
+tasks.register('verifyDeathWormTerrainAbi', JavaExec) {
+    group = 'verification'
+    description = 'Pins both actual SDK class graphs and exact-once terrain field alias sites.'
+    dependsOn(tasks.named('classes'))
+    classpath = files(fileTree(new File(gradle.gradleHomeDir, 'lib')) { include('groovy-*.jar', 'asm-*.jar') })
+    mainClass.set('groovy.ui.GroovyMain')
+    doFirst {
+        def roots = sourceSets.main.output.classesDirs.files.findAll {
+            new File(it, 'com/bettercontent/bettercompatfixes/mixin/iceandfire/DeathWormTerrainMixin.class').isFile()
+        }
+        if (roots.size() != 1) throw new GradleException('Missing/ambiguous compiled DeathWorm role')
+        setArgs([file('scripts/verify-death-worm-abi.groovy').absolutePath,
+                 file('gradle/death-worm-abi-pins.json').absolutePath,
+                 rawWorm.singleFile.absolutePath, mappedWorm.singleFile.absolutePath, roots.iterator().next().absolutePath])
+    }
+}
+tasks.named('verifyFast') { dependsOn('verifyDeathWormTerrainAbi') }

@@ -11,16 +11,16 @@ import org.spongepowered.asm.mixin.injection.Group;
 /** Ice and Fire tests the sand tag directly in this part of death worm movement. */
 @Mixin(targets = "com.github.alexthe666.iceandfire.entity.ai.DeathWormAIAttack", remap = false)
 public abstract class DeathWormAttackTerrainMixin {
-    @Group(name = "wormTerrain", min = 1)
-    @ModifyExpressionValue(method = {"m_8056_"},
+    @Group(name = "wormTerrain", min = 1, max = 1)
+    @ModifyExpressionValue(method = {"m_8056_()V", "start()V"},
         at = @At(value = "FIELD", target = "Lnet/minecraft/tags/BlockTags;SAND:Lnet/minecraft/tags/TagKey;", remap = false),
         remap = false, require = 0)
     private TagKey<Block> betterContentFixes$allTerrain(final TagKey<Block> original) {
         return DeathWormTerrain.BURROWABLE;
     }
 
-    @Group(name = "wormTerrain", min = 1)
-    @ModifyExpressionValue(method = {"m_8056_"},
+    @Group(name = "wormTerrain", min = 1, max = 1)
+    @ModifyExpressionValue(method = {"m_8056_()V", "start()V"},
         at = @At(value = "FIELD", target = "Lnet/minecraft/tags/BlockTags;f_13029_:Lnet/minecraft/tags/TagKey;", remap = false),
         remap = false, require = 0)
     private TagKey<Block> betterContentFixes$allTerrainObfuscated(final TagKey<Block> original) {
