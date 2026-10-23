@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Set;
 
 /** No inferred compatibility from version alone; both published and mapped bytes are reviewed. */
 public final class TreasureUrnMixinPlugin implements IMixinConfigPlugin {

@@ -1,4 +1,12 @@
 // Declared immutable upstream inputs. No source/native observation is borrowed from old build outputs.
+// Applied scripts have their own compilation classpath; project dependencies do not supply ASM here.
+buildscript {
+    repositories { mavenCentral() }
+    dependencies {
+        classpath 'org.ow2.asm:asm:9.7.1'
+        classpath 'org.ow2.asm:asm-commons:9.7.1'
+    }
+}
 def oracleDirectory = layout.buildDirectory.dir('generated/urn-oracle').get().asFile
 def sourceSdk = providers.provider {
     def matches = configurations.compileClasspath.files.findAll { candidate ->

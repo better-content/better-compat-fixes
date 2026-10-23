@@ -33,7 +33,7 @@ public abstract class TreasureUrnWorldGenLookupMixin {
         if (chunk.getClass() == ProtoChunk.class) live = ((ProtoChunk) chunk).getBlockEntities().containsKey(pos);
         else if (chunk.getClass() == LevelChunk.class) live = ((LevelChunk) chunk).getBlockEntities().containsKey(pos);
         else return; // Unknown subclasses may materialize on access; do not intercept them.
-        if (live || !TreasureUrnStates.isStateless(chunk.getBlockState(pos))) return;
+        if (live || !TreasureUrnStates.isStatelessTreasure(chunk.getBlockState(pos))) return;
         if (TreasureUrnPredicate.skipLookup(true, live, TreasureUrnPending.absentOrMinimal(chunk.getBlockEntityNbt(pos), pos)))
             cir.setReturnValue(null);
     }

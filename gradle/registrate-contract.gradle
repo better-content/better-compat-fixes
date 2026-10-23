@@ -1,0 +1,44 @@
+// Optional nonshipping actual Base-native profile. Default runtime has NO Registrate dependency.
+def fixture = sourceSets.getByName('registrateFixture')
+def present = project.findProperty('withRegistrateFixture') == 'true'
+def nativeRun = minecraft.runs.getByName('gameTestServer')
+if (present) {
+    nativeRun.property('bc.registrate.fixture.attempt', project.ext.bcNativeGameTestDirectory.name)
+    tasks.matching { it.name == 'runGameTestServer' }.configureEach {
+        dependsOn(fixture.classesTaskName)
+        doLast {
+            def log = new File(project.ext.bcNativeGameTestDirectory, 'logs/debug.log')
+            if (!log.isFile()) throw new GradleException('Missing actual Registrate native file-backed sink')
+            def text = log.getText('UTF-8')
+            ['pending-transfer', 'factory-exception'].each { name ->
+                def marker = 'BC_REGISTRATE_NATIVE_V1 attempt=' + project.ext.bcNativeGameTestDirectory.name + ' case=' + name + ' original_base=true'
+                if (text.readLines().count { it.contains(marker) } != 1)
+                    throw new GradleException('Missing/duplicate actual native Registrate case witness: ' + name)
+            }
+        }
+    }
+}
+def inputsCheck = tasks.register('verifyRegistrateContract', Exec) {
+    group = 'verification'
+    dependsOn('compileJava')
+    inputs.files(configurations.registrateNativePins, configurations.registrateMappedPins)
+    inputs.file('scripts/verify_registrate.py')
+    doFirst {
+        commandLine('python3', '-B', project.file('scripts/verify_registrate.py'),
+            '--raw', configurations.registrateNativePins.singleFile,
+            '--mapped', configurations.registrateMappedPins.singleFile,
+            '--classes', sourceSets.main.output.classesDirs.asPath)
+    }
+}
+tasks.named('verifyFast').configure { dependsOn(inputsCheck) }
+tasks.withType(org.gradle.api.tasks.bundling.Jar).configureEach {
+    doLast {
+        project.exec { commandLine('python3', '-B', project.file('scripts/verify_registrate.py'), '--archive-only', '--archives', archiveFile.get().asFile) }
+    }
+}
+tasks.named('test').configure {
+    doFirst {
+        systemProperty('bc.registrate.raw', configurations.registrateNativePins.singleFile.absolutePath)
+        systemProperty('bc.registrate.mapped', configurations.registrateMappedPins.singleFile.absolutePath)
+    }
+}

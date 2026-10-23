@@ -21,7 +21,7 @@ public abstract class TreasureUrnLookupMixin {
         LevelChunk chunk = (LevelChunk) (Object) this;
         if (chunk.getClass() != LevelChunk.class) return; // Unknown overridden accessors must keep the native path.
         boolean live = chunk.getBlockEntities().containsKey(pos); // Includes removed entries: never invoke materializing lookup.
-        if (live || !TreasureUrnStates.isStateless(chunk.getBlockState(pos))) return;
+        if (live || !TreasureUrnStates.isStatelessTreasure(chunk.getBlockState(pos))) return;
         if (TreasureUrnPredicate.skipLookup(true, live, TreasureUrnPending.absentOrMinimal(chunk.getBlockEntityNbt(pos), pos)))
             cir.setReturnValue(null);
     }

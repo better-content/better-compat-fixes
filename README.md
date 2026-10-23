@@ -21,6 +21,63 @@ INFO; the pack selects scoped DEBUG. Logging does not waive native inventory par
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## Registrate construction transactions (source candidate)
+
+The optional production repair targets exact raw/official-mapped **Registrate1.3.3** Base and
+private Registration class pairs, not a version-only guess. A plugin outside the reserved
+Mixin prefix checks bounded original class resources without target loading/initialization:
+complete absence is inert; partial or unknown present pairs fail closed. MixinExtras0.5.4
+provides required WrapMethod/WrapOperation support. No Create/Ponder/Flywheel runtime dependency
+is added to this mod; Root Create's embedded Registrate bytes match the pinned raw library.
+
+One eagerly initialized reentrant lock per registrar protects only original construction
+transactions: accept's pending.removeAll -> original callback transfer -> registrations.put;
+and String-key addRegisterCallback's original table lookup -> pending.put or existing-list
+append. Exact private Table.get is wrapped using its public Object return (never private
+Registration coercion), and getAll holds the same lock for its original **eager** list collection.
+Every original forwarder executes once with original arguments/results; the original maps,
+callback values/identity/order, virtual self, and exception objects are retained. Finally cleanup
+restores the caller's baseline hold count on exceptional and nested paths.
+
+The original Registration constructor/delegate factory and debug logger run before accept's
+OWN acquisition; getDelegate/virtual self run after release. **No lock surrounds onRegister,
+onRegisterLate, actual registry creators, consumer/Runnable execution or native diagnostics**;
+unused callback WARN/clear/DEV throw remain unchanged. Forge construction must finish before
+registry-event dispatch. This is not a repair for background mutation during dispatch, auxiliary
+afterRegisterCallbacks/completedRegistrations, all builder state, or arbitrary foreign Mixins.
+
+**Supported callback contract:** original callback hashCode/equals do not perform blocking or
+reentrant registry mutations. No whitelist, rejection, prehash, copy or exception substitution
+enforces that assumption. Native HashMultimap put and removeAll's removed-set copy may invoke
+callback hashing inside the slice. Reentrant hashing can therefore execute a nested constructor
+under an INHERITED outer lock even before its own acquisition. That explicit negative is
+UNSUPPORTED, not a claim of unconditional deadlock freedom or universally lock-free factories.
+The historical exact caller/key interleaving is still unknown: retained actual native iteration
+CMEs and a deterministic real-Guava corruption capability are not historical-cause proof.
+An unlocked diagnostic projection may still see intermediate changes during one serialized
+writer; its CME presence/absence alone is not a post-repair verdict.
+
+`-PwithRegistrateFixture=true` attaches a separate nonshipping source set **only** to gameTestServer
+and adds the exact pinned Registrate runtime library, not a copied oracle/provider. Two required
+native tests (81 with the default graph) call an actual protected Base subclass. Read-only native
+accessors inspect original pending multimap, table and callback list. A required original-removeAll
+gap schedules real callback lookup against transfer/publication; tests require exact callback/
+delegate identities, native get/getAll snapshot behavior, original collection retention, and no
+creator invocation. A real constructor delegate factory requires another thread's actual getAll
+to finish before returning (rejecting whole-accept locking). Original factory and critical hash
+exception identities plus subsequent foreign native reads prove cleanup. RegistryObject creation
+only installs its original synchronized holder handler/lookup; capture never registers fake items,
+mutates a frozen native registry, invokes creators or substitutes a native provider.
+
+Both case witnesses are exact-attempt bound in original native debug.log; the ordinary strict
+log/count guards remain required. Default/no-Heat79, no-Bees77 and no-Curios76 populations are
+unchanged without the flag. The fixture classes/accessors/gap/configuration are rejected from all
+runtime/source archives. `verifyFast` includes paired raw/mapped method/order pins, compiled
+required eight-site/four-original-forward checks and mutation/exclusion/absence/cleanup controls.
+These source controls are **not** actual transformed Mixins or native acceptance. The lead must
+run the documented present profile and ordinary/other required profiles after reviewing source;
+actual MixinExtras WrapMethod/Inject composition and native-present/absence gates remain pending.
+
 ## Supplementaries treasure urn source contract
 
 Supplementaries **1.20-3.1.43** deliberately returns no `UrnBlockTile` for `treasure=true`.

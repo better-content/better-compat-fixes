@@ -7,6 +7,15 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
 - Deterministic CI-equivalent lane: `./gradlew verifyFast`.
 - Runtime/GameTest changes: `./gradlew verifyFull`.
 - Stage: `./gradlew stageRuntimeJar`, `build/libs/better-compat-fixes-<version>.jar`.
+- Registrate construction changes additionally require the native-present SOURCE profile:
+  `./gradlew clean verifyFull stageRuntimeJar -PwithRegistrateFixture=true --no-daemon`, then
+  `./gradlew clean verifyFull stageRuntimeJar --no-daemon` for ordinary optional absence/staging.
+  Present adds only pinned Registrate 1.3.3 and two actual upstream Base tests (81 with the
+  default graph); no Create/Ponder/Flywheel fixture or runtime dependency is added. Ordinary
+  default/no-Heat79, no-Bees77 and no-Curios76 populations remain unchanged without this flag.
+  This does not replace existing required optional profiles or authorize native execution.
+  Raw/mapped paired class pins and compiled site/forwarding checks run in `verifyFast`;
+  WrapMethod/Inject composition and actual native behavior require the separately admitted gate.
 - Default full native gate requires canonical staged `better-industrial-heat-0.1.0.jar`
   via `BC_CUSTOM_MOD_JAR_DIR` or sibling `build/libs`; prepare that provider first.
   Spoilage changes also run `./gradlew clean verifyFull stageRuntimeJar -PspoilageWithoutHeat=true --no-daemon`,

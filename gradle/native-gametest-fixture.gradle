@@ -3,11 +3,12 @@ def nativeToken = UUID.randomUUID().toString()
 def nativeDirectory = layout.buildDirectory.dir('gametest/' + nativeToken).get().asFile
 ext.bcNativeGameTestDirectory = nativeDirectory
 minecraft.runs.gameTestServer.workingDirectory(nativeDirectory)
-def expected = project.name == 'better-block-placement-preview' ? 6 :
+def expectedBase = project.name == 'better-block-placement-preview' ? 6 :
         project.name == 'better-rehooked-grappling' ? 4 :
         project.name == 'better-rpg-progression' ? 6 :
         project.findProperty('colonyWithoutBees') == 'true' ? 77 :
         project.findProperty('backpackWithoutCurios') == 'true' ? 76 : 79
+def expected = expectedBase + (project.findProperty('withRegistrateFixture') == 'true' ? 2 : 0)
 
 def ensureNativeProperties = { File directory ->
     java.nio.file.Files.createDirectories(directory.toPath())

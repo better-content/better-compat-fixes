@@ -16,7 +16,8 @@ plugins {
 
 group = "com.bettercontent"
 version = property("mod_version") as String
-val mixinExtrasVersion = "0.5.0"
+val mixinExtrasVersion = "0.5.4"
+val withRegistrateFixture = providers.gradleProperty("withRegistrateFixture").map(String::toBooleanStrict).getOrElse(false)
 // Native optional-absence profile; Ars Nouveau requires Curios and cannot be present in it.
 val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
 val spoilageWithoutHeat = providers.gradleProperty("spoilageWithoutHeat").map(String::toBoolean).getOrElse(false)
@@ -96,14 +97,18 @@ val nativeFixture by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
+val registrateFixture by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
 // Defense in depth for production, jarJar and any current/future sources archives.
 // The fixture is attached only as gameTestServer source directories, never an archive.
 tasks.withType<Jar>().configureEach {
-    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "better_compat_fixes.native_fixture.mixins.json")
+    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
     doLast {
         ZipFile(archiveFile.get().asFile).use { archive ->
             check(archive.entries().asSequence().none {
-                it.name.contains("/nativefixture/") || it.name.contains("/nativeFixture/") || it.name.contains("/nativewitness/")
+                it.name.contains("/nativefixture/") || it.name.contains("/nativeFixture/") || it.name.contains("/nativewitness/") || it.name.contains("/registratefixture/") || it.name == "better_compat_fixes.registrate_fixture.mixins.json"
                     || it.name == "better_compat_fixes.native_fixture.mixins.json"
             }) { "Nonshipping Native witness/fixture leaked into archive" }
         }
@@ -157,7 +162,11 @@ minecraft {
             property("forge.enabledGameTestNamespaces", property("mod_id") as String)
             property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
             property("better_compat_fixes.expectHeatAbsent", spoilageWithoutHeat.toString())
-            mods { named(property("mod_id") as String) { source(nativeFixture) } }
+            mods { named(property("mod_id") as String) {
+                source(nativeFixture)
+                if (withRegistrateFixture) source(registrateFixture)
+            } }
+            if (withRegistrateFixture) args("--mixin.config", "better_compat_fixes.registrate_fixture.mixins.json")
             // Mixin's actual launcher option, scoped only to this nonshipping native source run.
             args("--mixin.config", "better_compat_fixes.native_fixture.mixins.json")
             arg("--nogui")
@@ -211,10 +220,16 @@ val starcatcherNativePins = configurations.create("starcatcherNativePins") { isT
 val heatNativePins = configurations.create("heatNativePins") { isTransitive = false }
 val aetherRenderNativePins = configurations.create("aetherRenderNativePins") { isTransitive = false }
 val colonyEmiNativePins = configurations.create("colonyEmiNativePins") { isTransitive = false }
+val registrateNativePins = configurations.create("registrateNativePins") { isTransitive = false }
+val registrateMappedPins = configurations.create("registrateMappedPins") { isTransitive = false }
 val urnNativePins = configurations.create("urnNativePins") { isTransitive = false }
 val urnMappedOracle = configurations.create("urnMappedOracle") { isTransitive = false }
 
 dependencies {
+    add(registrateNativePins.name, "com.tterrag.registrate:Registrate:MC1.20-1.3.3")
+    add(registrateMappedPins.name, fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
+    compileOnly(fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
+    if (withRegistrateFixture) add(registrateFixture.runtimeOnlyConfigurationName, fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
     add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(caravanMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(urnMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
@@ -366,7 +381,7 @@ tasks.named<Jar>("jar") {
     from(choppingMixins.output)
     from(caravanMixins.output)
     from(urnMixins.output)
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json")
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json")
     filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
@@ -1290,6 +1305,7 @@ tasks.named("verifyFast") { dependsOn(verifyRuntimeColonyEmi) }
 
 apply(from = "gradle/native-gametest-fixture.gradle")
 apply(from = "gradle/treasure-urn-contract.gradle")
+apply(from = "gradle/registrate-contract.gradle")
 
 jacoco {
     toolVersion = "0.8.12"
