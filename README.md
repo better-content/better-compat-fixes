@@ -21,6 +21,46 @@ INFO; the pack selects scoped DEBUG. Logging does not waive native inventory par
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## DeepVoid flesh-template producer coordinates (source candidate)
+
+Only the eight `StructureFeatureConfiguration.structure()` IDs used by pinned `flesh_stuff` are
+admitted: `flesh_rib1`, `flesh_rib2`, `flesh_ribs1`, `giant_rib1`, `giant_rib2`,
+`fleshy_giant_skull`, `flesh_ribs_eyes`, `flesh_tentacles_new` in `the_deep_void`. This identifies
+the template producer, not arbitrary top-level placed-feature provenance. Other IDs/nonregion
+calls forward unchanged once. In the actual `WorldGenRegion`, a typed read-only radius field
+must equal the pinned FEATURES constructor's1. The whole native rotated/mirrored bounding box
+is minimally translated into the actual center's48-block writable envelope with a one-block
+**direct native edge-update** margin (46-block interior). No bounding-box clipping, skipped
+native neighbor pass, global write guard or diagnostic suppression is used. Fallout is unchanged.
+
+Every actual loaded palette is inspected through public `Palette.blocks()` (not the mutating
+filtered-cache overload): positions must lie inside actual size and the native transform box;
+entities must be empty; block IDs/classes must belong to the17 pinned vanilla/DeepVoid choices;
+waterlogged states are rejected; NBT is allowed only on actually ignored structure blocks.
+Changed bounded overrides with these properties may pass; an ID/raw-JAR hash alone is not
+runtime loaded-resource proof. Settings must contain exactly one freshly constructed exact-class
+BlockIgnoreProcessor with precisely AIR/STRUCTURE_BLOCK contents, local pivotZERO, null BB and
+flags4. Unsupported metadata/radius/size/overflow throws a bounded explicit exception before
+placement, never a silent false/true success. There is no serializer, template/world cache,
+terrain/BE/light query, palette RNG selection or resource-manager I/O in this admission scan.
+Typed readonly Shadow-backed views bind explicit named/SRG private-field aliases without adding
+a global refmap or changing the historical compilation path; their bridges live outside reserved
+Mixin prefixes. Both actual SDK graphs and getter bytecode are pinned by the owning ABI gate.
+
+Safe supported placements retain original position/pivot references. Unsafe placements change
+only both native world-position arguments by identical X/Z delta (including their original alias
+identity), **not** settings-local rotationPivot or Y. One original placeInWorld call retains the
+same template/level/settings/random/flags, Boolean and Throwable; the producer still discards
+Boolean and returns true. Original rotation/mirror/offset/palette draws and callbacks remain.
+Unsafe relocation intentionally changes terrain context: it is NOT a promise of equal historical
+RNG consumption, successful writes or callback results. No height/upgrading fix, global callback
+fence or guarantee about arbitrary outside-neighbor callbacks, deferred fluids or other Mixins.
+
+`verifyDeepVoidPlacementControl` and `verifyDeepVoidPlacementAbi` run under `verifyFast` with
+nonshipping SDK roles and production archive assertions. Pure/property/recording/ASM controls
+and cached actual SDK geometry are not native composition or acceptance; supported shared
+full-five-profile qualification and canonical consumer strict audit are still required.
+
 ## Death worm terrain aliases (source candidate)
 
 Ice and Fire file5633453 has both SRG and official-mapped override names. The terrain replacements

@@ -1,0 +1,60 @@
+// Nonshipping actual SDK/compiled contracts; no added runtime provider or native profile.
+def rawVoid = configurations.create('deepVoidRawAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+def mappedVoid = configurations.create('deepVoidMappedAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+dependencies.add(rawVoid.name, 'curse.maven:the-deep-void-982999:8507128')
+dependencies.add(mappedVoid.name, fg.deobf('curse.maven:the-deep-void-982999:8507128'))
+def controlCompile = tasks.register('compileDeepVoidPlacementControl', JavaCompile) {
+    dependsOn('classes')
+    source(file('scripts/DeepVoidPlacementControl.java'))
+    classpath = files(sourceSets.main.output.classesDirs)
+    destinationDirectory.set(layout.buildDirectory.dir('classes/deepvoidControl'))
+    options.release.set(17)
+}
+def pureCheck = tasks.register('verifyDeepVoidPlacementControl', JavaExec) {
+    group = 'verification'
+    dependsOn(controlCompile)
+    classpath = files(controlCompile.flatMap { it.destinationDirectory }, sourceSets.main.output.classesDirs)
+    mainClass.set('DeepVoidPlacementControl')
+}
+def abiCheck = tasks.register('verifyDeepVoidPlacementAbi', JavaExec) {
+    group = 'verification'
+    dependsOn('classes')
+    classpath = files(fileTree(new File(gradle.gradleHomeDir, 'lib')) { include('groovy-*.jar', 'asm-*.jar') }, sourceSets.main.output.classesDirs)
+    mainClass.set('groovy.ui.GroovyMain')
+    doFirst {
+        def roots = sourceSets.main.output.classesDirs.files.findAll {
+            new File(it, 'com/bettercontent/bettercompatfixes/mixin/deepvoid/FleshStructureFeatureMixin.class').isFile()
+        }
+        def sdk = sourceSets.main.compileClasspath.files.findAll {
+            it.name == 'forge-1.20.1-47.4.13_mapped_official_1.20.1.jar'
+        }
+        if (roots.size() != 1 || sdk.size() != 1) throw new GradleException('Missing/ambiguous actual DeepVoid compiled/SDK role')
+        def named = sdk.iterator().next()
+        // FG's original SRG producer is a required sibling of the actual mapped SDK artifact.
+        def srg = new File(named.parentFile.parentFile, '1.20.1-47.4.13/forge-1.20.1-47.4.13-srg.jar')
+        if (!srg.isFile()) throw new GradleException('Missing actual pre-mapped Forge SDK producer: ' + srg)
+        setArgs([file('scripts/verify-deepvoid-abi.groovy').absolutePath,
+                 file('gradle/deepvoid-abi-pins.json').absolutePath,
+                 rawVoid.singleFile.absolutePath, mappedVoid.singleFile.absolutePath,
+                 named.absolutePath, srg.absolutePath, roots.iterator().next().absolutePath])
+    }
+}
+tasks.named('verifyFast') { dependsOn(pureCheck, abiCheck) }
+tasks.named('jar', org.gradle.api.tasks.bundling.Jar).configure {
+    doLast {
+        new java.util.zip.ZipFile(archiveFile.get().asFile).withCloseable { archive ->
+            def ids = ['FleshStructureFeatureMixin', 'TemplateMetadataAccessor', 'IgnoreMetadataAccessor', 'RegionWriteRadiusAccessor']
+            def json = new groovy.json.JsonSlurper().parse(archive.getInputStream(archive.getEntry('better_compat_fixes.mixins.json')))
+            ids.each { id ->
+                if (json.mixins.count { it == 'deepvoid.' + id } != 1 || archive.getEntry('com/bettercontent/bettercompatfixes/mixin/deepvoid/' + id + '.class') == null)
+                    throw new GradleException('Missing/duplicate production DeepVoid metadata/placement Mixin: ' + id)
+            }
+            if (archive.entries().toList().any { it.name.contains('DeepVoidPlacementControl') || it.name.contains('NativeGeometryControl') })
+                throw new GradleException('Nonshipping DeepVoid control leaked into archive')
+        }
+    }
+}

@@ -1,0 +1,153 @@
+{
+  "void-raw": {
+    "sha256": "018c80220b13abba85ddeba05a7d4850e2b989d9a14d6f008d65e2e94000f375",
+    "classes": {
+      "net.mcreator.thedeepvoid.world.features.StructureFeature": "83842ba9623e4e6b6e5d4900916802369d6479a866ab0ada20874f975d16bda5"
+    }
+  },
+  "void-mapped": {
+    "sha256": "b1ffa6b38e1828dfbbb343d6ee073b7f5b0e205223819145535cf504ed61255c",
+    "classes": {
+      "net.mcreator.thedeepvoid.world.features.StructureFeature": "b1ecb1ac1f8dbf3105a6eca4da42f939662a50f4c16d3555f4d4a10dfba2c5d1"
+    }
+  },
+  "sdk": {
+    "sha256": "86ce0a0aa09201b566430dfec17f7a03fd2acbd16e04b17992b6ad5e78df4b0f",
+    "classes": {
+      "net.minecraft.server.level.WorldGenRegion": "7812f15df307ddd0cdcae8ef08223a716a624de00f3e512c0f49239920d10db9",
+      "net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate": "1d428774197540beeeced1a5d591454a3d45dd13c8374f55e5b8e35304bc09a5",
+      "net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor": "c1345e0dfe68b94b6834a411c4ee657950ba2e6b45b3bbbf8a561fac440cc8ca"
+    }
+  },
+  "sdk-srg": {
+    "sha256": "5b64144d093357797dfb22bfa187e0e476783bc9844fa51e29b9b71f7599a453",
+    "classes": {
+      "net.minecraft.server.level.WorldGenRegion": "038e9cbe8b414845da295611e70caeac6cca1ac9efdfc1f163f9fa213c1ab6cd",
+      "net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate": "f5edb3e17b29c8f469cc3d3873eb9ada93a16cf61af7a258346ead28f27fc5a5",
+      "net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor": "b4f673466f5130fddadd04c9dbd998e2fd5740a756118715c872418d0f5d8291"
+    }
+  },
+  "templates": [
+    {
+      "id": "the_deep_void:flesh_rib1",
+      "path": "data/the_deep_void/structures/flesh_rib1.nbt",
+      "sha256": "47465aeeb4363908ab60d8627791c5fe6d54acf56f6ad76561baebd7401ecf90",
+      "size": [
+        4,
+        8,
+        1
+      ],
+      "blockCount": 32
+    },
+    {
+      "id": "the_deep_void:flesh_rib2",
+      "path": "data/the_deep_void/structures/flesh_rib2.nbt",
+      "sha256": "65d7427d013315f2f5186443495e4637acfd68427606d94323974f74e492318d",
+      "size": [
+        3,
+        6,
+        1
+      ],
+      "blockCount": 18
+    },
+    {
+      "id": "the_deep_void:flesh_ribs1",
+      "path": "data/the_deep_void/structures/flesh_ribs1.nbt",
+      "sha256": "54d16d682625ab09bfbf4888e5f39662e3b7f13e33e89816d96a1e31a92964f8",
+      "size": [
+        7,
+        5,
+        5
+      ],
+      "blockCount": 175
+    },
+    {
+      "id": "the_deep_void:giant_rib1",
+      "path": "data/the_deep_void/structures/giant_rib1.nbt",
+      "sha256": "3f17749ca021f85abadfe4e9da8a8ba5cb6b6d9a29f4fba4a72c159070327af0",
+      "size": [
+        12,
+        18,
+        4
+      ],
+      "blockCount": 864
+    },
+    {
+      "id": "the_deep_void:giant_rib2",
+      "path": "data/the_deep_void/structures/giant_rib2.nbt",
+      "sha256": "ca48b9a9268a81b66ede37b9c09472fdcb2c0a27167ec3f0b41b06e3e7969f04",
+      "size": [
+        15,
+        16,
+        4
+      ],
+      "blockCount": 960
+    },
+    {
+      "id": "the_deep_void:fleshy_giant_skull",
+      "path": "data/the_deep_void/structures/fleshy_giant_skull.nbt",
+      "sha256": "0f1d44815bb5cf78be3a295691bd7c7f36229ac71290406f46bd23eba631b1cd",
+      "size": [
+        11,
+        10,
+        19
+      ],
+      "blockCount": 2090
+    },
+    {
+      "id": "the_deep_void:flesh_ribs_eyes",
+      "path": "data/the_deep_void/structures/flesh_ribs_eyes.nbt",
+      "sha256": "46f2ad1e160dab4ccb56d0f5b62941ffe7a936cd926b185cd0766c1b81377110",
+      "size": [
+        11,
+        12,
+        17
+      ],
+      "blockCount": 2244
+    },
+    {
+      "id": "the_deep_void:flesh_tentacles_new",
+      "path": "data/the_deep_void/structures/flesh_tentacles_new.nbt",
+      "sha256": "f474abcc57c5d2c235638bac9e95f60cef4b01997808ae9bea3899bca9f41ca1",
+      "size": [
+        11,
+        13,
+        10
+      ],
+      "blockCount": 1430
+    }
+  ],
+  "fields": {
+    "TemplateMetadataAccessor": {
+      "target": "net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate",
+      "fields": {
+        "palettes": [
+          "f_74482_",
+          "Ljava/util/List;"
+        ],
+        "entityInfoList": [
+          "f_74483_",
+          "Ljava/util/List;"
+        ]
+      }
+    },
+    "IgnoreMetadataAccessor": {
+      "target": "net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor",
+      "fields": {
+        "toIgnore": [
+          "f_74049_",
+          "Lcom/google/common/collect/ImmutableList;"
+        ]
+      }
+    },
+    "RegionWriteRadiusAccessor": {
+      "target": "net.minecraft.server.level.WorldGenRegion",
+      "fields": {
+        "writeRadiusCutoff": [
+          "f_143481_",
+          "I"
+        ]
+      }
+    }
+  }
+}
