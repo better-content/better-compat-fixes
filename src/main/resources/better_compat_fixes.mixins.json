@@ -46,6 +46,7 @@
     "tconstruct.PartBuilderPatternSlotPlacementMixin",
     "dynamictrees.NormalSeasonManagerMixin",
     "dynamictrees.LevelPoissonDiscProviderMixin",
+    "dynamictrees.JoCodeRootySoilAdmissionMixin",
     "dynamictrees.BranchHardnessMixin",
     "dynamictrees.FellingItemStackMixin",
     "dynamictrees.FellingBranchMixin",

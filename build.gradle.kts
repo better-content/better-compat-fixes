@@ -1310,6 +1310,7 @@ apply(from = "gradle/registrate-contract.gradle")
 apply(from = "gradle/mixin-namespace-contract.gradle")
 apply(from = "gradle/death-worm-contract.gradle")
 apply(from = "gradle/deepvoid-contract.gradle")
+apply(from = "gradle/rooty-soil-contract.gradle")
 
 jacoco {
     toolVersion = "0.8.12"

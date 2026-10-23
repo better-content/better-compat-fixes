@@ -1,0 +1,18 @@
+{
+  "raw": {
+    "sha256": "3d5c1052bbf8a72e2087174039b530201c4ee9657b0391f2e1b130c85afd855f",
+    "classes": {
+      "com/ferreusveritas/dynamictrees/block/rooty/SoilHelper.class": "73cb1ec8f57154dd9006b526eb6cb0252e6e1bcd164860fb6fe85a3638286d22",
+      "com/ferreusveritas/dynamictrees/tree/species/Species.class": "c55a7690336d30b0e0899ec14a2212057b362576c342225af275a1069a837986",
+      "com/ferreusveritas/dynamictrees/worldgen/JoCode.class": "48ec1b13baada28632504245955440689f3ec6826ff6681a6ed64246c8097ad4"
+    }
+  },
+  "mapped": {
+    "sha256": "ca21e8d1796bdd66b4fad163822761492262354181788b31783497b0ae322315",
+    "classes": {
+      "com/ferreusveritas/dynamictrees/block/rooty/SoilHelper.class": "9c58fa4876fb9c1fac7ea4a1dc3630e9a6163ecd61bdafb88b4b9b9ed5fa91b5",
+      "com/ferreusveritas/dynamictrees/tree/species/Species.class": "9524ec03fc54134e61757428c4818fb5b0d9107b799ac84c9a7cc908bb01e078",
+      "com/ferreusveritas/dynamictrees/worldgen/JoCode.class": "1d7f5296e258c8a7744b8270c5236b5e4d1f1d3a6534eec1ab7937a7e2b48189"
+    }
+  }
+}

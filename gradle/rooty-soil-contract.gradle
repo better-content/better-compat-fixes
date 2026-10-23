@@ -1,0 +1,35 @@
+// Tiny nonshipping site/local/read controls for the pinned final-root admission hook.
+def rawSoil = configurations.create('rootySoilRawAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+def mappedSoil = configurations.create('rootySoilMappedAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+dependencies.add(rawSoil.name, 'curse.maven:dynamic-trees-252818:7502488')
+dependencies.add(mappedSoil.name, fg.deobf('curse.maven:dynamic-trees-252818:7502488'))
+def check = tasks.register('verifyRootySoilAdmission', JavaExec) {
+    group = 'verification'
+    dependsOn('classes')
+    classpath = files(fileTree(new File(gradle.gradleHomeDir, 'lib')) { include('groovy-*.jar', 'asm-*.jar') }, sourceSets.main.output.classesDirs)
+    mainClass.set('groovy.ui.GroovyMain')
+    doFirst {
+        def roots = sourceSets.main.output.classesDirs.files.findAll {
+            new File(it, 'com/bettercontent/bettercompatfixes/mixin/dynamictrees/JoCodeRootySoilAdmissionMixin.class').isFile()
+        }
+        if (roots.size() != 1) throw new GradleException('Missing/ambiguous compiled final-root Mixin')
+        setArgs([file('scripts/verify-rooty-soil.groovy').absolutePath,
+                 file('gradle/rooty-soil-abi-pins.json').absolutePath,
+                 rawSoil.singleFile.absolutePath, mappedSoil.singleFile.absolutePath, roots.iterator().next().absolutePath])
+    }
+}
+tasks.named('verifyFast') { dependsOn(check) }
+tasks.named('jar', org.gradle.api.tasks.bundling.Jar).configure {
+    doLast {
+        new java.util.zip.ZipFile(archiveFile.get().asFile).withCloseable { archive ->
+            def id = 'dynamictrees.JoCodeRootySoilAdmissionMixin'
+            def json = new groovy.json.JsonSlurper().parse(archive.getInputStream(archive.getEntry('better_compat_fixes.mixins.json')))
+            if (json.mixins.count { it == id } != 1 || archive.getEntry('com/bettercontent/bettercompatfixes/mixin/dynamictrees/JoCodeRootySoilAdmissionMixin.class') == null)
+                throw new GradleException('Missing/duplicate production final-root admission Mixin')
+        }
+    }
+}

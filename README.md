@@ -21,6 +21,27 @@ INFO; the pack selects scoped DEBUG. Logging does not waive native inventory par
 
 Pack-owned compatibility and runtime patch mod for Forge `1.20.1`.
 
+## Dynamic Trees final-root soil admission (source candidate)
+
+Pinned Dynamic Trees7502488 accepts water-fluid foliage through its water soil mapping, while
+`Species.placeRootyDirtBlock` tests the raw block, warns, writes fallback dirt and returns false;
+`JoCode.generate` ignores that false. This is a demonstrated contract gap, not proof of the
+historical Species/caller or a concurrent terrain change behind the five canonical30 warnings.
+
+The worldgen-only hook captures native `worldGen` slot5 and `initialDirtState` slot7 **after**
+`preGeneration` and its final root-state read, immediately **before** the sole root conversion.
+Raw registered soil and existing RootyBlock retain the original path; unsupported final soil
+cancels the whole JoCode before fallback root conversion and subsequent branch writes. Earlier
+preGeneration callbacks, writes and RNG remain intact; rejected paths intentionally skip their
+remaining work. This is not a global no-write, RNG-neutrality or concurrent snapshot fence claim.
+Nonworldgen saplings, water/depth traversal, ground/Y selection, registration and logging are unchanged.
+
+`verifyRootySoilAdmission` under `verifyFast` checks actual raw/mapped class pins, exact invocation
+and live locals, require=allow=1, compiled read/forwarding boundaries and eight small policy cases.
+Helpers live outside reserved Mixin namespaces; the existing union guard and an owning JAR guard
+cover composition. These portable controls are not native qualification: the existing canonical
+mandatory population and strict log audit must pass for this candidate before acceptance.
+
 ## DeepVoid flesh-template producer coordinates (source candidate)
 
 Only the eight `StructureFeatureConfiguration.structure()` IDs used by pinned `flesh_stuff` are

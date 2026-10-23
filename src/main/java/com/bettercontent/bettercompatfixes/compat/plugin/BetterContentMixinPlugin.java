@@ -295,7 +295,8 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
                 if (mixinClassName.startsWith(KUBEJS_MIXIN_PREFIX)) {
             return hasVersion(mods, "kubejs", "2001.6.5-build.16");
         }
-        if (DYNAMIC_TREES_POISSON_MIXIN.equals(mixinClassName)) {
+        if (DYNAMIC_TREES_POISSON_MIXIN.equals(mixinClassName)
+                || mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.dynamictrees.JoCodeRootySoilAdmissionMixin")) {
             return hasVersion(mods, "dynamictrees", "1.20.1-1.4.10");
         }
         if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.dynamictrees.FellingBranchMixin")
