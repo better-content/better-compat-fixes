@@ -1,0 +1,19 @@
+// Every authored config participates, including source-only native configs. No package exemptions.
+def roles = ['main','choppingMixins','caravanMixins','urnMixins','nativeFixture','registrateFixture','test']
+def namespaceCheck = tasks.register('verifyMixinNamespaces', Exec) {
+    group = 'verification'
+    roles.each { role -> dependsOn(sourceSets.getByName(role).classesTaskName) }
+    inputs.file('scripts/verify_mixin_namespaces.py')
+    roles.each { role -> inputs.files(sourceSets.getByName(role).allSource, sourceSets.getByName(role).output.classesDirs) }
+    doFirst {
+        def command = ['python3', '-B', project.file('scripts/verify_mixin_namespaces.py').absolutePath]
+        roles.each { role ->
+            sourceSets.getByName(role).output.classesDirs.files.each { root ->
+                def outputRole = root.canonicalFile == layout.buildDirectory.dir('generated/urn-oracle').get().asFile.canonicalFile ? 'generatedOracle' : role
+                command.addAll(['--classes', outputRole + '=' + root.absolutePath])
+            }
+        }
+        commandLine(command)
+    }
+}
+tasks.named('verifyFast').configure { dependsOn(namespaceCheck) }

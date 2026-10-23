@@ -103,7 +103,7 @@ class DynamicTreesFellingNativeContractTest {
         Path root = Path.of("src/main/java/com/bettercontent/bettercompatfixes");
         String stack = Files.readString(root.resolve("mixin/dynamictrees/FellingItemStackMixin.java"));
         String branch = Files.readString(root.resolve("mixin/dynamictrees/FellingBranchMixin.java"));
-        String plugin = Files.readString(root.resolve("mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(root.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         String mixins = Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"));
         for (String name : List.of("FellingItemStackMixin", "FellingBranchMixin")) {
             assertTrue(plugin.contains("dynamictrees." + name));

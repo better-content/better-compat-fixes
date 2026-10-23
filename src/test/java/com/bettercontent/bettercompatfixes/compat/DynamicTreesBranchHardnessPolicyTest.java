@@ -31,7 +31,7 @@ class DynamicTreesBranchHardnessPolicyTest {
                 "src/main/java/com/bettercontent/bettercompatfixes/mixin/dynamictrees/BranchHardnessMixin.java"));
         String config = Files.readString(root.resolve("src/main/resources/better_compat_fixes.mixins.json"));
         String plugin = Files.readString(root.resolve(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         String commonConfig = Files.readString(root.resolve(
                 "src/main/java/com/bettercontent/bettercompatfixes/config/BcFixesConfig.java"));
         String pinnedMod = Files.readString(root.resolve("../../better-content-modpack/mods/dynamictrees.pw.toml"));

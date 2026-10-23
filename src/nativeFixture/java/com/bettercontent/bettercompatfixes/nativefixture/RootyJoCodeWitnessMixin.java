@@ -18,7 +18,7 @@ public abstract class RootyJoCodeWitnessMixin {
     @WrapOperation(method = "generate(Lcom/ferreusveritas/dynamictrees/worldgen/GenerationContext;)V",
             remap = false, require = 1,
             at = @At(value = "INVOKE", target = "Lcom/ferreusveritas/dynamictrees/tree/species/Species;placeRootyDirtBlock(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;I)Z", remap = false))
-    boolean betterCompat$generation(Species species, LevelAccessor level, BlockPos pos, int fertility,
+    public boolean betterCompat$generation(Species species, LevelAccessor level, BlockPos pos, int fertility,
                                              Operation<Boolean> original, GenerationContext context) {
         RootySoilLedger.Generation previous = RootySoilWitness.enter(context);
         try {

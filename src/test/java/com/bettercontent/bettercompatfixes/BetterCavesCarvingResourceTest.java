@@ -34,7 +34,7 @@ final class BetterCavesCarvingResourceTest {
     @Test
     void optionalTargetIsPinnedToTheInspectedBetterCavesRelease() throws IOException {
         final String plugin = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         final String manifest = Files.readString(Path.of("src/main/resources/META-INF/mods.toml"));
 
         assertTrue(plugin.contains("hasVersion(mods, \"bettercaves\", \"1.20.1-Forge-2.0.6\")"));

@@ -1,6 +1,19 @@
-// Optional nonshipping actual Base-native profile. Default runtime has NO Registrate dependency.
+// Optional nonshipping actual Base-native cases. Existing default graph already includes Registrate/Create.
 def fixture = sourceSets.getByName('registrateFixture')
 def present = project.findProperty('withRegistrateFixture') == 'true'
+// Inspect actual JavaExec launcher args, not just config declarations/manifest membership.
+minecraft.runs.all { run ->
+    tasks.matching { it.name == run.taskName }.configureEach {
+        doFirst {
+            def effective = args.collect { it.toString() }
+            if (effective.count { it == 'better_compat_fixes.registrate.mixins.json' } != 1)
+                throw new GradleException('Production Registrate config missing/duplicate in actual launcher ' + run.name)
+            def expectedFixture = run.name == 'gameTestServer' && present ? 1 : 0
+            if (effective.count { it == 'better_compat_fixes.registrate_fixture.mixins.json' } != expectedFixture)
+                throw new GradleException('Registrate fixture config scope/count mismatch in actual launcher ' + run.name)
+        }
+    }
+}
 def nativeRun = minecraft.runs.getByName('gameTestServer')
 if (present) {
     nativeRun.property('bc.registrate.fixture.attempt', project.ext.bcNativeGameTestDirectory.name)

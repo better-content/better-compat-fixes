@@ -1,4 +1,7 @@
-package com.bettercontent.bettercompatfixes.nativefixture;
+package com.bettercontent.bettercompatfixes.nativewitness;
+
+import com.bettercontent.bettercompatfixes.nativefixture.RootySpeciesWitnessMixin;
+import com.bettercontent.bettercompatfixes.nativefixture.RootyJoCodeWitnessMixin;
 
 import com.bettercontent.bettercompatfixes.nativewitness.RootySoilWitness;
 

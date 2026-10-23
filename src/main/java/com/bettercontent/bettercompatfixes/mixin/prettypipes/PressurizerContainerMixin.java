@@ -8,7 +8,7 @@ import de.ellpeck.prettypipes.pressurizer.PressurizerContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.DataSlot;
+import com.bettercontent.bettercompatfixes.compat.prettypipes.PressurizerAirDataSlot;
 import net.minecraft.world.inventory.MenuType;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,14 +25,8 @@ public abstract class PressurizerContainerMixin extends AbstractContainerMenu im
 
     @Inject(method = "<init>", at = @At("RETURN"), require = 1)
     private void bc$syncAir(MenuType<?> type, int id, Player player, BlockPos pos, CallbackInfo ci) {
-        addDataSlot(new DataSlot() {
-            @Override public int get() { return PressurizerAirPolicy.low(bc$serverAir()); }
-            @Override public void set(int value) { bc$lowAir = value & 0xffff; }
-        });
-        addDataSlot(new DataSlot() {
-            @Override public int get() { return PressurizerAirPolicy.high(bc$serverAir()); }
-            @Override public void set(int value) { bc$highAir = value & 0xffff; }
-        });
+        addDataSlot(new PressurizerAirDataSlot(() -> PressurizerAirPolicy.low(bc$serverAir()), value -> bc$lowAir = value & 0xffff));
+        addDataSlot(new PressurizerAirDataSlot(() -> PressurizerAirPolicy.high(bc$serverAir()), value -> bc$highAir = value & 0xffff));
     }
 
     @Unique private int bc$serverAir() {

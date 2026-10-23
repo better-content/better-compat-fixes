@@ -1,5 +1,7 @@
 package com.bettercontent.bettercompatfixes.nativefixture;
 
+import com.bettercontent.bettercompatfixes.urnfixture.UrnRandomScope;
+
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.storage.loot.LootContext;
 import org.spongepowered.asm.mixin.Mixin;

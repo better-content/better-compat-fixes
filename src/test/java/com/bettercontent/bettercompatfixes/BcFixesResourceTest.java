@@ -117,7 +117,7 @@ final class BcFixesResourceTest {
     @Test
     void dtaetherMixinIsPinnedToTheKnownBrokenRelease() throws IOException {
         String plugin = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         String manifest = Files.readString(Path.of("src/main/resources/META-INF/mods.toml"));
 
         assertTrue(plugin.contains("hasVersion(mods, \"dtaether\", \"1.20.1-1.3.3\")"));

@@ -1,4 +1,4 @@
-package com.bettercontent.bettercompatfixes.nativefixture;
+package com.bettercontent.bettercompatfixes.nativewitness;
 
 import com.bettercontent.bettercompatfixes.nativewitness.RootySoilLedger;
 

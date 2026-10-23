@@ -17,7 +17,7 @@ final class TconCompatResourceTest {
                 Path.of("src/main/resources/better_compat_fixes.mixins.json"))).getAsJsonObject();
 
         assertEquals(
-                "com.bettercontent.bettercompatfixes.mixin.BetterContentMixinPlugin",
+                "com.bettercontent.bettercompatfixes.compat.plugin.BetterContentMixinPlugin",
                 config.get("plugin").getAsString());
         assertTrue(config.getAsJsonArray("mixins").toString()
                 .contains("tconstruct.CraftingStationPolymorphMixin"));
@@ -41,7 +41,7 @@ final class TconCompatResourceTest {
     void pneumaticJackhammerHeadBridgeIsRegisteredOnlyWithBothProviders() throws IOException {
         final String mixins = Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"));
         final String plugin = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         final String policy = Files.readString(Path.of(
                 "src/main/java/com/bettercontent/bettercompatfixes/compat/pneumaticcraft/TconJackhammerHeadPolicy.java"));
 

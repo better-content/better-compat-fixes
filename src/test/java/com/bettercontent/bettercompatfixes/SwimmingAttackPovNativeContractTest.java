@@ -136,7 +136,7 @@ final class SwimmingAttackPovNativeContractTest {
                 .getAsJsonObject();
         assertTrue(config.getAsJsonArray("client").toString().contains("epicfight.LocalPlayerAttackPovMixin"));
         assertFalse(config.getAsJsonArray("mixins").toString().contains("LocalPlayerAttackPovMixin"));
-        String plugin = Files.readString(SOURCE.resolve("mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(SOURCE.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("EPIC_FIGHT_ATTACK_POV_MIXIN.equals(mixinClassName)"));
         assertTrue(plugin.contains("hasVersion(mods, \"epicfight\", \"20.14.17\")"));
         String hook = Files.readString(SOURCE.resolve("mixin/epicfight/LocalPlayerAttackPovMixin.java"));

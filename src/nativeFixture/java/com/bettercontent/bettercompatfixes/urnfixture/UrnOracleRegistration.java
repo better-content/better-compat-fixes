@@ -1,12 +1,12 @@
-package com.bettercontent.bettercompatfixes.nativefixture;
+package com.bettercontent.bettercompatfixes.urnfixture;
 
 import com.bettercontent.bettercompatfixes.BetterContentFixes;
-import com.bettercontent.bettercompatfixes.nativefixture.oracle.PinnedUrnOracle;
+import com.bettercontent.bettercompatfixes.urnfixture.oracle.PinnedUrnOracle;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.mehvahdjukaar.supplementaries.reg.ModRegistry;
-import net.minecraftforge.event.RegisterEvent;
+import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 

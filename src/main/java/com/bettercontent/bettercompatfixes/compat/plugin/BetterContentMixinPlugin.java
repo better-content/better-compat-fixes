@@ -1,4 +1,4 @@
-package com.bettercontent.bettercompatfixes.mixin;
+package com.bettercontent.bettercompatfixes.compat.plugin;
 
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.LoadingModList;

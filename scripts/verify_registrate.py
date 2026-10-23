@@ -65,7 +65,7 @@ def compiled_contract(compiled):
 
 def check_archive(path):
     with zipfile.ZipFile(path) as archive:
-        require(not any('/registratefixture/' in name or name == 'better_compat_fixes.registrate_fixture.mixins.json'
+        require(not any('/registratefixture/' in name or '/urnfixture/' in name or name.startswith('urn-oracle/') or name == 'better_compat_fixes.registrate_fixture.mixins.json'
             for name in archive.namelist()), 'Nonshipping Registrate fixture leaked into archive')
 
 def source_and_archive_controls(evidence):
@@ -74,6 +74,7 @@ def source_and_archive_controls(evidence):
     require(build.count('source(registrateFixture)') == 1 and 'if (withRegistrateFixture) source(registrateFixture)' in build, 'Fixture source-set scope drift')
     require('if (withRegistrateFixture) add(registrateFixture.runtimeOnlyConfigurationName' in build, 'Optional runtime library not conditional')
     require('val mixinExtrasVersion = "0.5.4"' in build, 'Required MixinExtras API floor drift')
+    require(build.count('config("better_compat_fixes.registrate.mixins.json")') == 1, 'Production source launcher config missing/duplicate')
     config = (repo / 'src/main/resources/better_compat_fixes.registrate.mixins.json').read_text()
     require('compat.registrate.RegistrateMixinPlugin' in config and 'mixin.registrate.RegistrateMixinPlugin' not in config, 'Plugin inside reserved mixin prefix')
     root = Path(evidence) / str(uuid.uuid4()); root.mkdir(parents=True)
@@ -82,7 +83,11 @@ def source_and_archive_controls(evidence):
         'com/bettercontent/bettercompatfixes/registratefixture/RegistrateGameTests.class',
         'com/bettercontent/bettercompatfixes/registratefixture/mixin/RegistrateStateAccessor.class',
         'com/bettercontent/bettercompatfixes/registratefixture/mixin/RegistrationCallbacksAccessor.class',
-        'com/bettercontent/bettercompatfixes/registratefixture/mixin/RegistrateTransferGateMixin.class']
+        'com/bettercontent/bettercompatfixes/registratefixture/mixin/RegistrateTransferGateMixin.class',
+        'com/bettercontent/bettercompatfixes/urnfixture/UrnRandomScope.class',
+        'com/bettercontent/bettercompatfixes/urnfixture/UrnOracleRegistration.class',
+        'com/bettercontent/bettercompatfixes/urnfixture/oracle/PinnedUrnOracle.class',
+        'urn-oracle/data/supplementaries/loot_tables/blocks/urn.json']
     for role in ['runtime', 'sources']:
         positive = root / f'{role}-positive.zip'
         with zipfile.ZipFile(positive, 'x') as archive:

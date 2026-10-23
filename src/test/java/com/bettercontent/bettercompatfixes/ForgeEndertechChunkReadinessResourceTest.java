@@ -18,7 +18,7 @@ class ForgeEndertechChunkReadinessResourceTest {
         for (String forbidden : new String[]{"@Inject", "cancel", "scheduledExplosions", "freshlyLoadedChunks", "getChunkFuture", "addRegionTicket", "original.call(level"}) assertFalse(hook.contains(forbidden), forbidden);
     }
     @Test void versionPinnedNativeStateRegressionIsRegisteredAndPackaged() throws Exception {
-        String plugin = Files.readString(MAIN.resolve("mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(MAIN.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"forgeendertech\", \"11.1.10.2\")"));
         String config = Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"));
         assertTrue(config.contains("forgeendertech.WorldDataChunkReadinessMixin") && config.contains("forgeendertech.WorldDataAccessor"));

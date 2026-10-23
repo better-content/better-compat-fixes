@@ -1,4 +1,4 @@
-package com.bettercontent.bettercompatfixes.nativefixture;
+package com.bettercontent.bettercompatfixes.urnfixture;
 
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;

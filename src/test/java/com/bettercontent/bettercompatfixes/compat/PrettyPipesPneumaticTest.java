@@ -78,7 +78,7 @@ final class PrettyPipesPneumaticTest {
         String be = Files.readString(MAIN.resolve("mixin/prettypipes/PressurizerBlockEntityMixin.java"));
         String gui = Files.readString(MAIN.resolve("mixin/prettypipes/PressurizerGuiMixin.java"));
         String menu = Files.readString(MAIN.resolve("mixin/prettypipes/PressurizerContainerMixin.java"));
-        String plugin = Files.readString(MAIN.resolve("mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(MAIN.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         String config = Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"));
         assertTrue(be.contains("createTierOneAirHandler(PressurizerAirPolicy.VOLUME)"));
         assertTrue(be.contains("cap == ForgeCapabilities.ENERGY") && be.contains("cir.setReturnValue(LazyOptional.empty())"));
@@ -88,7 +88,7 @@ final class PrettyPipesPneumaticTest {
         assertTrue(be.contains("super.invalidateCaps()") && be.contains("super.reviveCaps()"));
         assertTrue(be.contains("air.tick(tile)") && be.contains("serializeNBT()") && be.contains("deserializeNBT("));
         assertTrue(be.contains("tag.remove(\"energy\")") && be.contains("ci.cancel()"));
-        assertTrue(menu.contains("addDataSlot(new DataSlot()"));
+        assertTrue(menu.contains("addDataSlot(new PressurizerAirDataSlot("));
         assertTrue(menu.contains("PressurizerAirPolicy.low(") && menu.contains("PressurizerAirPolicy.high("));
         assertTrue(gui.contains("PressureGaugeRenderer2D.drawPressureGauge("));
         assertTrue(gui.contains("new WidgetTooltipArea(") && gui.contains("printManometerMessage("));

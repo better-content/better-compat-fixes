@@ -130,7 +130,7 @@ class NativeSortContractTest {
         assertTrue(admission.contains("require = 1, allow = 1"));
         assertFalse(admission.contains("startsWith("));
         assertTrue(routing.contains("QuarkGeneralConfig.isScreenAllowed(raw)"));
-        String plugin = Files.readString(Path.of(ROOT + "mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(Path.of(ROOT + "compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("mixinClassName.startsWith(\"com.bettercontent.bettercompatfixes.mixin.quark.\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"quark\", \"4.0-462\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"zeta\", \"1.0-31\")"));

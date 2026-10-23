@@ -19,7 +19,7 @@ final class TaczCompatibilityResourceTest {
         assertTrue(client.contains("tacz.ClientIndexManagerMixin"));
         assertTrue(client.contains("tacz.ClientAssetsManagerAccessor"));
 
-        final String plugin = Files.readString(SOURCE_ROOT.resolve("mixin/BetterContentMixinPlugin.java"));
+        final String plugin = Files.readString(SOURCE_ROOT.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"tacz\", \"1.20.1-1.1.8-hotfix\")"));
     }
 

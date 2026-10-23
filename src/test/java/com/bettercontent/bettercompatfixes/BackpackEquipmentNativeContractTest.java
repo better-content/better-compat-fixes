@@ -111,7 +111,7 @@ class BackpackEquipmentNativeContractTest {
         assertTrue(call(dispenser, selector.name, "<init>") >= 0);
     }
     @Test void hooksAreOptionalVersionPinnedFinalScopedAndNeverInterceptRemovalOrCommands() throws Exception {
-        String plugin = Files.readString(Path.of(ROOT + "mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(Path.of(ROOT + "compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"curios\", \"5.14.1+1.20.1\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"sophisticatedbackpacks\", \"3.24.35.1675\")"));
         String api = Files.readString(Path.of(ROOT + "mixin/backpackequipment/CuriosApiMixin.java"));

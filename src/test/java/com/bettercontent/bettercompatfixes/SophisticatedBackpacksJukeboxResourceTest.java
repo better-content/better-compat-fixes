@@ -14,7 +14,7 @@ final class SophisticatedBackpacksJukeboxResourceTest {
                 Path.of("src/main/resources/better_compat_fixes.mixins.json"))).getAsJsonObject();
         final String mixins = config.getAsJsonArray("mixins").toString();
         final String plugin = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         final String owner = Files.readString(Path.of(
                 "src/main/java/com/bettercontent/bettercompatfixes/mixin/sophisticatedbackpacks/UpgradeWrapperBaseMixin.java"));
         final String wrapper = Files.readString(Path.of(

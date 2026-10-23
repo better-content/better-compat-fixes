@@ -43,7 +43,7 @@ final class EpicFightBattleModeResourceTest {
         String keySource = Files.readString(MIXIN_ROOT.resolve("EpicFightKeyMappingsMixin.java"));
         String controllerSource = Files.readString(MIXIN_ROOT.resolve("EpicFightControlifyEntrypointMixin.java"));
         String pluginSource = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
 
         assertTrue(keySource.contains("keyMapping != EpicFightKeyMappings.SWITCH_MODE"));
         assertTrue(controllerSource.contains("action != EpicFightInputAction.SWITCH_MODE"));

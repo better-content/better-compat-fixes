@@ -72,7 +72,7 @@ final class MarkerAndLimbNativeContractTest {
         assertTrue(policy.contains("isExcludedId(ForgeRegistries.BLOCKS.getKey(state.getBlock()))"));
         assertTrue(policy.contains("return MARKER.equals(id)"));
         assertFalse(policy.contains("crying_obsidian"));
-        String plugin = Files.readString(SOURCE.resolve("mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(SOURCE.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"rbp\", \"1.0.0\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"realisticphysics\", \"1.0.1\")"));
         assertTrue(Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json")).contains("rbp.BlockOperationSchedulerMixin"));

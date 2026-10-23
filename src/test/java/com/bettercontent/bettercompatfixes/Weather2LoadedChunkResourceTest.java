@@ -32,7 +32,7 @@ class Weather2LoadedChunkResourceTest {
     @Test void serverOnlyHooksPreserveStormLifecycleAndAreVersionPinned() throws Exception {
         String height = Files.readString(MAIN.resolve("mixin/weather2/WeatherUtilBlockMixin.java"));
         String storm = Files.readString(MAIN.resolve("mixin/weather2/StormObjectMixin.java"));
-        String plugin = Files.readString(MAIN.resolve("mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(MAIN.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         String config = Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"));
         assertTrue(height.contains("world instanceof ServerLevel"));
         assertTrue(height.contains("Heightmap$Types;"));

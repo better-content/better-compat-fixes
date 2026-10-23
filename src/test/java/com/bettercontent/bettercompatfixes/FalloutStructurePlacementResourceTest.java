@@ -34,7 +34,7 @@ final class FalloutStructurePlacementResourceTest {
     @Test
     void optionalTargetIsPinnedToTheInspectedFalloutArtifact() throws IOException {
         final String plugin = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         final String manifest = Files.readString(Path.of("src/main/resources/META-INF/mods.toml"));
         final String build = Files.readString(Path.of("build.gradle.kts"));
 

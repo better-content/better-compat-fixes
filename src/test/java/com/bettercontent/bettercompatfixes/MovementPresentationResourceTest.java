@@ -32,7 +32,7 @@ final class MovementPresentationResourceTest {
 
     @Test
     void optionalCompatibilityIsPinnedToInspectedVersions() throws IOException {
-        final String plugin = Files.readString(SOURCE_ROOT.resolve("mixin/BetterContentMixinPlugin.java"));
+        final String plugin = Files.readString(SOURCE_ROOT.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         final String metadata = Files.readString(Path.of("src/main/resources/META-INF/mods.toml"));
 
         assertTrue(plugin.contains("hasVersion(mods, \"parcool\", \"3.4.3.3\")"));
@@ -101,7 +101,7 @@ final class MovementPresentationResourceTest {
         assertTrue(camera.contains("original.visibilityOthers()"));
         assertTrue(camera.contains("original.hasUniqueAnimation()"));
         assertTrue(camera.contains("original.syncFrame()"));
-        final String plugin = Files.readString(SOURCE_ROOT.resolve("mixin/BetterContentMixinPlugin.java"));
+        final String plugin = Files.readString(SOURCE_ROOT.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"epicparcool\", \"20.12.0.1\")"));
     }
 
@@ -117,7 +117,7 @@ final class MovementPresentationResourceTest {
             assertTrue(camera.contains("original." + field + "()"));
         }
         assertTrue(camera.contains("require = 1") && camera.contains("allow = 1"));
-        final String plugin = Files.readString(SOURCE_ROOT.resolve("mixin/BetterContentMixinPlugin.java"));
+        final String plugin = Files.readString(SOURCE_ROOT.resolve("compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("(EPIC_FIGHT_MIXIN_PREFIX + \"EpicFightClimbCameraMixin\").equals(mixinClassName)"));
     }
 

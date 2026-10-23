@@ -42,7 +42,7 @@ final class ExplosionOverhaulScanPolicyResourceTest {
     @Test
     void optionalTargetIsPinnedToTheInspectedExplosionOverhaulVersion() throws IOException {
         String plugin = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
 
         assertTrue(plugin.contains("hasVersion(mods, \"explosionoverhaul\", \"0.2.3.0-forge\")"));
     }

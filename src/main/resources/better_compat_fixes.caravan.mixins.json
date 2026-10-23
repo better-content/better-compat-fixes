@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.bettercontent.bettercompatfixes.mixin",
-  "plugin": "com.bettercontent.bettercompatfixes.mixin.BetterContentMixinPlugin",
+  "plugin": "com.bettercontent.bettercompatfixes.compat.plugin.BetterContentMixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "better_compat_fixes.caravan.refmap.json",
   "mixins": ["caravan.SinglePoolElementMixin"],

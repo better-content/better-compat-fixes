@@ -9,7 +9,9 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
 - Stage: `./gradlew stageRuntimeJar`, `build/libs/better-compat-fixes-<version>.jar`.
 - Registrate construction changes additionally require the native-present SOURCE profile:
   `./gradlew clean verifyFull stageRuntimeJar -PwithRegistrateFixture=true --no-daemon`, then
-  `./gradlew clean verifyFull stageRuntimeJar --no-daemon` for ordinary optional absence/staging.
+  `./gradlew clean verifyFull stageRuntimeJar --no-daemon` for fixture-disabled/default staging.
+  The existing default graph already includes Registrate/Create; this is NOT target-library absence.
+  Only the resource-only JDK control currently proves the genuinely absent plugin branch.
   Present adds only pinned Registrate 1.3.3 and two actual upstream Base tests (81 with the
   default graph); no Create/Ponder/Flywheel fixture or runtime dependency is added. Ordinary
   default/no-Heat79, no-Bees77 and no-Curios76 populations remain unchanged without this flag.

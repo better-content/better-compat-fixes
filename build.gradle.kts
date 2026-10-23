@@ -526,6 +526,7 @@ mixin {
     add(choppingMixins, "better_compat_fixes.chopping.refmap.json")
     add(caravanMixins, "better_compat_fixes.caravan.refmap.json")
     add(urnMixins, "better_compat_fixes.urn.refmap.json")
+    config("better_compat_fixes.registrate.mixins.json")
     config("better_compat_fixes.urn.mixins.json")
     config("better_compat_fixes.oc2r.mixins.json")
     config("better_compat_fixes.caravan.mixins.json")
@@ -1111,7 +1112,7 @@ val verifyRuntimeSwimmingAttackPov by tasks.registering {
             }
             bytes(root + "client/FirstPersonPovPriority.class")
             check(bytes("better_compat_fixes.mixins.json").contains("epicfight.LocalPlayerAttackPovMixin"))
-            check(bytes(root + "mixin/BetterContentMixinPlugin.class").contains("LocalPlayerAttackPovMixin"))
+            check(bytes(root + "compat/plugin/BetterContentMixinPlugin.class").contains("LocalPlayerAttackPovMixin"))
         }
     }
 }
@@ -1306,6 +1307,7 @@ tasks.named("verifyFast") { dependsOn(verifyRuntimeColonyEmi) }
 apply(from = "gradle/native-gametest-fixture.gradle")
 apply(from = "gradle/treasure-urn-contract.gradle")
 apply(from = "gradle/registrate-contract.gradle")
+apply(from = "gradle/mixin-namespace-contract.gradle")
 
 jacoco {
     toolVersion = "0.8.12"

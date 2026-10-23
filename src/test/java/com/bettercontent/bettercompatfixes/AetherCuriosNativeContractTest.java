@@ -99,7 +99,7 @@ final class AetherCuriosNativeContractTest {
         var json = com.google.gson.JsonParser.parseString(config).getAsJsonObject();
         assertEquals(4, json.getAsJsonArray("client").asList().stream().filter(e -> e.getAsString().startsWith("aetherepicfight.")).count());
         assertFalse(json.getAsJsonArray("mixins").toString().contains("aetherepicfight"));
-        String plugin = Files.readString(Path.of("src/main/java/" + B + "mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(Path.of("src/main/java/" + B + "compat/plugin/BetterContentMixinPlugin.java"));
         int start = plugin.indexOf("mixin.aetherepicfight.");
         String gate = plugin.substring(start, plugin.indexOf("\n        }", start));
         assertTrue(gate.contains("hasVersion(mods, \"aether\", \"1.20.1-1.5.2-neoforge\")"));

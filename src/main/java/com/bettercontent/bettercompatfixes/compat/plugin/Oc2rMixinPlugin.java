@@ -1,4 +1,4 @@
-package com.bettercontent.bettercompatfixes.mixin.oc2r;
+package com.bettercontent.bettercompatfixes.compat.plugin;
 
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.objectweb.asm.tree.ClassNode;

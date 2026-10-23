@@ -12,7 +12,7 @@ final class CreateSifterCompatibilityResourceTest {
     @Test
     void sifterCompatibilityIsExactVersionGatedAndLossless() throws IOException {
         final String plugin = Files.readString(Path.of(
-                "src/main/java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+                "src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"createsifter\", \"1.20.1-1.8.6-6.0.6\")"));
 
         final String outputMixin = Files.readString(Path.of(

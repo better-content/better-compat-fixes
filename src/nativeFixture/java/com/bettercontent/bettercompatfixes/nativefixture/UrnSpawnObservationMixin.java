@@ -1,5 +1,7 @@
 package com.bettercontent.bettercompatfixes.nativefixture;
 
+import com.bettercontent.bettercompatfixes.urnfixture.UrnRandomScope;
+
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -11,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 /** Both the unchanged original oracle and native implementation receive identical scoped RNG input. */
 @Mixin(targets = {"net.mehvahdjukaar.supplementaries.common.block.blocks.UrnBlock",
-        "com.bettercontent.bettercompatfixes.nativefixture.oracle.PinnedUrnOracle"}, remap = false)
+        "com.bettercontent.bettercompatfixes.urnfixture.oracle.PinnedUrnOracle"}, remap = false)
 public abstract class UrnSpawnObservationMixin {
     @ModifyExpressionValue(method = "spawnAfterBreak", at = @At(value = "FIELD",
             target = "Lnet/minecraft/server/level/ServerLevel;random:Lnet/minecraft/util/RandomSource;"), require = 1, expect = 1, allow = 1)

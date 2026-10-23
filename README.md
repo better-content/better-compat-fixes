@@ -28,7 +28,10 @@ private Registration class pairs, not a version-only guess. A plugin outside the
 Mixin prefix checks bounded original class resources without target loading/initialization:
 complete absence is inert; partial or unknown present pairs fail closed. MixinExtras0.5.4
 provides required WrapMethod/WrapOperation support. No Create/Ponder/Flywheel runtime dependency
-is added to this mod; Root Create's embedded Registrate bytes match the pinned raw library.
+is added by this fixture; the existing default dependency graph already includes Registrate/Create.
+Default fixture-disabled staging is NOT target-library absence. Only the resource-only JDK
+control currently proves the genuinely absent plugin branch. Root Create's embedded Registrate
+bytes match the pinned raw library.
 
 One eagerly initialized reentrant lock per registrar protects only original construction
 transactions: accept's pending.removeAll -> original callback transfer -> registrations.put;
@@ -75,8 +78,21 @@ unchanged without the flag. The fixture classes/accessors/gap/configuration are 
 runtime/source archives. `verifyFast` includes paired raw/mapped method/order pins, compiled
 required eight-site/four-original-forward checks and mutation/exclusion/absence/cleanup controls.
 These source controls are **not** actual transformed Mixins or native acceptance. The lead must
-run the documented present profile and ordinary/other required profiles after reviewing source;
-actual MixinExtras WrapMethod/Inject composition and native-present/absence gates remain pending.
+run the documented fixture-enabled and fixture-disabled/other required profiles after reviewing source;
+actual MixinExtras WrapMethod/Inject composition and native fixture gates remain pending.
+Production Registrate config is registered in both the archive manifest and global source Mixin
+configuration; exact effective JavaExec launcher config counts are asserted before all source runs.
+
+All eight Mixin configs reserve their complete package descendant union. Plugins and ordinary
+helpers live outside it, including urn registration/random scope/generated oracle and ordinary
+JUnit controls. `verifyMixinNamespaces` admits only configured classes with actual class-level
+Mixin annotations under those prefixes, rejects nested/anonymous helpers, and requires explicit
+source/compiled output roles. It never treats a constant-pool descriptor string as an annotation.
+The generated oracle root is a builtBy nativeFixture classesDirs entry, not merely output.dir:
+ForgeGradle08 actually omitted that latter root from MOD_CLASSES (log442–443). Pre-launch checks
+now require its exact coordinate in actual native JavaExec MOD_CLASSES and reject ordinary-run
+source exposure. Runtime/source archive guards reject the complete urnfixture tree and oracle
+resources. Namespace/module/config wiring remains source-qualified until the next lead native gate.
 
 ## Supplementaries treasure urn source contract
 

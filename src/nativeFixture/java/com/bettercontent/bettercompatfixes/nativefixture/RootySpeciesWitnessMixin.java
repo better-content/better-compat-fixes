@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public abstract class RootySpeciesWitnessMixin {
     @WrapMethod(method = "placeRootyDirtBlock(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;I)Z",
             remap = false, require = 1)
-    boolean betterCompat$rootyCall(LevelAccessor level, BlockPos root, int fertility, Operation<Boolean> original) {
+    public boolean betterCompat$rootyCall(LevelAccessor level, BlockPos root, int fertility, Operation<Boolean> original) {
         RootySoilLedger.Call call = RootySoilWitness.begin();
         boolean returned;
         try {
@@ -46,7 +46,7 @@ public abstract class RootySpeciesWitnessMixin {
 
     @WrapOperation(method = "lambda$placeRootyDirtBlock$10", remap = false, require = 1,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/LevelAccessor;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", remap = false))
-    boolean betterCompat$setBlock(LevelAccessor receiver, BlockPos pos, BlockState state, int flags,
+    public boolean betterCompat$setBlock(LevelAccessor receiver, BlockPos pos, BlockState state, int flags,
                                           Operation<Boolean> original) {
         // Copy scalar arguments BEFORE the call; preserve original receiver/pos/state/flags and native POP.
         RootySoilLedger.Call call = RootySoilWitness.setStart(pos, state, flags);

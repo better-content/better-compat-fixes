@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 final class TreasureUrnContractTest {
     private static final String ORIGINAL = "net/mehvahdjukaar/supplementaries/common/block/blocks/UrnBlock";
-    private static final String ORACLE = "com/bettercontent/bettercompatfixes/nativefixture/oracle/PinnedUrnOracle";
+    private static final String ORACLE = "com/bettercontent/bettercompatfixes/urnfixture/oracle/PinnedUrnOracle";
     private static CompoundTag dummy(BlockPos pos) {
         var tag = new CompoundTag(); tag.putString("id", "DUMMY");
         tag.putInt("x", pos.getX()); tag.putInt("y", pos.getY()); tag.putInt("z", pos.getZ()); return tag;

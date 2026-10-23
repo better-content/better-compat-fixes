@@ -126,7 +126,7 @@ final class EpicParCoolDodgeKeyConflictTest {
         assertFalse(mixin.contains("@Inject")); // Never return early around native stamina.
         assertTrue(Files.readString(root.resolve("resources/better_compat_fixes.mixins.json"))
                 .contains("epicfight.EpicParCoolDodgeKeyConflictMixin"));
-        String plugin = Files.readString(root.resolve("java/com/bettercontent/bettercompatfixes/mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(root.resolve("java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("EpicParCoolDodgeKeyConflictMixin"));
         assertTrue(plugin.contains("hasVersion(mods, \"epicparcool\", \"20.12.0.1\")"));
         Object equipped = new Object();

@@ -40,7 +40,7 @@ def prepareOracle = tasks.register('prepareTreasureUrnNativeOracle') {
     outputs.dir(oracleDirectory)
     doLast {
         def oldName = 'net/mehvahdjukaar/supplementaries/common/block/blocks/UrnBlock'
-        def newName = 'com/bettercontent/bettercompatfixes/nativefixture/oracle/PinnedUrnOracle'
+        def newName = 'com/bettercontent/bettercompatfixes/urnfixture/oracle/PinnedUrnOracle'
         new java.util.zip.ZipFile(configurations.urnMappedOracle.singleFile).withCloseable { zip ->
             def bytes = zip.getInputStream(zip.getEntry(oldName + '.class')).withCloseable { it.readAllBytes() }
             def writer = new org.objectweb.asm.ClassWriter(0)
@@ -60,7 +60,23 @@ def prepareOracle = tasks.register('prepareTreasureUrnNativeOracle') {
         }
     }
 }
+// FG builds MOD_CLASSES from classesDirs/resourcesDir, not arbitrary output.dir roots.
 sourceSets.nativeFixture.output.dir([builtBy:prepareOracle], oracleDirectory)
+sourceSets.nativeFixture.output.classesDirs.from(files(oracleDirectory).builtBy(prepareOracle))
+tasks.named('runGameTestServer').configure {
+    dependsOn(prepareOracle)
+    doFirst {
+        def actual = environment.get('MOD_CLASSES')?.toString()
+        def coordinate = project.property('mod_id') + '%%' + oracleDirectory.absolutePath
+        if (actual == null || !actual.split(java.util.regex.Pattern.quote(File.pathSeparator)).contains(coordinate))
+            throw new GradleException('Generated urn oracle absent from actual JavaExec MOD_CLASSES: ' + actual)
+        minecraft.runs.each { run ->
+            if (run.name != 'gameTestServer' && run.allSources.any { it.output.classesDirs.files.contains(oracleDirectory) })
+                throw new GradleException('Native urn oracle leaked into ordinary RunConfig ' + run.name)
+        }
+        logger.lifecycle('BC_URN_ORACLE_MODULE_V1 nativeOnly=true coordinate=' + coordinate)
+    }
+}
 sourceSets.nativeFixture.compileClasspath += files(oracleDirectory)
 tasks.named('compileNativeFixtureJava').configure { dependsOn(prepareOracle) }
 tasks.named('test').configure {
@@ -74,10 +90,10 @@ tasks.named('test').configure {
 }
 tasks.named('verifyFast').configure { dependsOn(verifyInputs) }
 tasks.withType(org.gradle.api.tasks.bundling.Jar).configureEach {
-    exclude('urn-oracle/**', '**/TreasureUrnGameTests*', '**/UrnOracleRegistration*')
+    exclude('urn-oracle/**', '**/urnfixture/**', '**/TreasureUrnGameTests*', '**/UrnOracleRegistration*')
     doLast {
         new java.util.zip.ZipFile(archiveFile.get().asFile).withCloseable { zip ->
-            if (zip.entries().any { it.name.startsWith('urn-oracle/') || it.name.contains('TreasureUrnGameTests') || it.name.contains('UrnOracleRegistration') })
+            if (zip.entries().any { it.name.startsWith('urn-oracle/') || it.name.contains('/urnfixture/') || it.name.contains('TreasureUrnGameTests') || it.name.contains('UrnOracleRegistration') })
                 throw new GradleException('Nonshipping urn oracle/control leaked into archive')
         }
     }

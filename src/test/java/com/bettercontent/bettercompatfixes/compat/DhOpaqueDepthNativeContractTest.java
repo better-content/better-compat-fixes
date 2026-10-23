@@ -76,7 +76,7 @@ final class DhOpaqueDepthNativeContractTest {
         String name = "oculus.DHCompatInternalMixin";
         assertTrue(config.getAsJsonArray("client").asList().stream().anyMatch(value -> value.getAsString().equals(name)));
         assertFalse(config.getAsJsonArray("mixins").asList().stream().anyMatch(value -> value.getAsString().equals(name)));
-        String plugin = Files.readString(Path.of(ROOT + "mixin/BetterContentMixinPlugin.java"));
+        String plugin = Files.readString(Path.of(ROOT + "compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"oculus\", \"1.8.0\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"distanthorizons\", \"2.4.5-b\")"));
         String mixin = Files.readString(Path.of(ROOT + "mixin/oculus/DHCompatInternalMixin.java"));
