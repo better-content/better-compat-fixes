@@ -12,13 +12,22 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
   `./gradlew clean verifyFull stageRuntimeJar --no-daemon` for fixture-disabled/default staging.
   The existing default graph already includes Registrate/Create; this is NOT target-library absence.
   Only the resource-only JDK control currently proves the genuinely absent plugin branch.
-  Present adds only pinned Registrate 1.3.3 and two actual upstream Base tests (83 with the
-  default graph); no Create/Ponder/Flywheel fixture or runtime dependency is added. Ordinary
+  Present selects exact pinned Registrate 1.3.11 (the full pack's Fruits Delight JarJar winner)
+  and two actual upstream Base tests (83 with the default graph); other profiles retain 1.3.3.
+  Both native witnesses require the exact 1.3.11 mapped resource pair from the active loader.
+  No Create/Ponder/Flywheel fixture or new library family is added. Ordinary
   default/no-Heat81, no-Bees79 and no-Curios78 populations include pending-read ownership and
   whole-bone placement cases; every previous native identity remains required without this flag.
-  This does not replace existing required optional profiles or authorize native execution.
+  This does not replace existing required optional profiles. Standing native authorization and
+  coordination follow the shared workspace testing policy.
   Raw/mapped paired class pins and compiled site/forwarding checks run in `verifyFast`;
   WrapMethod/Inject composition and actual native behavior require the separately admitted gate.
+- `qualifyUpstreamRuntimeOverrides` under `verifyFast` requires all 17 pinned-original and pure
+  controls, including two identical builds, unchanged recursive classes/licenses/scripts and exact
+  current production replacement/plugin bytes. Retain original inputs, attempts and support outputs;
+  never mutate caches, add log exemptions or publicly publish corrected restricted binaries. Stable
+  support paths under `build/upstream-runtime-overrides/` are source-qualified inputs to Root's sole
+  packager, not runtime acceptance or a redistribution grant. See `src/upstreamRuntime/README.md`.
 - Default full native gate requires canonical staged `better-industrial-heat-0.1.0.jar`
   via `BC_CUSTOM_MOD_JAR_DIR` or sibling `build/libs`; prepare that provider first.
   Spoilage changes also run `./gradlew clean verifyFull stageRuntimeJar -PspoilageWithoutHeat=true --no-daemon`,

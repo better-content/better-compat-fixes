@@ -90,6 +90,28 @@ full-five-profile qualification and canonical consumer strict audit are still re
 in a real native region from an unsafe origin and checks every translated payload block for all three
 bone templates. Its pre-repair negative must fail; it does not suppress native errors or clip the payload.
 
+## Local-only upstream runtime resources
+
+`qualifyUpstreamRuntimeOverrides` is part of `verifyFast`. It fetches only the five exact pinned
+originals into a separate immutable input directory, then runs all 17 resource controls against
+the current production Compat JAR. Two independently built copies must match; 3,144 recursive
+class bytes, untouched compressed records, licenses and scripts remain invariant. The reviewed
+recipe changes seven missing `minVersion` fields, three client-only Mixin list entries, and three
+obsolete AdPother coremod registrations already replaced by exact-gated production hooks.
+It does not repair both emission paths or alter logging/error handlers.
+
+Fresh outputs/receipts remain in `build/upstream-runtime-evidence/`; successful stable support
+paths are `build/upstream-runtime-overrides/`. Root source qualification binds those support
+hashes, the recipe and actual staged replacement classes before its existing packager assembles
+local candidates. Originals, existing `.pw.toml` identities and download caches remain immutable.
+These outputs are **local only**: Relics and AdPother declare All Rights Reserved without a found
+grant, and other artifacts have notice/source obligations. Neither the recipe nor a receipt grants
+public redistribution rights. No corrected third-party binary is committed or publicly hosted.
+See [the exact resource/rights contract](src/upstreamRuntime/README.md).
+
+Resource controls and source-native profiles are not exact-candidate client/server acceptance;
+Root must still qualify the full real pack and strict logs without exemptions.
+
 ## Death worm terrain aliases (source candidate)
 
 Ice and Fire file5633453 has both SRG and official-mapped override names. The terrain replacements
@@ -106,15 +128,17 @@ Cached JDK/Mixin-AP/ASM controls are not actual native Mixin composition or pack
 
 ## Registrate construction transactions (source candidate)
 
-The optional production repair targets exact raw/official-mapped **Registrate1.3.3** Base and
-private Registration class pairs, not a version-only guess. A plugin outside the reserved
+The optional production repair targets exact raw/official-mapped **Registrate1.3.3 and 1.3.11**
+Base and private Registration class pairs, not a version-only guess. A plugin outside the reserved
 Mixin prefix checks bounded original class resources without target loading/initialization:
 complete absence is inert; partial or unknown present pairs fail closed. MixinExtras0.5.4
 provides required WrapMethod/WrapOperation support. No Create/Ponder/Flywheel runtime dependency
 is added by this fixture; the existing default dependency graph already includes Registrate/Create.
 Default fixture-disabled staging is NOT target-library absence. Only the resource-only JDK
-control currently proves the genuinely absent plugin branch. Root Create's embedded Registrate
-bytes match the pinned raw library.
+control currently proves the genuinely absent plugin branch. Root Create's embedded 1.3.3 bytes
+match the legacy raw pair; Fruits Delight's JarJar 1.3.11 wins in the actual full pack. The newer
+`accept` adds mod-ID logging before the original locked slice; reviewed lookup, transfer,
+publication, callback and delegate instructions preserve the admitted transaction semantics.
 
 One eagerly initialized reentrant lock per registrar protects only original construction
 transactions: accept's pending.removeAll -> original callback transfer -> registrations.put;
@@ -144,8 +168,11 @@ An unlocked diagnostic projection may still see intermediate changes during one 
 writer; its CME presence/absence alone is not a post-repair verdict.
 
 `-PwithRegistrateFixture=true` attaches a separate nonshipping source set **only** to gameTestServer
-and adds the exact pinned Registrate runtime library, not a copied oracle/provider. Two required
-native tests (83 with the default graph) call an actual protected Base subclass. Read-only native
+and selects the exact pinned **1.3.11** runtime library, not a copied oracle/provider. Other
+profiles retain **1.3.3**, so each invocation has one coherent raw/mapped SDK rather than conflicting
+ForgeGradle versions. Two required native tests (83 with the default graph) call an actual protected
+Base subclass; each native witness additionally requires both exact official-mapped 1.3.11 class
+resource hashes from the active game loader. Read-only native
 accessors inspect original pending multimap, table and callback list. A required original-removeAll
 gap schedules real callback lookup against transfer/publication; tests require exact callback/
 delegate identities, native get/getAll snapshot behavior, original collection retention, and no

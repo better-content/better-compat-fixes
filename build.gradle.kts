@@ -18,6 +18,7 @@ group = "com.bettercontent"
 version = property("mod_version") as String
 val mixinExtrasVersion = "0.5.4"
 val withRegistrateFixture = providers.gradleProperty("withRegistrateFixture").map(String::toBooleanStrict).getOrElse(false)
+val registrateFixtureVersion = if (withRegistrateFixture) "1.3.11" else "1.3.3"
 // Native optional-absence profile; Ars Nouveau requires Curios and cannot be present in it.
 val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
 val spoilageWithoutHeat = providers.gradleProperty("spoilageWithoutHeat").map(String::toBoolean).getOrElse(false)
@@ -238,15 +239,17 @@ val heatNativePins = configurations.create("heatNativePins") { isTransitive = fa
 val aetherRenderNativePins = configurations.create("aetherRenderNativePins") { isTransitive = false }
 val colonyEmiNativePins = configurations.create("colonyEmiNativePins") { isTransitive = false }
 val registrateNativePins = configurations.create("registrateNativePins") { isTransitive = false }
+val registrateOtherNativePins = configurations.create("registrateOtherNativePins") { isTransitive = false }
 val registrateMappedPins = configurations.create("registrateMappedPins") { isTransitive = false }
 val urnNativePins = configurations.create("urnNativePins") { isTransitive = false }
 val urnMappedOracle = configurations.create("urnMappedOracle") { isTransitive = false }
 
 dependencies {
-    add(registrateNativePins.name, "com.tterrag.registrate:Registrate:MC1.20-1.3.3")
-    add(registrateMappedPins.name, fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
-    compileOnly(fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
-    if (withRegistrateFixture) add(registrateFixture.runtimeOnlyConfigurationName, fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
+    add(registrateNativePins.name, "com.tterrag.registrate:Registrate:MC1.20-$registrateFixtureVersion")
+    add(registrateOtherNativePins.name, "com.tterrag.registrate:Registrate:MC1.20-${if (withRegistrateFixture) "1.3.3" else "1.3.11"}")
+    add(registrateMappedPins.name, fg.deobf("com.tterrag.registrate:Registrate:MC1.20-$registrateFixtureVersion"))
+    compileOnly(fg.deobf("com.tterrag.registrate:Registrate:MC1.20-$registrateFixtureVersion"))
+    if (withRegistrateFixture) add(registrateFixture.runtimeOnlyConfigurationName, fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.11"))
     add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(caravanMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(urnMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
@@ -307,7 +310,8 @@ dependencies {
     implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${property("minecraft_version")}:1.0.92"))
     compileOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-${property("minecraft_version")}:1.0.5"))
     runtimeOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-${property("minecraft_version")}:1.0.5"))
-    implementation(fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3"))
+    // Match the full pack's JarJar winner in the explicit native fixture, preserving old SDK coverage.
+    implementation(fg.deobf("com.tterrag.registrate:Registrate:MC1.20-$registrateFixtureVersion"))
     runtimeOnly(fg.deobf("maven.modrinth:create-sifting:1.20.1-1.8.6-6.0.6"))
     compileOnly(fg.deobf("curse.maven:the-deep-void-982999:8507128"))
     runtimeOnly(fg.deobf("curse.maven:the-deep-void-982999:8507128"))
@@ -1336,6 +1340,7 @@ tasks.named("verifyFast") { dependsOn(verifyRuntimeColonyEmi) }
 apply(from = "gradle/native-gametest-fixture.gradle")
 apply(from = "gradle/treasure-urn-contract.gradle")
 apply(from = "gradle/registrate-contract.gradle")
+apply(from = "gradle/upstream-runtime-contract.gradle")
 apply(from = "gradle/mixin-namespace-contract.gradle")
 apply(from = "gradle/death-worm-contract.gradle")
 apply(from = "gradle/deepvoid-contract.gradle")

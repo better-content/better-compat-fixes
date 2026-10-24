@@ -51,10 +51,28 @@ public final class RegistrateGameTests {
     private static void noFailure(AtomicReference<Throwable> failure) {
         if (failure.get() != null) throw new AssertionError("Actual upstream call failed", failure.get());
     }
+    private static void requireRuntimeSdk() {
+        String[] resources = {"com/tterrag/registrate/AbstractRegistrate.class",
+                "com/tterrag/registrate/AbstractRegistrate$Registration.class"};
+        String[] expected = {"923bc6c760a84def349071c986044e7906503824c3ac460166f77a88973b65bc",
+                "f150c0f07209434ae135ceb32480b22d05c539fd81c60e1e49605cd0c8e86864"};
+        try {
+            for (int i = 0; i < resources.length; i++) {
+                try (var input = Thread.currentThread().getContextClassLoader().getResourceAsStream(resources[i])) {
+                    require(input != null, "Actual runtime Registrate SDK resource missing");
+                    byte[] bytes = input.readNBytes(2 * 1024 * 1024 + 1);
+                    require(bytes.length <= 2 * 1024 * 1024, "Actual runtime Registrate SDK resource oversized");
+                    String actual = HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));
+                    require(actual.equals(expected[i]), "Native fixture must exercise the exact official-mapped 1.3.11 SDK");
+                }
+            }
+        } catch (java.io.IOException | java.security.NoSuchAlgorithmException failure) { throw new AssertionError(failure); }
+    }
     private static void witness(String test) {
+        requireRuntimeSdk();
         String attempt = System.getProperty("bc.registrate.fixture.attempt", "");
         require(attempt.matches("[0-9a-f-]{36}"), "Missing fresh native attempt binding");
-        LoggerFactory.getLogger(RegistrateGameTests.class).info("BC_REGISTRATE_NATIVE_V1 attempt={} case={} original_base=true", attempt, test);
+        LoggerFactory.getLogger(RegistrateGameTests.class).info("BC_REGISTRATE_NATIVE_V1 attempt={} case={} original_base=true sdk=MC1.20-1.3.11", attempt, test);
     }
     @GameTest(templateNamespace = "better_compat_fixes", template = "empty", batch = "registrate", timeoutTicks = 400)
     public static void pendingTransferReadersAndIdentity(GameTestHelper helper) {

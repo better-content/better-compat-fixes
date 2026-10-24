@@ -20,7 +20,12 @@ public final class RegistrateTransactionTest {
     @Test public void independentActualClassPairsAbsencePartialAndUnknown() throws Exception {
         byte[][] raw = classes(System.getProperty("bc.registrate.raw")), mapped = classes(System.getProperty("bc.registrate.mapped"));
         assertFalse(RegistrateCompatibility.check(null, null));
+        byte[][] other = classes(System.getProperty("bc.registrate.other.raw"));
         assertTrue(RegistrateCompatibility.check(raw[0], raw[1])); assertTrue(RegistrateCompatibility.check(mapped[0], mapped[1]));
+        assertTrue(RegistrateCompatibility.check(other[0], other[1]));
+        assertThrows(IllegalStateException.class, () -> RegistrateCompatibility.check(raw[0], other[1]));
+        assertThrows(IllegalStateException.class, () -> RegistrateCompatibility.check(other[0], raw[1]));
+        assertThrows(IllegalStateException.class, () -> RegistrateCompatibility.check(other[0], mapped[1]));
         assertThrows(IllegalStateException.class, () -> RegistrateCompatibility.check(raw[0], null));
         assertThrows(IllegalStateException.class, () -> RegistrateCompatibility.check(raw[0], mapped[1]));
         byte[] wrong = raw[0].clone(); wrong[wrong.length - 1] ^= 1;
