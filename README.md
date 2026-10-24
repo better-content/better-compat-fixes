@@ -1,10 +1,5 @@
 # Better Compat Fixes
 
-## Scope and authority
-
-This repository owns its mod-specific behavior and authoring inputs. Read [local instructions](AGENTS.md)
-and the [shared documentation/policy index](../../better-content-modpack/docs/README.md).
-
 ## Bounded playtest diagnostics
 
 Loader SLF4J `bc.playtest.better_compat_fixes.*` reports one INFO own-source/version/integration
