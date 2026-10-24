@@ -91,6 +91,22 @@ tasks.named<JavaCompile>(urnMixins.compileJavaTaskName) {
     doLast { check(refmap.get().asFile.isFile) { "Urn AP did not produce its refmap" } }
 }
 
+// Mandatory vanilla pending-read hook: isolate its AP/refmap from historical hooks.
+val chunkIoPaths = listOf("com/bettercontent/bettercompatfixes/mixin/minecraft/IOWorkerPendingReadMixin.java")
+val chunkIoMixins by sourceSets.creating {
+    java.setSrcDirs(listOf("src/main/java"))
+    java.setIncludes(chunkIoPaths)
+    compileClasspath += sourceSets.main.get().output.classesDirs + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+sourceSets.main { java.exclude(chunkIoPaths) }
+tasks.named<JavaCompile>(chunkIoMixins.compileJavaTaskName) {
+    options.isIncremental = false
+    val refmap = layout.buildDirectory.file("tmp/compileChunkIoMixinsJava/compileChunkIoMixinsJava-refmap.json")
+    outputs.file(refmap)
+    doLast { check(refmap.get().asFile.isFile) { "Chunk I/O AP did not produce its refmap" } }
+}
+
 // Mirror the pack's authored disabled optional fillet recipe only in source GameTests.
 // This source set is never included in the production JAR.
 val nativeFixture by sourceSets.creating {
@@ -149,6 +165,7 @@ minecraft {
                     source(choppingMixins)
                     source(caravanMixins)
                     source(urnMixins)
+                    source(chunkIoMixins)
                 }
             }
         }
@@ -233,6 +250,8 @@ dependencies {
     add(choppingMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(caravanMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(urnMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
+    add(chunkIoMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
+    add(chunkIoMixins.annotationProcessorConfigurationName, "io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
     add(urnNativePins.name, "curse.maven:supplementaries-412082:7884611")
     add(urnMappedOracle.name, fg.deobf("curse.maven:supplementaries-412082:7884611"))
     compileOnly(fg.deobf("curse.maven:supplementaries-412082:7884611"))
@@ -381,15 +400,16 @@ tasks.named<Jar>("jar") {
     from(choppingMixins.output)
     from(caravanMixins.output)
     from(urnMixins.output)
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json")
-    filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json")) {
+    from(chunkIoMixins.output)
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json")
+    filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
     finalizedBy("reobfJar")
 }
 
 tasks.withType<Jar>().matching { it.name == "sourcesJar" }.configureEach {
-    from(choppingMixins.allSource, caravanMixins.allSource, urnMixins.allSource)
+    from(choppingMixins.allSource, caravanMixins.allSource, urnMixins.allSource, chunkIoMixins.allSource)
 }
 
 val stageRuntimeJar by tasks.registering(Copy::class) {
@@ -526,6 +546,8 @@ mixin {
     add(choppingMixins, "better_compat_fixes.chopping.refmap.json")
     add(caravanMixins, "better_compat_fixes.caravan.refmap.json")
     add(urnMixins, "better_compat_fixes.urn.refmap.json")
+    add(chunkIoMixins, "better_compat_fixes.chunk_io.refmap.json")
+    config("better_compat_fixes.chunk_io.mixins.json")
     config("better_compat_fixes.registrate.mixins.json")
     config("better_compat_fixes.urn.mixins.json")
     config("better_compat_fixes.oc2r.mixins.json")
@@ -559,16 +581,23 @@ val syncUrnRefmap by tasks.registering(Copy::class) {
     into(layout.buildDirectory.dir("resources/main"))
     doLast { check(layout.buildDirectory.file("resources/main/better_compat_fixes.urn.refmap.json").get().asFile.isFile) }
 }
+val syncChunkIoRefmap by tasks.registering(Copy::class) {
+    dependsOn(tasks.named(chunkIoMixins.compileJavaTaskName), tasks.named("processResources"))
+    from(layout.buildDirectory.file("tmp/compileChunkIoMixinsJava/compileChunkIoMixinsJava-refmap.json"))
+    rename { "better_compat_fixes.chunk_io.refmap.json" }
+    into(layout.buildDirectory.dir("resources/main"))
+    doLast { check(layout.buildDirectory.file("resources/main/better_compat_fixes.chunk_io.refmap.json").get().asFile.isFile) }
+}
 tasks.withType<JavaCompile>().configureEach {
-    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName && name != caravanMixins.compileJavaTaskName && name != urnMixins.compileJavaTaskName) {
-        dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap)
+    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName && name != caravanMixins.compileJavaTaskName && name != urnMixins.compileJavaTaskName && name != chunkIoMixins.compileJavaTaskName) {
+        dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap)
     }
 }
-tasks.named("jar") { dependsOn(syncCaravanRefmap, syncUrnRefmap) }
-tasks.withType<Test>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap) }
-tasks.withType<Jar>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap) }
+tasks.named("jar") { dependsOn(syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap) }
+tasks.withType<Test>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap) }
+tasks.withType<Jar>().configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap) }
 tasks.matching { it.name == "addMixinsToJar" || it.name == "addMixinsToSourcesJar" || it.name.startsWith("prepareRun") }
-    .configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap) }
+    .configureEach { dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap) }
 
 val verifyRuntimeDispenserAlias by tasks.registering {
     group = "verification"
@@ -1311,6 +1340,7 @@ apply(from = "gradle/mixin-namespace-contract.gradle")
 apply(from = "gradle/death-worm-contract.gradle")
 apply(from = "gradle/deepvoid-contract.gradle")
 apply(from = "gradle/rooty-soil-contract.gradle")
+apply(from = "gradle/chunk-io-contract.gradle")
 
 jacoco {
     toolVersion = "0.8.12"

@@ -6,8 +6,8 @@ minecraft.runs.gameTestServer.workingDirectory(nativeDirectory)
 def expectedBase = project.name == 'better-block-placement-preview' ? 6 :
         project.name == 'better-rehooked-grappling' ? 4 :
         project.name == 'better-rpg-progression' ? 6 :
-        project.findProperty('colonyWithoutBees') == 'true' ? 77 :
-        project.findProperty('backpackWithoutCurios') == 'true' ? 76 : 79
+        project.findProperty('colonyWithoutBees') == 'true' ? 78 :
+        project.findProperty('backpackWithoutCurios') == 'true' ? 77 : 80
 def expected = expectedBase + (project.findProperty('withRegistrateFixture') == 'true' ? 2 : 0)
 
 def ensureNativeProperties = { File directory ->
@@ -20,11 +20,50 @@ def ensureNativeProperties = { File directory ->
         // Preserve original effective settings and exact bytes.
     }
 }
+// Forge's config watcher prints some failures directly to stderr, outside Log4j.
+// Keep raw child console distinct from native Log4j sinks (abbreviated logger syntax).
+// The Source gate below audits its severities/counts and exact bare watcher failures;
+// Root's full native policy continues to audit the unmodified logs/latest+debug sinks.
+def consoleCapture = [stream: null, task: null, output: null, error: null]
+def nativeConsoleLog = new File(nativeDirectory, 'native-console.log')
+def teeNativeOutput = { OutputStream original, OutputStream capture ->
+    java.util.Objects.requireNonNull(original, 'Native forwarding requires an effective original stream')
+    java.util.Objects.requireNonNull(capture, 'Native forwarding requires an owned capture stream')
+    new OutputStream() {
+        @Override void write(int value) {
+            synchronized (capture) { original.write(value); capture.write(value) }
+        }
+        @Override void write(byte[] bytes, int offset, int length) {
+            synchronized (capture) { original.write(bytes, offset, length); capture.write(bytes, offset, length) }
+        }
+        @Override void flush() {
+            synchronized (capture) { original.flush(); capture.flush() }
+        }
+        // Gradle may close a forwarding stream; only our finalizer owns the capture.
+        @Override void close() { flush() }
+    }
+}
+def closeNativeConsole = tasks.register('closeNativeConsoleCapture') {
+    doLast {
+        if (consoleCapture.stream != null) {
+            try { consoleCapture.stream.close() }
+            finally {
+                consoleCapture.task.standardOutput = consoleCapture.output
+                consoleCapture.task.errorOutput = consoleCapture.error
+                consoleCapture.stream = null
+                consoleCapture.task = null
+                consoleCapture.output = null
+                consoleCapture.error = null
+            }
+        }
+    }
+}
 def validateNativeLog = { File log, int required ->
     if (!log.isFile()) throw new GradleException("Missing current native log: ${log}")
     def text = log.getText('UTF-8')
     def errors = text.readLines().findAll { line ->
         (line =~ /^(?:\[[^\]\r\n]+\]\s+)?\[(?:[^\]\r\n]+\/)?(?:ERROR|FATAL)\](?:\s|$)/) ||
+            line.startsWith('net.minecraftforge.fml.config.ConfigFileTypeHandler$ConfigLoadingException: Failed loading config file ') ||
             line.contains('Mixin apply failed') || (line.contains('LevelChunk') && line.contains('Tried to load') &&
                 (line.contains('but failed at location') || line.contains('but found not block entity block'))) ||
             (line.contains('WorldGenRegion') && line.contains('Tried to access a block entity before it was created.'))
@@ -37,7 +76,8 @@ def validateNativeLog = { File log, int required ->
 }
 
 tasks.named('syncGameTestStructures').configure { into(new File(nativeDirectory, 'gameteststructures')) }
-tasks.matching { it.name == 'runGameTestServer' }.configureEach {
+tasks.matching { it.name == 'runGameTestServer' }.configureEach { nativeTask ->
+    finalizedBy(closeNativeConsole)
     doFirst {
         if (file(minecraft.runs.gameTestServer.workingDirectory).canonicalFile != nativeDirectory.canonicalFile)
             throw new GradleException('Configured native RunConfig/setup directory mismatch')
@@ -45,11 +85,23 @@ tasks.matching { it.name == 'runGameTestServer' }.configureEach {
         project.exec {
             commandLine('python3', '-B', project.file('scripts/native_default_configs.py'), 'prepare',
                     '--root', project.file('../../better-content-modpack'),
-                    '--snapshot', project.file('gradle/native-default-configs'),
+                    '--snapshot', project.file('gradle/native-default-configs-v2'),
                     '--run', nativeDirectory, '--base', nativeDirectory.parentFile)
         }
+        java.nio.file.Files.createDirectories(nativeConsoleLog.parentFile.toPath())
+        consoleCapture.stream = java.nio.file.Files.newOutputStream(nativeConsoleLog.toPath(),
+                java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE)
+        consoleCapture.task = nativeTask
+        // JavaExec's unset stream properties may be null: resolve the documented
+        // System.out/System.err defaults before installing an asynchronous forwarder.
+        consoleCapture.output = nativeTask.standardOutput ?: System.out
+        consoleCapture.error = nativeTask.errorOutput ?: System.err
+        standardOutput = teeNativeOutput(consoleCapture.output, consoleCapture.stream)
+        errorOutput = teeNativeOutput(consoleCapture.error, consoleCapture.stream)
     }
     doLast {
+        consoleCapture.stream.flush()
+        validateNativeLog(nativeConsoleLog, expected)
         validateNativeLog(new File(nativeDirectory, 'logs/latest.log'), expected)
         def debug = new File(nativeDirectory, 'logs/debug.log')
         if (debug.isFile()) validateNativeLog(debug, expected)
@@ -73,11 +125,27 @@ def guard = tasks.register('verifyColdNativeFixtureGuard') {
         def line = '[01Jan2026 00:00:00.000] [Server thread/INFO] [net.minecraft.gametest.framework.GameTestServer/]: '
         def valid = line + '========= ' + expected + ' GAME TESTS COMPLETE ======================\n' +
                 line + 'All ' + expected + ' required tests passed :)\n'
-        log.setText(valid + line + 'quoted [main/ERROR] payload is not severity\n', 'UTF-8'); validateNativeLog(log, expected)
+        log.setText(valid + line + 'quoted [main/ERROR] payload is not severity\n' +
+                line + 'quoted net.minecraftforge.fml.config.ConfigFileTypeHandler$ConfigLoadingException: Failed loading config file example\n', 'UTF-8')
+        validateNativeLog(log, expected)
+        def original = new ByteArrayOutputStream()
+        def captured = new ByteArrayOutputStream()
+        def forwarding = teeNativeOutput(original, captured)
+        byte[] sample = 'unaltered native stdout/stderr'.getBytes('UTF-8')
+        forwarding.write(sample, 0, sample.length); forwarding.write(10); forwarding.flush(); forwarding.close()
+        if (!java.util.Arrays.equals(original.toByteArray(), captured.toByteArray()) ||
+                original.toString('UTF-8') != 'unaltered native stdout/stderr\n')
+            throw new GradleException('Native console forwarding changed or lost bytes')
+        [[null, captured], [original, null]].each { pair ->
+            boolean rejected = false
+            try { teeNativeOutput(pair[0], pair[1]) } catch (NullPointerException expectedNull) { rejected = true }
+            if (!rejected) throw new GradleException('Native stream capture admitted a null forwarding endpoint')
+        }
         def invalid = ['', line + 'All ' + expected + ' required tests passed :)\n',
                 valid.replace('All ' + expected, 'All ' + (expected + 1)), valid + valid,
                 valid + '[main/ERROR] real failure\n', valid + '[Server thread/FATAL] real failure\n',
                 valid + '[main/INFO] Mixin apply failed\n',
+                valid + 'net.minecraftforge.fml.config.ConfigFileTypeHandler$ConfigLoadingException: Failed loading config file sophisticatedcore-common.toml of type COMMON for modid sophisticatedcore\n',
                 valid + '[Server thread/WARN] [net.minecraft.world.level.chunk.LevelChunk/]: Tried to load a block entity for block Block{supplementaries:urn} but failed at location BlockPos{x=1, y=2, z=3}\n',
                 valid + '[Server thread/WARN] [net.minecraft.world.level.chunk.LevelChunk/]: Tried to load a DUMMY block entity @ BlockPos{x=1, y=2, z=3} but found not block entity block Block{supplementaries:urn} at location\n',
                 valid + '[Worker-Main-1/WARN] [net.minecraft.server.level.WorldGenRegion/]: Tried to access a block entity before it was created. BlockPos{x=1, y=2, z=3}\n']
@@ -98,10 +166,12 @@ tasks.named('jar').configure {
         new java.util.zip.ZipFile(archiveFile.get().asFile).withCloseable { zip ->
             def leaked = zip.entries().findAll { entry ->
                 entry.name.startsWith('gradle/native-default-configs/') ||
+                        entry.name.startsWith('gradle/native-default-configs-v2/') ||
                         entry.name == 'scripts/native_default_configs.py' ||
                         entry.name == 'scripts/test_native_default_configs.py' ||
                         entry.name == 'config/adpother-common.toml' ||
-                        entry.name == 'config/forgeendertech-common.toml'
+                        entry.name == 'config/forgeendertech-common.toml' ||
+                        entry.name == 'config/sophisticatedcore-common.toml'
             }
             if (leaked) throw new GradleException('Nonshipping native defaults leaked into production archive: ' + leaked)
         }
@@ -109,7 +179,7 @@ tasks.named('jar').configure {
 }
 def configGuard = tasks.register('verifyNativeDefaultConfigInputs', Exec) {
     group = 'verification'
-    description = 'Retained pure controls for two pinned tracked production defaults; no Minecraft.'
+    description = 'Retained pure controls for three pinned tracked production defaults; no Minecraft.'
     commandLine('python3', '-B', project.file('scripts/test_native_default_configs.py'))
 }
 tasks.matching { it.name == 'runGameTestServer' }.configureEach { dependsOn(configGuard) }

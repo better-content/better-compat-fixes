@@ -7,7 +7,9 @@ import struct
 from pathlib import Path
 
 MIXIN = 'Lorg/spongepowered/asm/mixin/Mixin;'
-ROLES = ('main', 'choppingMixins', 'caravanMixins', 'urnMixins', 'nativeFixture', 'registrateFixture', 'test')
+ROLES = ('main', 'choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins', 'nativeFixture', 'registrateFixture', 'test')
+CHUNK_IO_CONFIG = 'better_compat_fixes.chunk_io.mixins.json'
+CHUNK_IO_CLASS = 'com.bettercontent.bettercompatfixes.mixin.minecraft.IOWorkerPendingReadMixin'
 def need(ok, message):
     if not ok: raise AssertionError(message)
 
@@ -60,7 +62,16 @@ def class_identity(data):
     return name, MIXIN in annotations
 
 def configuration(repo):
-    configs = sorted((repo/'src').glob('*/resources/*mixins.json')); need(len(configs) == 8, 'Explicit config population drift')
+    configs = sorted((repo/'src').glob('*/resources/*mixins.json')); need(len(configs) == 9, 'Explicit config population drift')
+    chunk_io_files = [file for file in configs if file.name == CHUNK_IO_CONFIG]
+    need(len(chunk_io_files) == 1, 'Exactly one dedicated chunk I/O config required')
+    chunk_io = json.loads(chunk_io_files[0].read_text())
+    need(chunk_io.get('required') is True and chunk_io.get('injectors', {}).get('defaultRequire') == 1,
+         'Chunk I/O config must fail closed')
+    need(chunk_io.get('package') == CHUNK_IO_CLASS.rsplit('.', 1)[0]
+         and chunk_io.get('mixins') == [CHUNK_IO_CLASS.rsplit('.', 1)[1]]
+         and not chunk_io.get('client') and not chunk_io.get('server'), 'Chunk I/O config must contain only its exact vanilla hook')
+    need(chunk_io.get('refmap') == 'better_compat_fixes.chunk_io.refmap.json', 'Chunk I/O dedicated refmap required')
     prefixes, configured = set(), set()
     for file in configs:
         data = json.loads(file.read_text()); prefix = data['package'] + '.'; prefixes.add(prefix)
@@ -79,7 +90,7 @@ def source_check(repo, prefixes, configured):
     found = set()
     for role in ROLES:
         # These AP-isolated roles explicitly select files from the same authored main root.
-        source_role = 'main' if role in ('choppingMixins', 'caravanMixins', 'urnMixins') else role
+        source_role = 'main' if role in ('choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins') else role
         root = repo/'src'/source_role/'java'; need(root.is_dir(), 'Missing explicit source role ' + role)
         for file in root.rglob('*.java'):
             text = file.read_text()
@@ -95,14 +106,22 @@ def source_check(repo, prefixes, configured):
     need(found == configured, 'Configured/source Mixin set differs: ' + str(configured ^ found))
 
 def compiled_check(roots, prefixes, configured):
-    found = set()
+    found, seen_roles = set(), set()
     for item in roots:
         role, path = item.split('=', 1); root = Path(path)
         need(role in (*ROLES, 'generatedOracle', 'repairSnapshot'), 'Unknown compiled output role ' + role)
         files = sorted(root.rglob('*.class')); need(root.is_dir() and files, 'Missing/empty compiled role ' + item)
+        seen_roles.add(role)
+        if role == 'chunkIoMixins':
+            need(len(files) == 1, 'Chunk I/O AP role must contain exactly one class')
         for file in files:
             name, annotated = class_identity(file.read_bytes()); admit(name, annotated, prefixes, configured)
+            if role == 'chunkIoMixins':
+                need(name == CHUNK_IO_CLASS and annotated, 'Chunk I/O AP role must contain only its annotated hook')
+            if name == CHUNK_IO_CLASS:
+                need(role == 'chunkIoMixins', 'Chunk I/O hook escaped its isolated AP role')
             if name in configured: found.add(name)
+    need('chunkIoMixins' in seen_roles, 'Explicit compiled chunk I/O AP role required')
     need(found == configured, 'Configured/compiled Mixin set differs: ' + str(configured ^ found))
 
 if __name__ == '__main__':
@@ -115,4 +134,4 @@ if __name__ == '__main__':
         try: admit(name, annotated, prefixes, configured)
         except AssertionError: pass
         else: raise AssertionError('Namespace negative accepted')
-    print('Union namespace guards passed: configs=8 configured=' + str(len(configured)) + '; strict class annotation controls, no silent roots')
+    print('Union namespace guards passed: configs=9 configured=' + str(len(configured)) + '; strict class annotation controls, no silent roots')

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Nonshipping native-fixture completion from exactly two approved tracked defaults."""
+"""Nonshipping native-fixture completion from exactly three approved tracked defaults."""
 import argparse
 from datetime import datetime, timezone
 import hashlib
@@ -12,6 +12,7 @@ import uuid
 APPROVED = {
     'config/adpother-common.toml': 'd255babc81f6729ce3442522c76cab2a05f960b496f292fdc0371af69745f514',
     'config/forgeendertech-common.toml': 'e3c7fbcf2865785d6dd5ec72b3db1abae3e7ba6376bd3aecc0472586ed21b6ad',
+    'config/sophisticatedcore-common.toml': '4f57715393772dce976ebfea3e78378a44ee7fc2fce8975d4811c40b8f9ddbd3',
 }
 
 
@@ -63,7 +64,7 @@ def validate_snapshot(root, snapshot):
     current = authority(root)
     names = {str(p.relative_to(snapshot)) for p in snapshot.rglob('*') if p.is_file()}
     if names != set(APPROVED) | {'origin.json'} or any(p.is_symlink() for p in snapshot.rglob('*')):
-        raise FixtureError('Snapshot must contain exactly the two allowlisted inputs and origin.json')
+        raise FixtureError('Snapshot must contain exactly the three allowlisted inputs and origin.json')
     origin = json.loads((snapshot / 'origin.json').read_text())
     if set(origin['files']) != set(APPROVED) or not re.fullmatch(r'(?:[0-9a-f]{40}|[0-9a-f]{64})', origin['root_head']):
         raise FixtureError('Snapshot origin allowlist/immutable HEAD mismatch')

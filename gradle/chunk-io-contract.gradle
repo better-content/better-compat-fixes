@@ -1,0 +1,67 @@
+// Mandatory vanilla pending-read hook: actual AP mappings and shipped archive, not source text alone.
+// Applied scripts have an independent compile classpath, like treasure-urn-contract.gradle.
+buildscript {
+    repositories { mavenCentral() }
+    dependencies {
+        classpath 'org.ow2.asm:asm:9.7.1'
+        classpath 'org.ow2.asm:asm-tree:9.7.1'
+    }
+}
+import groovy.json.JsonSlurper
+import java.util.zip.ZipFile
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.Opcodes
+import org.objectweb.asm.tree.ClassNode
+import org.objectweb.asm.tree.MethodInsnNode
+
+def gate = tasks.register('verifyChunkIoOwnershipArtifact') {
+    group = 'verification'
+    dependsOn('stageRuntimeJar')
+    doLast {
+        def runtime = layout.buildDirectory.file("libs/${base.archivesName.get()}-${project.version}.jar").get().asFile
+        new ZipFile(runtime).withCloseable { zip ->
+            def bytes = { String path ->
+                def entry = zip.getEntry(path)
+                if (entry == null) throw new GradleException("Missing chunk I/O runtime entry: ${path}")
+                zip.getInputStream(entry).withCloseable { it.readAllBytes() }
+            }
+            def json = { String path -> new JsonSlurper().parse(bytes(path)) }
+            def config = json('better_compat_fixes.chunk_io.mixins.json')
+            if (config.required != true || config.injectors.defaultRequire != 1 ||
+                    config.mixins != ['IOWorkerPendingReadMixin'] ||
+                    config.refmap != 'better_compat_fixes.chunk_io.refmap.json')
+                throw new GradleException('Chunk I/O config must require exactly the pending-read hook/refmap')
+            def owner = 'net/minecraft/world/level/chunk/storage/IOWorker'
+            def chunk = 'Lnet/minecraft/world/level/ChunkPos;'
+            def either = 'Lcom/mojang/datafixers/util/Either;'
+            def tag = 'Lnet/minecraft/nbt/CompoundTag;'
+            def mixin = 'com/bettercontent/bettercompatfixes/mixin/minecraft/IOWorkerPendingReadMixin'
+            def expected = [
+                    ('lambda$loadAsync$4(' + chunk + ')' + either): ('L' + owner + ';m_223494_(' + chunk + ')' + either),
+                    ('L' + owner + '$PendingStore;data:' + tag): ('L' + owner + '$PendingStore;f_63565_:' + tag)
+            ]
+            def refmap = json('better_compat_fixes.chunk_io.refmap.json')
+            if (refmap.mappings[mixin] != expected || refmap.data.searge[mixin] != expected)
+                throw new GradleException("Chunk I/O AP must map the exact pending-read method AND data field: ${refmap}")
+            bytes(mixin + '.class')
+            def helper = new ClassNode()
+            new ClassReader(bytes('com/bettercontent/bettercompatfixes/compat/PendingChunkReadSnapshots.class'))
+                    .accept(helper, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES)
+            def detach = helper.methods.find { it.name == 'detach' && it.desc == '(' + tag + ')' + tag }
+            def calls = detach?.instructions?.toArray()?.findAll { it instanceof MethodInsnNode }
+            if (calls?.size() != 1 || calls[0].opcode != Opcodes.INVOKEVIRTUAL ||
+                    calls[0].owner != 'net/minecraft/nbt/CompoundTag' || calls[0].name != 'm_6426_' ||
+                    calls[0].desc != '()' + tag)
+                throw new GradleException('Shipped snapshot helper must invoke actual native CompoundTag.copy exactly once')
+            def leaked = zip.entries().findAll {
+                it.name.contains('IOWorkerMailboxAccessor') || it.name.contains('IOWorkerPendingReadGameTests')
+            }
+            if (leaked) throw new GradleException("Nonshipping chunk I/O actor fixture leaked: ${leaked}")
+            def manifest = new java.util.jar.Manifest(new ByteArrayInputStream(bytes('META-INF/MANIFEST.MF')))
+            if (!manifest.mainAttributes.getValue('MixinConfigs').split(',').contains('better_compat_fixes.chunk_io.mixins.json'))
+                throw new GradleException('Required chunk I/O config is absent from production manifest')
+        }
+        logger.lifecycle('Verified required chunk I/O archive, exact method/field AP mappings and native copy binding')
+    }
+}
+tasks.named('verifyFast').configure { dependsOn(gate) }

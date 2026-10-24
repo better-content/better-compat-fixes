@@ -1,5 +1,5 @@
 // Every authored config participates, including source-only native configs. No package exemptions.
-def roles = ['main','choppingMixins','caravanMixins','urnMixins','nativeFixture','registrateFixture','test']
+def roles = ['main','choppingMixins','caravanMixins','urnMixins','chunkIoMixins','nativeFixture','registrateFixture','test']
 def namespaceCheck = tasks.register('verifyMixinNamespaces', Exec) {
     group = 'verification'
     roles.each { role -> dependsOn(sourceSets.getByName(role).classesTaskName) }

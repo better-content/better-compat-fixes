@@ -1,0 +1,17 @@
+{
+  "root_head": "618d08a859f079477d7414c92ecd552d65883e92",
+  "files": {
+    "config/adpother-common.toml": {
+      "sha256": "d255babc81f6729ce3442522c76cab2a05f960b496f292fdc0371af69745f514",
+      "git_blob": "465b839da761702fc97770e20f98269d2a185fd9"
+    },
+    "config/forgeendertech-common.toml": {
+      "sha256": "e3c7fbcf2865785d6dd5ec72b3db1abae3e7ba6376bd3aecc0472586ed21b6ad",
+      "git_blob": "dfc7715cff6274e064c04860e61f67a89c9cb2a2"
+    },
+    "config/sophisticatedcore-common.toml": {
+      "sha256": "4f57715393772dce976ebfea3e78378a44ee7fc2fce8975d4811c40b8f9ddbd3",
+      "git_blob": "b91533dc175016628b61cc3231a9909ccfc97e17"
+    }
+  }
+}

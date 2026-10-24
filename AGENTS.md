@@ -12,9 +12,10 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
   `./gradlew clean verifyFull stageRuntimeJar --no-daemon` for fixture-disabled/default staging.
   The existing default graph already includes Registrate/Create; this is NOT target-library absence.
   Only the resource-only JDK control currently proves the genuinely absent plugin branch.
-  Present adds only pinned Registrate 1.3.3 and two actual upstream Base tests (81 with the
+  Present adds only pinned Registrate 1.3.3 and two actual upstream Base tests (82 with the
   default graph); no Create/Ponder/Flywheel fixture or runtime dependency is added. Ordinary
-  default/no-Heat79, no-Bees77 and no-Curios76 populations remain unchanged without this flag.
+  default/no-Heat80, no-Bees78 and no-Curios77 populations include one pending-read ownership case;
+  every previous native identity remains required without this flag.
   This does not replace existing required optional profiles or authorize native execution.
   Raw/mapped paired class pins and compiled site/forwarding checks run in `verifyFast`;
   WrapMethod/Inject composition and actual native behavior require the separately admitted gate.
@@ -28,6 +29,11 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
   and runs the Curios-free armor regression. Then run default `./gradlew clean verifyFull stageRuntimeJar --no-daemon`
   to stage the paired-inventory candidate. Production-JAR checks include optional-class-linkage absence;
   this source/GameTest profile is not a standalone production-server or human-pointer verdict.
+- Pending chunk-read changes require `verifyChunkIoOwnershipArtifact`, four deterministic JUnit
+  controls, and the native two-barrier test-owned worker case. The dedicated required config and
+  exact AP method/field mappings must survive staging; do not move ordinary fixture helpers into
+  the reserved native mixin package. Production-default preparation uses the three-file immutable
+  `gradle/native-default-configs-v2/`; retain the historical two-file snapshot unchanged.
 - Inventory compatibility changes also read [native parity](../../better-content-modpack/docs/inventory-parity.md).
 
 ## Shared authority

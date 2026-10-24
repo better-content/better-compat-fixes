@@ -137,7 +137,7 @@ writer; its CME presence/absence alone is not a post-repair verdict.
 
 `-PwithRegistrateFixture=true` attaches a separate nonshipping source set **only** to gameTestServer
 and adds the exact pinned Registrate runtime library, not a copied oracle/provider. Two required
-native tests (81 with the default graph) call an actual protected Base subclass. Read-only native
+native tests (82 with the default graph) call an actual protected Base subclass. Read-only native
 accessors inspect original pending multimap, table and callback list. A required original-removeAll
 gap schedules real callback lookup against transfer/publication; tests require exact callback/
 delegate identities, native get/getAll snapshot behavior, original collection retention, and no
@@ -148,7 +148,7 @@ only installs its original synchronized holder handler/lookup; capture never reg
 mutates a frozen native registry, invokes creators or substitutes a native provider.
 
 Both case witnesses are exact-attempt bound in original native debug.log; the ordinary strict
-log/count guards remain required. Default/no-Heat79, no-Bees77 and no-Curios76 populations are
+log/count guards remain required. Default/no-Heat80, no-Bees78 and no-Curios77 populations are
 unchanged without the flag. The fixture classes/accessors/gap/configuration are rejected from all
 runtime/source archives. `verifyFast` includes paired raw/mapped method/order pins, compiled
 required eight-site/four-original-forward checks and mutation/exclusion/absence/cleanup controls.
@@ -235,7 +235,7 @@ original-versus-actual native loot/Fortune/hidden reroll/Silk Touch/use/comparat
 Scoped deterministic RNG inputs and actual spawn observation forward the original algorithms;
 temporary hidden membership, game rule and spawned entities are restored in `finally`/scope
 closure. No test or accessor/oracle class/resource ships. Expected required populations are
-79 default/no-Heat, 77 no-Bees, 76 no-Curios. Actual native failed BE promotion remains fatal
+80 default/no-Heat, 78 no-Bees, 77 no-Curios. Actual native failed BE promotion remains fatal
 to the native-log guard, including its WARN forms; no new acceptable-operation category exists.
 
 **Validation status:** source candidate only. The small in-memory JDK-only predicate/admission
@@ -419,17 +419,23 @@ from this mod's production JAR. No diagnostic is suppressed or allowlisted by th
 Each source native invocation binds one fresh `build/gametest/<UUID>` directly to Forge's
 RunConfig, structures, setup and audited sink. Legacy fixtures and ordinary/visual runs stay
 untouched. Absent-only CREATE_NEW settings preserve any existing property bytes exactly. The
-full gate requires one completed/passed native count (default79, no-Bees77, no-Heat79,
-no-Curios76) and rejects ERROR/FATAL or mixin failure in actual latest/debug logs. Pure negative
+full gate requires one completed/passed native count (default80, no-Bees78, no-Heat80,
+no-Curios77) and rejects ERROR/FATAL or mixin failure in actual latest/debug logs. Pure negative
 controls reject missing/stale-count/duplicate/failed sinks; source passes still require an admitted
 full invocation for each profile, default last. Build-tree retention is required before `clean`.
 The native preparation also uses an immutable outside-build snapshot in
-`gradle/native-default-configs/` of exactly two tracked pack inputs: `config/adpother-common.toml`
-and `config/forgeendertech-common.toml`. Their pinned SHA256/HEAD-blob provenance is checked against
-`../../better-content-modpack` before launch. Original Root HEAD is provenance, not a whole-repository
-version lock: unrelated Root commits are accepted when both tracked blobs and working bytes remain
-exactly approved; a changed committed config still fails. Both match the SDK's supported generated defaults
-byte-for-byte; no Sources.cfg/emission settings or warm generated inputs are imported. Missing,
+`gradle/native-default-configs-v2/` of exactly three tracked pack inputs: `config/adpother-common.toml`,
+`config/forgeendertech-common.toml` and `config/sophisticatedcore-common.toml`. The historical two-file
+snapshot remains retained at `gradle/native-default-configs/`, outside active preparation. Pinned
+SHA256/HEAD-blob provenance is checked against `../../better-content-modpack` before launch. Original
+Root HEAD is provenance, not a whole-repository version lock: unrelated Root commits are accepted
+when all three tracked blobs and working bytes remain approved; a changed committed config fails.
+The first two match the SDK's supported generated defaults byte-for-byte. SophisticatedCore uses the
+exact production configuration, including thirteen intentionally disabled copper/jukebox identities;
+it is not copied from a warm native run. Its predeclared entries cover all currently observed native
+item-enabled conditions. Chipped-only recipe conditions short-circuit while Chipped is absent;
+new integrations still require input and runtime requalification. No Sources.cfg/emission settings
+or warm generated inputs are imported. Missing,
 untracked, modified, extra or mismatched inputs fail closed. CREATE_NEW never overwrites existing
 bytes; differing existing destinations are retained and rejected. A source/destination before/after
 receipt is written to the actual UUID root as `native-default-config-inputs.json` before native
@@ -437,6 +443,26 @@ launch. `verifyNativeDefaultConfigInputs` runs the retained Minecraft-free Pytho
 `runGameTestServer`. These authored inputs complete first-start configuration without disabling
 watchers, masking diagnostics, changing production code or claiming a cure before all four fresh
 gates pass. Neither the snapshot nor its preparation script is part of the production JAR.
+
+### Pending chunk-read ownership
+
+Vanilla's pending `IOWorker.loadAsync` branch exposes the same mutable root that the mailbox will
+serialize. `ChunkMap` asynchronously upgrades that result, and `ChunkStorage` inserts/removes root
+`__context` even for current data versions. The required `chunk_io` mixin copies only that pending
+field read, on the mailbox thread before future completion. Disk reads, original futures, write
+ordering, deletion sentinels and exception propagation are unchanged. Callers must still transfer
+ownership when calling `store`; this is not protection against arbitrary post-store caller mutation.
+The exact external mutator/interleaving of the retained C41 save failure remains unknown.
+
+Four JUnit controls cover null, deep-copy isolation and a deterministic actual-NBT serialization
+interleaving: the old shared root fails with one `CompoundTag.write` frame, while the detached
+reader preserves the writer. One additional required native case uses a test-owned worker and two
+foreground mailbox barriers before background flush, then checks read isolation, persisted bytes,
+null deletion and missing chunks. It adds one case without removing any existing native case.
+`verifyChunkIoOwnershipArtifact` requires the shipped fail-closed config, exact generated method
+and field SRG mappings, native copy binding and absence of nonshipping actor helpers. These
+controls establish only their executed scope; fresh profile and same-artifact pack acceptance remain
+required. No save/config diagnostic is waived.
 
 A separate default-off, nonshipping Rooty-soil witness is prepared under `src/nativeFixture`.
 Only an explicitly admitted source `gameTestServer` invocation may opt in with
