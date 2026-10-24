@@ -2,13 +2,19 @@
   "void-raw": {
     "sha256": "018c80220b13abba85ddeba05a7d4850e2b989d9a14d6f008d65e2e94000f375",
     "classes": {
-      "net.mcreator.thedeepvoid.world.features.StructureFeature": "83842ba9623e4e6b6e5d4900916802369d6479a866ab0ada20874f975d16bda5"
+      "net.mcreator.thedeepvoid.world.features.StructureFeature": "83842ba9623e4e6b6e5d4900916802369d6479a866ab0ada20874f975d16bda5",
+      "net.mcreator.thedeepvoid.block.OldBoneBlockBlock": "84bc325b94f9fc4a3b467db816a6c347f1fde1c4214ef716b26871b4b6a4ff45",
+      "net.mcreator.thedeepvoid.block.BlockOfBoneMarrowBlock": "ee16f3121c97bc07863d30361eae24f302cb829af1438e7a2efee082b502f287",
+      "net.mcreator.thedeepvoid.block.RottenGrowthBlock": "c7f29eeb0763cbccb97d6179f5c0338b9a0d84bca9c8f980cb9fcfa29ec91a87"
     }
   },
   "void-mapped": {
     "sha256": "b1ffa6b38e1828dfbbb343d6ee073b7f5b0e205223819145535cf504ed61255c",
     "classes": {
-      "net.mcreator.thedeepvoid.world.features.StructureFeature": "b1ecb1ac1f8dbf3105a6eca4da42f939662a50f4c16d3555f4d4a10dfba2c5d1"
+      "net.mcreator.thedeepvoid.world.features.StructureFeature": "b1ecb1ac1f8dbf3105a6eca4da42f939662a50f4c16d3555f4d4a10dfba2c5d1",
+      "net.mcreator.thedeepvoid.block.OldBoneBlockBlock": "c7cd73df09834fa7c7ff7575bdcf82fc15d570e46b1fd053b35ec4c54a66f580",
+      "net.mcreator.thedeepvoid.block.BlockOfBoneMarrowBlock": "9b281d3c54deb571ab048334eaac692df776a9438a663b5be14d48cd4dcba208",
+      "net.mcreator.thedeepvoid.block.RottenGrowthBlock": "ffacc91654e7eb5c3d3105094710da0b60d8482e3524cf6440ffc00eb9823b56"
     }
   },
   "sdk": {
@@ -115,6 +121,27 @@
         10
       ],
       "blockCount": 1430
+    },
+    {
+      "id": "the_deep_void:broken_bone1",
+      "path": "data/the_deep_void/structures/broken_bone1.nbt",
+      "sha256": "94fee3dcd64a8651b0c67c7210f56fcd4f88a82e1f90f6fb250af13877f13114",
+      "size": [21, 7, 7],
+      "blockCount": 478
+    },
+    {
+      "id": "the_deep_void:broken_bone2",
+      "path": "data/the_deep_void/structures/broken_bone2.nbt",
+      "sha256": "82d793a646048738ab7e6280af66a8a1edd176a9855a05c689bd2313d64ab7e8",
+      "size": [4, 12, 10],
+      "blockCount": 176
+    },
+    {
+      "id": "the_deep_void:broken_bone3new",
+      "path": "data/the_deep_void/structures/broken_bone3new.nbt",
+      "sha256": "b0a9e08e70781cde2c92a7b989af12fcffa215e5e599c89344776dc2afb869fd",
+      "size": [11, 4, 4],
+      "blockCount": 101
     }
   ],
   "fields": {

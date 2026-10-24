@@ -9,8 +9,16 @@ public final class FleshTemplateSemantics {
             "the_deep_void:flesh_rib1", "the_deep_void:flesh_rib2", "the_deep_void:flesh_ribs1",
             "the_deep_void:giant_rib1", "the_deep_void:giant_rib2", "the_deep_void:fleshy_giant_skull",
             "the_deep_void:flesh_ribs_eyes", "the_deep_void:flesh_tentacles_new");
+    private static final Set<String> BONE_IDS = Set.of(
+            "the_deep_void:broken_bone1", "the_deep_void:broken_bone2", "the_deep_void:broken_bone3new");
     private FleshTemplateSemantics() {}
-    public static boolean recognizes(String id) { return IDS.contains(id); }
+    public static boolean recognizes(String id) { return IDS.contains(id) || isBrokenBone(id); }
+    public static boolean isBrokenBone(String id) { return BONE_IDS.contains(id); }
+    public static void boneSettings(int processors, boolean exactProcessor, int ignored,
+                                    boolean air, boolean structure, boolean zeroPivot, boolean nullBox, int flags) {
+        require(processors == 1 && exactProcessor && ignored == 1 && !air && structure, "bone-ignore-processor");
+        require(zeroPivot && nullBox && flags == 4, "placement-settings");
+    }
     public static void settings(int processors, boolean exactProcessor, int ignored,
                                 boolean air, boolean structure, boolean zeroPivot, boolean nullBox, int flags) {
         require(processors == 1 && exactProcessor && ignored == 2 && air && structure, "ignore-processor");

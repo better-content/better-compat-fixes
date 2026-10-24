@@ -42,11 +42,15 @@ Helpers live outside reserved Mixin namespaces; the existing union guard and an 
 cover composition. These portable controls are not native qualification: the existing canonical
 mandatory population and strict log audit must pass for this candidate before acceptance.
 
-## DeepVoid flesh-template producer coordinates (source candidate)
+## DeepVoid template producer coordinates
 
-Only the eight `StructureFeatureConfiguration.structure()` IDs used by pinned `flesh_stuff` are
+The eight `StructureFeatureConfiguration.structure()` IDs used by pinned `flesh_stuff` are
 admitted: `flesh_rib1`, `flesh_rib2`, `flesh_ribs1`, `giant_rib1`, `giant_rib2`,
-`fleshy_giant_skull`, `flesh_ribs_eyes`, `flesh_tentacles_new` in `the_deep_void`. This identifies
+`fleshy_giant_skull`, `flesh_ribs_eyes`, `flesh_tentacles_new` in `the_deep_void`. The same
+whole-template repair also admits the three pinned `broken_bones` producers: `broken_bone1`,
+`broken_bone2`, and `broken_bone3new`. Their separate palette admission allows only exact native
+OldBoneBlockBlock, BlockOfBoneMarrowBlock and dry RottenGrowthBlock identities (plus AIR/STRUCTURE_BLOCK).
+This identifies
 the template producer, not arbitrary top-level placed-feature provenance. Other IDs/nonregion
 calls forward unchanged once. In the actual `WorldGenRegion`, a typed read-only radius field
 must equal the pinned FEATURES constructor's1. The whole native rotated/mirrored bounding box
@@ -60,8 +64,9 @@ entities must be empty; block IDs/classes must belong to the17 pinned vanilla/De
 waterlogged states are rejected; NBT is allowed only on actually ignored structure blocks.
 Changed bounded overrides with these properties may pass; an ID/raw-JAR hash alone is not
 runtime loaded-resource proof. Settings must contain exactly one freshly constructed exact-class
-BlockIgnoreProcessor with precisely AIR/STRUCTURE_BLOCK contents, local pivotZERO, null BB and
-flags4. Unsupported metadata/radius/size/overflow throws a bounded explicit exception before
+BlockIgnoreProcessor with precisely AIR/STRUCTURE_BLOCK contents for flesh templates, or only
+STRUCTURE_BLOCK for broken bones, matching the actual pinned configured features; local pivotZERO,
+null BB and flags4 remain required. Unsupported metadata/radius/size/overflow throws a bounded explicit exception before
 placement, never a silent false/true success. There is no serializer, template/world cache,
 terrain/BE/light query, palette RNG selection or resource-manager I/O in this admission scan.
 Typed readonly Shadow-backed views bind explicit named/SRG private-field aliases without adding
@@ -80,7 +85,10 @@ fence or guarantee about arbitrary outside-neighbor callbacks, deferred fluids o
 `verifyDeepVoidPlacementControl` and `verifyDeepVoidPlacementAbi` run under `verifyFast` with
 nonshipping SDK roles and production archive assertions. Pure/property/recording/ASM controls
 and cached actual SDK geometry are not native composition or acceptance; supported shared
-full-five-profile qualification and canonical consumer strict audit are still required.
+full-five-profile qualification and canonical consumer strict audit are still required. The source-only
+`brokenBonesFitWholeTemplatesInsideNativeWriteRegion` regression invokes the actual upstream feature
+in a real native region from an unsafe origin and checks every translated payload block for all three
+bone templates. Its pre-repair negative must fail; it does not suppress native errors or clip the payload.
 
 ## Death worm terrain aliases (source candidate)
 
@@ -137,7 +145,7 @@ writer; its CME presence/absence alone is not a post-repair verdict.
 
 `-PwithRegistrateFixture=true` attaches a separate nonshipping source set **only** to gameTestServer
 and adds the exact pinned Registrate runtime library, not a copied oracle/provider. Two required
-native tests (82 with the default graph) call an actual protected Base subclass. Read-only native
+native tests (83 with the default graph) call an actual protected Base subclass. Read-only native
 accessors inspect original pending multimap, table and callback list. A required original-removeAll
 gap schedules real callback lookup against transfer/publication; tests require exact callback/
 delegate identities, native get/getAll snapshot behavior, original collection retention, and no
@@ -148,8 +156,8 @@ only installs its original synchronized holder handler/lookup; capture never reg
 mutates a frozen native registry, invokes creators or substitutes a native provider.
 
 Both case witnesses are exact-attempt bound in original native debug.log; the ordinary strict
-log/count guards remain required. Default/no-Heat80, no-Bees78 and no-Curios77 populations are
-unchanged without the flag. The fixture classes/accessors/gap/configuration are rejected from all
+log/count guards remain required. Default/no-Heat81, no-Bees79 and no-Curios78 populations include the source-only whole-bone
+placement regression; every earlier test identity remains required. The fixture classes/accessors/gap/configuration are rejected from all
 runtime/source archives. `verifyFast` includes paired raw/mapped method/order pins, compiled
 required eight-site/four-original-forward checks and mutation/exclusion/absence/cleanup controls.
 These source controls are **not** actual transformed Mixins or native acceptance. The lead must

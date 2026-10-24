@@ -6,8 +6,8 @@ minecraft.runs.gameTestServer.workingDirectory(nativeDirectory)
 def expectedBase = project.name == 'better-block-placement-preview' ? 6 :
         project.name == 'better-rehooked-grappling' ? 4 :
         project.name == 'better-rpg-progression' ? 6 :
-        project.findProperty('colonyWithoutBees') == 'true' ? 78 :
-        project.findProperty('backpackWithoutCurios') == 'true' ? 77 : 80
+        project.findProperty('colonyWithoutBees') == 'true' ? 79 :
+        project.findProperty('backpackWithoutCurios') == 'true' ? 78 : 81
 def expected = expectedBase + (project.findProperty('withRegistrateFixture') == 'true' ? 2 : 0)
 
 def ensureNativeProperties = { File directory ->

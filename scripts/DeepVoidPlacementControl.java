@@ -10,7 +10,7 @@ public final class DeepVoidPlacementControl {
         throw new AssertionError("unsupported accepted");
     }
     public static void main(String[] args) {
-        int[][] sizes={{4,8,1},{3,6,1},{7,5,5},{12,18,4},{15,16,4},{11,10,19},{11,12,17},{11,13,10}};
+        int[][] sizes={{4,8,1},{3,6,1},{7,5,5},{12,18,4},{15,16,4},{11,10,19},{11,12,17},{11,13,10},{21,7,7},{4,12,10},{11,4,4}};
         int[] starts={-33,-16,-1,0,1,15,16,32,47};
         int cases=0;
         for(int[] size:sizes) for(int mirror=0;mirror<3;mirror++) for(int rot=0;rot<4;rot++)
@@ -33,7 +33,7 @@ public final class DeepVoidPlacementControl {
                     need(!(minX>=loX&&maxX<=hiX&&minZ>=loZ&&maxZ<=hiZ)||shift.unchanged());
                     cases++;
                 }
-        need(cases==69984);
+        need(cases==96228);
         rejects(()->FleshTemplateBounds.fit(0,46,0,1,0,0,1));
         rejects(()->FleshTemplateBounds.fit(0,1,0,1,0,0,0));
         rejects(()->FleshTemplateBounds.fit(0,1,0,1,Integer.MAX_VALUE,0,1));
@@ -63,6 +63,18 @@ public final class DeepVoidPlacementControl {
         rejects(()->FleshTemplateSemantics.block(0,0,0,4,8,1,true,false,true,false));
         need(!FleshTemplateSemantics.recognizes("the_deep_void:unrelated"));
         need(FleshTemplateSemantics.recognizes("the_deep_void:flesh_rib1"));
+        for (String id : new String[]{"broken_bone1", "broken_bone2", "broken_bone3new"}) {
+            need(FleshTemplateSemantics.recognizes("the_deep_void:" + id));
+            need(FleshTemplateSemantics.isBrokenBone("the_deep_void:" + id));
+        }
+        need(!FleshTemplateSemantics.isBrokenBone("the_deep_void:flesh_rib1"));
+        need(!FleshTemplateSemantics.recognizes("other:broken_bone1"));
+        FleshTemplateSemantics.boneSettings(1,true,1,false,true,true,true,4);
+        rejects(()->FleshTemplateSemantics.boneSettings(1,true,2,true,true,true,true,4));
+        rejects(()->FleshTemplateSemantics.boneSettings(1,true,1,false,false,true,true,4));
+        rejects(()->FleshTemplateSemantics.boneSettings(1,true,1,false,true,false,true,4));
+        rejects(()->FleshTemplateSemantics.boneSettings(1,true,1,false,true,true,false,4));
+        rejects(()->FleshTemplateSemantics.boneSettings(1,true,1,false,true,true,true,3));
         record P(int x,int z) {}
         P p=new P(1,2),q=new P(3,4);Object value=new Object();AtomicInteger calls=new AtomicInteger();
         Object out=FleshTemplateCall.call(p,q,new FleshTemplateBounds.Shift(0,0),

@@ -12,10 +12,10 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
   `./gradlew clean verifyFull stageRuntimeJar --no-daemon` for fixture-disabled/default staging.
   The existing default graph already includes Registrate/Create; this is NOT target-library absence.
   Only the resource-only JDK control currently proves the genuinely absent plugin branch.
-  Present adds only pinned Registrate 1.3.3 and two actual upstream Base tests (82 with the
+  Present adds only pinned Registrate 1.3.3 and two actual upstream Base tests (83 with the
   default graph); no Create/Ponder/Flywheel fixture or runtime dependency is added. Ordinary
-  default/no-Heat80, no-Bees78 and no-Curios77 populations include one pending-read ownership case;
-  every previous native identity remains required without this flag.
+  default/no-Heat81, no-Bees79 and no-Curios78 populations include pending-read ownership and
+  whole-bone placement cases; every previous native identity remains required without this flag.
   This does not replace existing required optional profiles or authorize native execution.
   Raw/mapped paired class pins and compiled site/forwarding checks run in `verifyFast`;
   WrapMethod/Inject composition and actual native behavior require the separately admitted gate.

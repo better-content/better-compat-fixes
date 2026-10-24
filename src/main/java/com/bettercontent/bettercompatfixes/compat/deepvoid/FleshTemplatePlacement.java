@@ -31,7 +31,7 @@ public final class FleshTemplatePlacement {
         require(region instanceof FleshTemplateMetadata.Region, "region-accessor");
         int radius = ((FleshTemplateMetadata.Region) region).better_compat_fixes$writeRadius();
         require(radius == 1, "write-radius");
-        validate(template, settings, flags);
+        validate(template, settings, flags, FleshTemplateSemantics.isBrokenBone(structureId));
         Vec3i size = template.getSize();
         // Detect wrap before native integer transform/bounding-box arithmetic. The local pivot is ZERO.
         int horizontal = Math.max(size.getX(), size.getZ());
@@ -65,16 +65,22 @@ public final class FleshTemplatePlacement {
                 FleshTemplateBounds.translated(position.getZ(), shift.z()));
     }
 
-    private static void validate(StructureTemplate template, StructurePlaceSettings settings, int flags) {
+    private static void validate(StructureTemplate template, StructurePlaceSettings settings, int flags, boolean bone) {
         var processors = settings.getProcessors();
         require(processors.size() == 1 && processors.get(0) != null
                 && processors.get(0).getClass() == BlockIgnoreProcessor.class, "ignore-processor");
         require(processors.get(0) instanceof FleshTemplateMetadata.Ignore, "ignore-accessor");
         var ignored = ((FleshTemplateMetadata.Ignore) processors.get(0)).better_compat_fixes$ignored();
         require(ignored != null, "ignored-block-list");
-        FleshTemplateSemantics.settings(processors.size(), true, ignored.size(), ignored.contains(Blocks.AIR),
-                ignored.contains(Blocks.STRUCTURE_BLOCK), BlockPos.ZERO.equals(settings.getRotationPivot()),
-                settings.getBoundingBox() == null, flags);
+        if (bone) {
+            FleshTemplateSemantics.boneSettings(processors.size(), true, ignored.size(), ignored.contains(Blocks.AIR),
+                    ignored.contains(Blocks.STRUCTURE_BLOCK), BlockPos.ZERO.equals(settings.getRotationPivot()),
+                    settings.getBoundingBox() == null, flags);
+        } else {
+            FleshTemplateSemantics.settings(processors.size(), true, ignored.size(), ignored.contains(Blocks.AIR),
+                    ignored.contains(Blocks.STRUCTURE_BLOCK), BlockPos.ZERO.equals(settings.getRotationPivot()),
+                    settings.getBoundingBox() == null, flags);
+        }
         require(template instanceof FleshTemplateMetadata.Template, "template-accessor");
         var metadata = (FleshTemplateMetadata.Template) template;
         var palettes = metadata.better_compat_fixes$palettes();
@@ -93,13 +99,25 @@ public final class FleshTemplatePlacement {
                 boolean wet = state.hasProperty(BlockStateProperties.WATERLOGGED)
                         && state.getValue(BlockStateProperties.WATERLOGGED);
                 FleshTemplateSemantics.block(pos.getX(), pos.getY(), pos.getZ(),
-                        size.getX(), size.getY(), size.getZ(), knownBlock(block), wet, info.nbt() != null,
+                        size.getX(), size.getY(), size.getZ(), knownBlock(block, bone), wet, info.nbt() != null,
                         block == Blocks.STRUCTURE_BLOCK && ignored.contains(block));
             }
         }
     }
 
-    private static boolean knownBlock(Block block) {
+    private static boolean knownBlock(Block block, boolean bone) {
+        if (bone) {
+            if (block == Blocks.AIR || block == Blocks.STRUCTURE_BLOCK) return true;
+            ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
+            if (id == null || !id.getNamespace().equals("the_deep_void")) return false;
+            Class<?> expected = switch (id.getPath()) {
+                case "old_bone_block" -> OldBoneBlockBlock.class;
+                case "block_of_bone_marrow" -> BlockOfBoneMarrowBlock.class;
+                case "rotten_growth" -> RottenGrowthBlock.class;
+                default -> null;
+            };
+            return expected != null && block.getClass() == expected;
+        }
         if (block == Blocks.AIR || block == Blocks.STRUCTURE_BLOCK
                 || block == Blocks.BONE_BLOCK || block == Blocks.SMOOTH_QUARTZ) return true;
         ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
