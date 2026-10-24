@@ -28,6 +28,14 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
   never mutate caches, add log exemptions or publicly publish corrected restricted binaries. Stable
   support paths under `build/upstream-runtime-overrides/` are source-qualified inputs to Root's sole
   packager, not runtime acceptance or a redistribution grant. See `src/upstreamRuntime/README.md`.
+- Separate `qualifyUpstreamInterfaceOverrides` under `verifyFast` runs 12 controls over two
+  additional originals. It must not alter the preceding five-artifact recipe or its 3,144-class
+  invariant. Only three exact PRIVATE|STATIC -> PUBLIC|STATIC method words in one pinned VS
+  interface may change; all Code/annotations/descriptors and every other class byte stay exact.
+  New side moves are limited to the two reviewed client-only Mixins. Separate three-file support
+  is under `build/upstream-interface-overrides/`; retained attempts/originals stay separate.
+  No global Mixin bootstrap replacement, server-handler removal or public binary publication.
+  See `src/upstreamRuntime/interface-README.md`; actual native acceptance remains mandatory.
 - Default full native gate requires canonical staged `better-industrial-heat-0.1.0.jar`
   via `BC_CUSTOM_MOD_JAR_DIR` or sibling `build/libs`; prepare that provider first.
   Spoilage changes also run `./gradlew clean verifyFull stageRuntimeJar -PspoilageWithoutHeat=true --no-daemon`,
