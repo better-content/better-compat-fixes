@@ -23,6 +23,20 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
   coordination follow the shared workspace testing policy.
   Raw/mapped paired class pins and compiled site/forwarding checks run in `verifyFast`;
   WrapMethod/Inject composition and actual native behavior require the separately admitted gate.
+- Native Forge API/Moonlight compatibility changes additionally require the sixth profile:
+  `./gradlew verifyFull stageRuntimeJar -PwithNativeForgeApiFixture=true --no-daemon`, then ordinary
+  default staging. It adds two real bridge/map-persistence and resource-reload cases (87), without
+  replacing any of the five existing profiles. The exact native provider distinction is local,
+  pack-owned support, not an upstream endorsement or blanket Fabric/Connector admission. Preserve
+  the original diagnostic for unknown providers and the global `ModList` presence truth. All 13
+  explicit Mixin configs participate in the namespace guard; four new observers and all helpers
+  under `src/nativeForgeApiFixture` stay nonshipping. Compiler SDKs exist for structural checks in
+  every profile; the complete mapped FFAPI/Moonlight runtime is attached only to the sixth profile.
+  SDK production/raw and nonproduction/official roles are separately pinned. Derive the private
+  worker's mapping through ordinary Forge compilation before SDK staging; no global-cache fallback,
+  configuration-time dependency resolution or historical MCP-cache restore. See Root's single
+  `docs/toolchains.md` inventory. Source-native proof does not replace same-candidate client/server
+  startup, map-use observations, strict logs or final Dist acceptance.
 - Active `qualifyUpstreamRuntimeOverridesV2` under `verifyFast` requires 19 pinned-original/pure
   controls, including deterministic repeat builds, unchanged 3,144 recursive classes/licenses/scripts,
   exact current replacement/plugin bytes, and immutable legacy builder/spec identities. The successor

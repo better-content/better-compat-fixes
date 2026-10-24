@@ -85,7 +85,7 @@ fence or guarantee about arbitrary outside-neighbor callbacks, deferred fluids o
 `verifyDeepVoidPlacementControl` and `verifyDeepVoidPlacementAbi` run under `verifyFast` with
 nonshipping SDK roles and production archive assertions. Pure/property/recording/ASM controls
 and cached actual SDK geometry are not native composition or acceptance; supported shared
-full-five-profile qualification and canonical consumer strict audit are still required. The source-only
+all required profile qualifications and canonical consumer strict audit are still required. The source-only
 `brokenBonesFitWholeTemplatesInsideNativeWriteRegion` regression invokes the actual upstream feature
 in a real native region from an unsafe origin and checks every translated payload block for all three
 bone templates. Its pre-repair negative must fail; it does not suppress native errors or clip the payload.
@@ -129,8 +129,25 @@ new cases require compilation and native execution; authored source and pure con
 runtime acceptance. Required populations become default/no-Heat85, no-Bees83, no-Curios82 and
 Registrate-present87 without removing any prior required identity.
 
+The separate sixth `native-forge-api` profile (`-PwithNativeForgeApiFixture=true`) adds exactly two
+required tests to the ordinary graph (87). It uses the real native Forge API interaction bridge,
+Moonlight custom-map persistence, native pack discovery and asynchronous generated-resource reload.
+The four fixture Mixins only observe completed original operations. Their helper/bootstrap and all
+fixture output remain outside production/source archives; all 13 explicit configurations participate
+in namespace admission. Compiler-only module SDKs never become duplicate top-level runtime mods.
+The pinned mapped whole-root development SDK is distinct from unchanged production archives and
+requires freshly derived private-worker Forge mappings, not restored historical MCP caches.
+
+The required production Moonlight callsite correction distinguishes only the exact selected native
+Forge provider/ABI pair. It preserves the original presence query, prior POI operation and unknown
+provider diagnostic; it does not lie about global installation, rename/remove the API, suppress a
+logger or waive the audit. This is bounded pack-owned support, not upstream endorsement or support
+for all Fabric modules/providers/rendering. Authored cases and pure controls are not native passes.
+
 Resource controls and source-native profiles are not exact-candidate client/server acceptance;
-Root must still qualify the full real pack and strict logs without exemptions.
+Root must still qualify the full real pack and strict logs without exemptions. Its full multiplayer
+acceptance additionally uses real client map-item input and captures both held-map forms; synthetic
+Robot input and captured PNGs are not human-pointer or blanket inventory-GUI acceptance.
 
 ## Death worm terrain aliases (source candidate)
 
@@ -190,7 +207,7 @@ writer; its CME presence/absence alone is not a post-repair verdict.
 `-PwithRegistrateFixture=true` attaches a separate nonshipping source set **only** to gameTestServer
 and selects the exact pinned **1.3.11** runtime library, not a copied oracle/provider. Other
 profiles retain **1.3.3**, so each invocation has one coherent raw/mapped SDK rather than conflicting
-ForgeGradle versions. Two required native tests (83 with the default graph) call an actual protected
+ForgeGradle versions. Two required native tests (87 with the four additive fuel cases) call an actual protected
 Base subclass; each native witness additionally requires both exact official-mapped 1.3.11 class
 resource hashes from the active game loader. Read-only native
 accessors inspect original pending multimap, table and callback list. A required original-removeAll

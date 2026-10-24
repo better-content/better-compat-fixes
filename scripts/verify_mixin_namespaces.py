@@ -7,18 +7,19 @@ import struct
 from pathlib import Path
 
 MIXIN = 'Lorg/spongepowered/asm/mixin/Mixin;'
-ROLES = ('main', 'choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins', 'nativeFixture', 'registrateFixture', 'test')
+ROLES = ('main', 'choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins', 'nativeFixture', 'registrateFixture', 'nativeForgeApiFixture', 'test')
 CHUNK_IO_CONFIG = 'better_compat_fixes.chunk_io.mixins.json'
 CHUNK_IO_CLASS = 'com.bettercontent.bettercompatfixes.mixin.minecraft.IOWorkerPendingReadMixin'
-# Explicit roles as well as names: admitting two reviewed configs must not turn
+# Explicit roles as well as names: adding reviewed configs must not turn
 # this guard into a count-only wildcard or permit moving a test config to main.
 EXPECTED_CONFIGS = {
     'main/resources/better_compat_fixes' + suffix + '.mixins.json'
-    for suffix in ('', '.caravan', '.chopping', '.chunk_io', '.oc2r', '.registrate', '.startup_abi', '.urn')
+    for suffix in ('', '.caravan', '.chopping', '.chunk_io', '.moonlight_platform', '.oc2r', '.registrate', '.startup_abi', '.urn')
 } | {
     'nativeFixture/resources/better_compat_fixes.native_fixture.mixins.json',
     'nativeFixture/resources/better_compat_fixes.fuel_fixture.mixins.json',
     'registrateFixture/resources/better_compat_fixes.registrate_fixture.mixins.json',
+    'nativeForgeApiFixture/resources/better_compat_fixes.native_forge_api_fixture.mixins.json',
 }
 def need(ok, message):
     if not ok: raise AssertionError(message)
@@ -82,6 +83,12 @@ def configuration(repo):
         ('better_compat_fixes.fuel_fixture.mixins.json',
          'com.bettercontent.bettercompatfixes.fuelfixture.mixin',
          ['HearthFuelAccess', 'SteamLocomotiveFuelAccess', 'SteamTugFuelAccess', 'ChunkPollutionWitnessMixin'], []),
+        ('better_compat_fixes.moonlight_platform.mixins.json',
+         'com.bettercontent.bettercompatfixes.mixin.moonlightplatform', ['MoonlightForgePlatformMixin'], []),
+        ('better_compat_fixes.native_forge_api_fixture.mixins.json',
+         'com.bettercontent.bettercompatfixes.nativeforgeapifixture.mixin',
+         ['FFAPIInteractionWitnessMixin', 'FFAPIPackFinderWitnessMixin',
+          'FFAPIResourcePackFinderWitnessMixin', 'MoonlightGeneratedBytesWitnessMixin'], []),
     ):
         data = json.loads(next(file for file in configs if file.name == name).read_text())
         need(data.get('required') is True and data.get('injectors', {}).get('defaultRequire') == 1,

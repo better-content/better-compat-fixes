@@ -20,6 +20,7 @@ version = property("mod_version") as String
 val mixinExtrasVersion = "0.5.4"
 val withRegistrateFixture = providers.gradleProperty("withRegistrateFixture").map(String::toBooleanStrict).getOrElse(false)
 val registrateFixtureVersion = if (withRegistrateFixture) "1.3.11" else "1.3.3"
+val withNativeForgeApiFixture = providers.gradleProperty("withNativeForgeApiFixture").map(String::toBooleanStrict).getOrElse(false)
 // Native optional-absence profile; Ars Nouveau requires Curios and cannot be present in it.
 val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
 val spoilageWithoutHeat = providers.gradleProperty("spoilageWithoutHeat").map(String::toBoolean).getOrElse(false)
@@ -115,6 +116,11 @@ val nativeFixture by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
+// Sixth profile only; fixture output is never included in any production/source archive.
+val nativeForgeApiFixture by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath + nativeFixture.output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath + nativeFixture.output
+}
 val registrateFixture by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
@@ -122,13 +128,15 @@ val registrateFixture by sourceSets.creating {
 // Defense in depth for production, jarJar and any current/future sources archives.
 // The fixture is attached only as gameTestServer source directories, never an archive.
 tasks.withType<Jar>().configureEach {
-    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "**/fuelfixture/**", "**/gametest/PollutionFuelGameTests*", "better_compat_fixes.fuel_fixture.mixins.json", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
+    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "**/fuelfixture/**", "**/nativeforgeapifixture/**", "**/nativeForgeApiFixture/**", "**/gametest/MoonlightNativeForgeGameTests*", "better_compat_fixes.native_forge_api_fixture.mixins.json", "**/gametest/PollutionFuelGameTests*", "better_compat_fixes.fuel_fixture.mixins.json", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
     doLast {
         ZipFile(archiveFile.get().asFile).use { archive ->
             check(archive.entries().asSequence().none {
                 it.name.contains("/nativefixture/") || it.name.contains("/nativeFixture/") || it.name.contains("/nativewitness/") || it.name.contains("/registratefixture/") || it.name == "better_compat_fixes.registrate_fixture.mixins.json"
                     || it.name == "better_compat_fixes.native_fixture.mixins.json"
                     || it.name.contains("/fuelfixture/") || it.name.contains("/gametest/PollutionFuelGameTests")
+                    || it.name.contains("/nativeforgeapifixture/") || it.name.contains("/nativeForgeApiFixture/")
+                    || it.name.contains("/gametest/MoonlightNativeForgeGameTests") || it.name == "better_compat_fixes.native_forge_api_fixture.mixins.json"
                     || it.name == "better_compat_fixes.fuel_fixture.mixins.json"
             }) { "Nonshipping Native witness/fixture leaked into archive" }
         }
@@ -186,11 +194,13 @@ minecraft {
             mods { named(property("mod_id") as String) {
                 source(nativeFixture)
                 if (withRegistrateFixture) source(registrateFixture)
+                if (withNativeForgeApiFixture) source(nativeForgeApiFixture)
             } }
             if (withRegistrateFixture) args("--mixin.config", "better_compat_fixes.registrate_fixture.mixins.json")
             // Mixin's actual launcher option, scoped only to this nonshipping native source run.
             args("--mixin.config", "better_compat_fixes.native_fixture.mixins.json")
             args("--mixin.config", "better_compat_fixes.fuel_fixture.mixins.json")
+            if (withNativeForgeApiFixture) args("--mixin.config", "better_compat_fixes.native_forge_api_fixture.mixins.json")
             arg("--nogui")
         }
     }
@@ -233,6 +243,7 @@ repositories {
 
 // Materialize the immutable local raw SDK artifact before ForgeGradle registers/deobfuscates it.
 apply(from = "gradle/fuel-sdk-adpother.gradle")
+apply(from = "gradle/native-forge-api-fixture.gradle")
 
 val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTransitive = false }
 val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitive = false }
@@ -267,7 +278,7 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:supplementaries-412082:7884611"))
     compileOnly(fg.deobf("curse.maven:selene-499980:8261419"))
     runtimeOnly(fg.deobf("curse.maven:supplementaries-412082:7884611"))
-    runtimeOnly(fg.deobf("curse.maven:selene-499980:8261419"))
+    if (!withNativeForgeApiFixture) runtimeOnly(fg.deobf("curse.maven:selene-499980:8261419"))
     add(aetherRenderNativePins.name, "curse.maven:the-aether-255308:6134920")
     add(heatNativePins.name, "curse.maven:kotlin-for-forge-351264:7291067")
     add(heatNativePins.name, "curse.maven:chemlib-340666:5128632")
@@ -414,7 +425,7 @@ tasks.named<Jar>("jar") {
     from(caravanMixins.output)
     from(urnMixins.output)
     from(chunkIoMixins.output)
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json")
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json")
     filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
@@ -561,6 +572,7 @@ mixin {
     add(urnMixins, "better_compat_fixes.urn.refmap.json")
     add(chunkIoMixins, "better_compat_fixes.chunk_io.refmap.json")
     config("better_compat_fixes.startup_abi.mixins.json")
+    config("better_compat_fixes.moonlight_platform.mixins.json")
     config("better_compat_fixes.chunk_io.mixins.json")
     config("better_compat_fixes.registrate.mixins.json")
     config("better_compat_fixes.urn.mixins.json")
