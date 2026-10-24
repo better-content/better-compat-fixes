@@ -1,0 +1,60 @@
+// Resource-only third-party corrections are qualified support artifacts, never new
+// production classes or replacements for immutable upstream SDK/cache identities.
+import groovy.json.JsonSlurper
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
+import java.util.UUID
+
+def upstreamSpec = file('src/upstreamRuntime/overrides-v2.json')
+def upstreamBuilder = file('scripts/build_upstream_runtime_overrides_v2.py')
+def upstreamControls = file('scripts/test_upstream_runtime_overrides_v2.py')
+def stagedRuntime = layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar")
+def upstreamSupport = layout.buildDirectory.dir('upstream-runtime-overrides-v2')
+def digest = { File path -> MessageDigest.getInstance('SHA-256').digest(path.bytes).encodeHex().toString() }
+
+def qualifyUpstreamRuntimeOverrides = tasks.register('qualifyUpstreamRuntimeOverridesV2') {
+    group = 'verification'
+    description = 'Qualifies deterministic local-only resource corrections against exact originals and production replacement bytes.'
+    dependsOn('stageRuntimeJar')
+    inputs.files(upstreamSpec, upstreamBuilder, upstreamControls, stagedRuntime)
+    outputs.upToDateWhen { false }
+    doLast {
+        def specSha = digest(upstreamSpec)
+        def retained = layout.buildDirectory.dir('upstream-runtime-v2-evidence').get().asFile
+        retained.mkdirs()
+        // Immutable original-input cache. The builder checks BOTH source digests on
+        // every use; corruption rejects instead of mutating/repairing these inputs.
+        def originals = new File(retained, "originals-${specSha}")
+        if (!originals.exists()) {
+            exec {
+                commandLine('python3', '-B', upstreamBuilder.absolutePath,
+                    '--fetch-originals', originals.absolutePath)
+            }
+        }
+        def attempt = new File(retained, "attempt-${UUID.randomUUID()}")
+        if (!attempt.mkdir()) throw new GradleException('Fresh upstream correction evidence required')
+        exec {
+            commandLine('python3', '-B', upstreamControls.absolutePath,
+                '--originals', originals.absolutePath, '--compat-jar', stagedRuntime.get().asFile.absolutePath,
+                '--output-root', attempt.absolutePath)
+        }
+        def output = new File(attempt, 'qualified')
+        exec {
+            commandLine('python3', '-B', upstreamBuilder.absolutePath,
+                '--inputs', originals.absolutePath, '--output', output.absolutePath,
+                '--compat-jar', stagedRuntime.get().asFile.absolutePath)
+        }
+        def spec = new JsonSlurper().parse(upstreamSpec)
+        def destination = upstreamSupport.get().asFile
+        destination.mkdirs()
+        // Stable support paths are snapshots of the latest successful qualification.
+        // Every preceding attempt/original/archive/receipt remains in retained evidence.
+        (spec.artifacts.collect { it.output } + ['receipt.json']).each { name ->
+            Files.copy(new File(output, name).toPath(), new File(destination, name).toPath(),
+                StandardCopyOption.REPLACE_EXISTING)
+        }
+        logger.lifecycle("Qualified local-only upstream resource support; runtime acceptance NOT_EVALUATED; evidence ${attempt}")
+    }
+}
+tasks.named('verifyFast') { dependsOn(qualifyUpstreamRuntimeOverrides) }

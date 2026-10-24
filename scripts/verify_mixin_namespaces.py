@@ -10,6 +10,16 @@ MIXIN = 'Lorg/spongepowered/asm/mixin/Mixin;'
 ROLES = ('main', 'choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins', 'nativeFixture', 'registrateFixture', 'test')
 CHUNK_IO_CONFIG = 'better_compat_fixes.chunk_io.mixins.json'
 CHUNK_IO_CLASS = 'com.bettercontent.bettercompatfixes.mixin.minecraft.IOWorkerPendingReadMixin'
+# Explicit roles as well as names: admitting two reviewed configs must not turn
+# this guard into a count-only wildcard or permit moving a test config to main.
+EXPECTED_CONFIGS = {
+    'main/resources/better_compat_fixes' + suffix + '.mixins.json'
+    for suffix in ('', '.caravan', '.chopping', '.chunk_io', '.oc2r', '.registrate', '.startup_abi', '.urn')
+} | {
+    'nativeFixture/resources/better_compat_fixes.native_fixture.mixins.json',
+    'nativeFixture/resources/better_compat_fixes.fuel_fixture.mixins.json',
+    'registrateFixture/resources/better_compat_fixes.registrate_fixture.mixins.json',
+}
 def need(ok, message):
     if not ok: raise AssertionError(message)
 
@@ -62,7 +72,23 @@ def class_identity(data):
     return name, MIXIN in annotations
 
 def configuration(repo):
-    configs = sorted((repo/'src').glob('*/resources/*mixins.json')); need(len(configs) == 9, 'Explicit config population drift')
+    configs = sorted((repo/'src').glob('*/resources/*mixins.json'))
+    actual_configs = {str(file.relative_to(repo/'src')) for file in configs}
+    need(actual_configs == EXPECTED_CONFIGS,
+         'Explicit config population drift: ' + str(actual_configs ^ EXPECTED_CONFIGS))
+    for name, prefix, entries, server in (
+        ('better_compat_fixes.startup_abi.mixins.json',
+         'com.bettercontent.bettercompatfixes.mixin.startupabi', [], ['EpicFightCapabilitiesServerAbiMixin']),
+        ('better_compat_fixes.fuel_fixture.mixins.json',
+         'com.bettercontent.bettercompatfixes.fuelfixture.mixin',
+         ['HearthFuelAccess', 'SteamLocomotiveFuelAccess', 'SteamTugFuelAccess', 'ChunkPollutionWitnessMixin'], []),
+    ):
+        data = json.loads(next(file for file in configs if file.name == name).read_text())
+        need(data.get('required') is True and data.get('injectors', {}).get('defaultRequire') == 1,
+             'New dedicated config must fail closed: ' + name)
+        need(data.get('package') == prefix and data.get('mixins') == entries
+             and data.get('server', []) == server and not data.get('client'),
+             'Exact dedicated config namespace/population drift: ' + name)
     chunk_io_files = [file for file in configs if file.name == CHUNK_IO_CONFIG]
     need(len(chunk_io_files) == 1, 'Exactly one dedicated chunk I/O config required')
     chunk_io = json.loads(chunk_io_files[0].read_text())
@@ -134,4 +160,4 @@ if __name__ == '__main__':
         try: admit(name, annotated, prefixes, configured)
         except AssertionError: pass
         else: raise AssertionError('Namespace negative accepted')
-    print('Union namespace guards passed: configs=9 configured=' + str(len(configured)) + '; strict class annotation controls, no silent roots')
+    print('Union namespace guards passed: configs=' + str(len(EXPECTED_CONFIGS)) + ' configured=' + str(len(configured)) + '; strict class annotation controls, no silent roots')

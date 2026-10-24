@@ -1,5 +1,14 @@
 # Local upstream runtime resource corrections
 
+**Retained v1 contract.** The commands and three-registration scope below describe immutable
+`bc-runtime.1`, not the active successor. Current `qualifyUpstreamRuntimeOverridesV2` uses
+`overrides-v2.json` and the separately named `_v2.py` builder/controls: four exact registrations,
+3,144 unchanged classes, first four output identities unchanged, and only AdPother named
+`bc-runtime.2`. Historical v1 files/receipts stay intact. The independent interface and ATL
+applicability contracts have separate namespaces. See the current
+[pack authority](../../../../better-content-modpack/docs/upstream-runtime-overrides.md) for
+successor support paths, native requirements and local-only publication limits.
+
 This source-only recipe belongs to Better Compat Fixes. It deterministically creates **local**,
 separately named `-bc-runtime.1.jar` replacements from five exactly pinned original archives.
 It does not build this mod, launch Minecraft, package a pack, deploy, update Packwiz or publish

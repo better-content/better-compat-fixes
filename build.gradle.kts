@@ -1,4 +1,5 @@
 import java.util.zip.ZipFile
+import java.util.jar.Manifest
 import java.security.MessageDigest
 import java.time.Instant
 import java.nio.file.Files
@@ -121,12 +122,14 @@ val registrateFixture by sourceSets.creating {
 // Defense in depth for production, jarJar and any current/future sources archives.
 // The fixture is attached only as gameTestServer source directories, never an archive.
 tasks.withType<Jar>().configureEach {
-    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
+    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "**/fuelfixture/**", "**/gametest/PollutionFuelGameTests*", "better_compat_fixes.fuel_fixture.mixins.json", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
     doLast {
         ZipFile(archiveFile.get().asFile).use { archive ->
             check(archive.entries().asSequence().none {
                 it.name.contains("/nativefixture/") || it.name.contains("/nativeFixture/") || it.name.contains("/nativewitness/") || it.name.contains("/registratefixture/") || it.name == "better_compat_fixes.registrate_fixture.mixins.json"
                     || it.name == "better_compat_fixes.native_fixture.mixins.json"
+                    || it.name.contains("/fuelfixture/") || it.name.contains("/gametest/PollutionFuelGameTests")
+                    || it.name == "better_compat_fixes.fuel_fixture.mixins.json"
             }) { "Nonshipping Native witness/fixture leaked into archive" }
         }
     }
@@ -187,6 +190,7 @@ minecraft {
             if (withRegistrateFixture) args("--mixin.config", "better_compat_fixes.registrate_fixture.mixins.json")
             // Mixin's actual launcher option, scoped only to this nonshipping native source run.
             args("--mixin.config", "better_compat_fixes.native_fixture.mixins.json")
+            args("--mixin.config", "better_compat_fixes.fuel_fixture.mixins.json")
             arg("--nogui")
         }
     }
@@ -226,6 +230,9 @@ repositories {
     maven("https://www.cursemaven.com") { content { includeGroup("curse.maven") } }
     mavenCentral()
 }
+
+// Materialize the immutable local raw SDK artifact before ForgeGradle registers/deobfuscates it.
+apply(from = "gradle/fuel-sdk-adpother.gradle")
 
 val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTransitive = false }
 val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitive = false }
@@ -303,7 +310,7 @@ dependencies {
     compileOnly(files(betterContentJar("better-survival-hud", "better-survival-hud-1.0.0.jar")))
     compileOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
-    runtimeOnly(fg.deobf("curse.maven:pollution-of-the-realms-269973:8554528"))
+    runtimeOnly(fg.deobf(project.extra["bcFuelSdkAdpotherCoordinate"] as String))
     compileOnly(fg.deobf("curse.maven:forgeendertech-244844:8554308"))
     runtimeOnly(fg.deobf("curse.maven:forgeendertech-244844:8554308"))
     implementation(fg.deobf("com.simibubi.create:create-${property("minecraft_version")}:6.0.8-291:slim"))
@@ -319,8 +326,10 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:hyle-609850:7736352"))
     compileOnly(fg.deobf("curse.maven:thirst-was-taken-679270:6660408"))
     compileOnly(fg.deobf("curse.maven:cold-sweat-506194:7893262"))
+    runtimeOnly(fg.deobf("curse.maven:cold-sweat-506194:7893262"))
     compileOnly(fg.deobf("curse.maven:pollution-of-the-realms-269973:8554528"))
     compileOnly(fg.deobf("curse.maven:little-logistics-570050:4799459"))
+    runtimeOnly(fg.deobf("curse.maven:little-logistics-570050:4799459"))
     compileOnly(fg.deobf("curse.maven:weather-storms-tornadoes-237746:5244118"))
     runtimeOnly(fg.deobf("curse.maven:weather-storms-tornadoes-237746:5244118"))
     compileOnly(fg.deobf("curse.maven:coroutil-237749:5096038"))
@@ -405,7 +414,7 @@ tasks.named<Jar>("jar") {
     from(caravanMixins.output)
     from(urnMixins.output)
     from(chunkIoMixins.output)
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json")
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json")
     filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
@@ -551,6 +560,7 @@ mixin {
     add(caravanMixins, "better_compat_fixes.caravan.refmap.json")
     add(urnMixins, "better_compat_fixes.urn.refmap.json")
     add(chunkIoMixins, "better_compat_fixes.chunk_io.refmap.json")
+    config("better_compat_fixes.startup_abi.mixins.json")
     config("better_compat_fixes.chunk_io.mixins.json")
     config("better_compat_fixes.registrate.mixins.json")
     config("better_compat_fixes.urn.mixins.json")
@@ -1337,10 +1347,39 @@ val verifyRuntimeColonyEmi by tasks.registering {
 }
 tasks.named("verifyFast") { dependsOn(verifyRuntimeColonyEmi) }
 
+// Independent raw/official-mapped Epic Fight proof; no upstream binary recipe changes.
+val epicStartupMappedPins = configurations.create("epicStartupMappedPins") { isTransitive = false }
+dependencies { add(epicStartupMappedPins.name, fg.deobf("curse.maven:epic-fight-mod-405076:8049910")) }
+tasks.test {
+    inputs.files(epicStartupMappedPins)
+    doFirst { systemProperty("bc.startupabi.epic.mapped", epicStartupMappedPins.singleFile.absolutePath) }
+}
+val verifyRuntimeStartupAbi by tasks.registering {
+    group = "verification"
+    dependsOn(stageRuntimeJar)
+    doLast {
+        ZipFile(layout.buildDirectory.file("libs/${base.archivesName.get()}-$version.jar").get().asFile).use { zip ->
+            val name = "better_compat_fixes.startup_abi.mixins.json"
+            val manifest = zip.getInputStream(requireNotNull(zip.getEntry("META-INF/MANIFEST.MF"))).use { Manifest(it) }
+            check(name in manifest.mainAttributes.getValue("MixinConfigs").split(','))
+            val config = zip.getInputStream(requireNotNull(zip.getEntry(name))).reader().use { com.google.gson.JsonParser.parseReader(it).asJsonObject }
+            check(config.get("required").asBoolean)
+            check(config.get("package").asString == "com.bettercontent.bettercompatfixes.mixin.startupabi")
+            check(config.get("plugin").asString == "com.bettercontent.bettercompatfixes.compat.startupabi.EpicFightServerAbiPlugin")
+            check(config.getAsJsonArray("mixins").isEmpty && config.getAsJsonArray("client").isEmpty)
+            check(config.getAsJsonArray("server").map { it.asString } == listOf("EpicFightCapabilitiesServerAbiMixin"))
+            for (path in listOf("compat/startupabi/EpicFightServerAbi", "compat/startupabi/EpicFightServerAbiPlugin", "mixin/startupabi/EpicFightCapabilitiesServerAbiMixin"))
+                check(zip.getEntry("com/bettercontent/bettercompatfixes/$path.class") != null) { "Missing required startup ABI class $path" }
+        }
+    }
+}
+tasks.named("verifyFast") { dependsOn(verifyRuntimeStartupAbi) }
+
 apply(from = "gradle/native-gametest-fixture.gradle")
 apply(from = "gradle/treasure-urn-contract.gradle")
 apply(from = "gradle/registrate-contract.gradle")
-apply(from = "gradle/upstream-runtime-contract.gradle")
+apply(from = "gradle/upstream-runtime-v2-contract.gradle")
+apply(from = "gradle/upstream-startup-contract.gradle")
 apply(from = "gradle/upstream-interface-contract.gradle")
 apply(from = "gradle/mixin-namespace-contract.gradle")
 apply(from = "gradle/death-worm-contract.gradle")

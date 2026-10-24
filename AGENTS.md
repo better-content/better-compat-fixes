@@ -13,21 +13,38 @@ Forge 1.20.1 / Java 17; mod ID `better_compat_fixes`.
   The existing default graph already includes Registrate/Create; this is NOT target-library absence.
   Only the resource-only JDK control currently proves the genuinely absent plugin branch.
   Present selects exact pinned Registrate 1.3.11 (the full pack's Fruits Delight JarJar winner)
-  and two actual upstream Base tests (83 with the default graph); other profiles retain 1.3.3.
+  and two actual upstream Base tests (87 with the four additive fuel cases); other profiles retain 1.3.3.
   Both native witnesses require the exact 1.3.11 mapped resource pair from the active loader.
   No Create/Ponder/Flywheel fixture or new library family is added. Ordinary
-  default/no-Heat81, no-Bees79 and no-Curios78 populations include pending-read ownership and
-  whole-bone placement cases; every previous native identity remains required without this flag.
+  default/no-Heat85, no-Bees83 and no-Curios82 populations include pending-read ownership,
+  whole-bone placement and four real consumption/emission cases. These are required populations,
+  not a claim that newly integrated fuel cases have passed; every previous identity remains required.
   This does not replace existing required optional profiles. Standing native authorization and
   coordination follow the shared workspace testing policy.
   Raw/mapped paired class pins and compiled site/forwarding checks run in `verifyFast`;
   WrapMethod/Inject composition and actual native behavior require the separately admitted gate.
-- `qualifyUpstreamRuntimeOverrides` under `verifyFast` requires all 17 pinned-original and pure
-  controls, including two identical builds, unchanged recursive classes/licenses/scripts and exact
-  current production replacement/plugin bytes. Retain original inputs, attempts and support outputs;
-  never mutate caches, add log exemptions or publicly publish corrected restricted binaries. Stable
-  support paths under `build/upstream-runtime-overrides/` are source-qualified inputs to Root's sole
-  packager, not runtime acceptance or a redistribution grant. See `src/upstreamRuntime/README.md`.
+- Active `qualifyUpstreamRuntimeOverridesV2` under `verifyFast` requires 19 pinned-original/pure
+  controls, including deterministic repeat builds, unchanged 3,144 recursive classes/licenses/scripts,
+  exact current replacement/plugin bytes, and immutable legacy builder/spec identities. The successor
+  removes four exact obsolete registrations; only AdPother changes its output suffix to `bc-runtime.2`.
+  Stable support is under `build/upstream-runtime-overrides-v2/`; originals/attempts remain under
+  `build/upstream-runtime-v2-evidence/`. Retain v1 files, receipts, artifacts and failed candidates
+  unchanged. Checksum pins are internal reviewed identities, not an external permission barrier.
+  No cache mutation, log exemptions or public corrected-binary publication. See the legacy contract
+  `src/upstreamRuntime/README.md` and current Root `docs/upstream-runtime-overrides.md`.
+- Independent `qualifyUpstreamStartupOverrides` under `verifyFast` binds exact ATL annotation-only
+  applicability for the reviewed Citadel 2.6.3 ABI, before issue initialization. Separate two-file
+  support is under `build/upstream-startup-overrides/`. Of 880 classes, only the exact annotation
+  UTF8 operand changes; all Code/method/field/resource/notices stay unchanged. Actual Forge scan and
+  Maven range controls are not cold-start acceptance. Do not substitute an early IssueManager Mixin,
+  reflection fallback, no-op constructor or global issue disable.
+- Four nonshipping native fuel cases use actual Hearth/Boiler/steam-vehicle consumption and completed
+  original AdPother integer-plus-fraction emission state against single/doubled native references.
+  Keep all original operations intact and preserve zero/manual/cold/remaining-burn controls. The
+  fixture-only corrected SDK uses its own immutable local Maven coordinate, not overwritten originals
+  or cached mappings. `compileNativeFixtureJava`, actual `verifyFull` populations and same-candidate
+  Dist are distinct requirements. Epic's required server-only startup ABI hook likewise requires
+  native cold Rhino binding proof, not merely its eight structural controls.
 - Separate `qualifyUpstreamInterfaceOverrides` under `verifyFast` runs 12 controls over two
   additional originals. It must not alter the preceding five-artifact recipe or its 3,144-class
   invariant. Only three exact PRIVATE|STATIC -> PUBLIC|STATIC method words in one pinned VS

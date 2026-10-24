@@ -1,0 +1,73 @@
+import java.security.MessageDigest
+import java.util.zip.ZipFile
+
+// SDK resource stage only. Production v2 qualification independently requires compiled providers.
+// Apply AFTER repository declaration, BEFORE any fg.deobf dependency registration/resolution.
+// Do not resolve ANY Gradle configuration here: ForgeGradle still changes repository
+// descriptors in afterEvaluate. A bounded pinned raw download is staged independently;
+// the normal compile-only dependency remains an unchanged upstream SDK coordinate.
+def originalRoot = new File(gradle.gradleUserHomeDir, 'bettercontent-local-sdk/fuel-adpother-originals-v1')
+def originalJar = new File(originalRoot, 'AdPother-1.20.1-8.1.49.0-build.2294.jar')
+def sdkRoot = new File(gradle.gradleUserHomeDir, 'bettercontent-local-sdk/fuel-adpother-v2')
+def coordinate = 'bettercontent.fuel.fixture:adpother:8.1.49.0-bc-runtime.2'
+def expected = '8d01d3db3f30d5ecce66cb44a75b79cd684c34f35127573c17c1ddc9ebaa979f'
+def relative = 'bettercontent/fuel/fixture/adpother/8.1.49.0-bc-runtime.2/adpother-8.1.49.0-bc-runtime.2.jar'
+// Install content filters before any dependency resolution: exclusiveContent updates
+// other repositories too, and Gradle freezes each descriptor after first use.
+// Create on RepositoryHandler, not inside ExclusiveContentRepositorySpec's Factory closure.
+def localRepository = repositories.maven {
+    name = 'betterContentFuelSdkLocalOnly'
+    url = new File(sdkRoot, 'maven').toURI()
+    metadataSources { artifact() }
+}
+repositories.exclusiveContent {
+    forRepositories(localRepository)
+    // Reserve the raw coordinate only. FG serves derived *_mapped_* versions from its own
+    // synthetic repository; group-wide exclusivity would incorrectly block those artifacts.
+    filter { includeVersion('bettercontent.fuel.fixture', 'adpother', '8.1.49.0-bc-runtime.2') }
+}
+// Intentional configuration-time closure: the artifact must already exist when FG first
+// resolves this new coordinate. This bounded Python stage neither builds nor qualifies providers.
+project.exec {
+    commandLine('python3', '-B', project.file('scripts/prepare_fuel_sdk_adpother.py'),
+            '--fetch-original-root', originalRoot, '--root', sdkRoot)
+}
+def localJar = new File(sdkRoot, 'maven/' + relative)
+def actual = MessageDigest.getInstance('SHA-256').digest(localJar.bytes).encodeHex().toString()
+if (actual != expected) throw new GradleException('Immutable fuel SDK AdPother hash mismatch')
+ext.bcFuelSdkAdpotherCoordinate = coordinate
+
+// Catch accidental direct/inherited reintroduction before it can create duplicate mod IDs.
+configurations.named('runtimeClasspath').configure {
+    incoming.beforeResolve {
+        if (allDependencies.any { it.group == 'curse.maven' && it.name == 'pollution-of-the-realms-269973' })
+            throw new GradleException('Original AdPother must not coexist with corrected fuel SDK runtime')
+    }
+    incoming.afterResolve {
+        def candidates = []
+        files.findAll { it.isFile() && it.name.endsWith('.jar') }.each { jar ->
+            new ZipFile(jar).withCloseable { zip ->
+                // Exact pinned mod class entry, not arbitrary dependencies.adpother TOML text.
+                // Checking the ZIP entry does not load/initialize the target class.
+                if (zip.getEntry('com/endertech/minecraft/mods/adpother/AdPother.class') != null) {
+                    candidates.add(jar)
+                    def entry = zip.getEntry('META-INF/coremods.json')
+                    if (entry == null) throw new GradleException('AdPother coremods registration missing')
+                    def bytes = zip.getInputStream(entry).withCloseable { it.bytes }
+                    def hash = MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString()
+                    if (hash != 'd41c0bb1f59f73ba2ccdfb7d57f70635ab6a4b4098a838113158566f68d6638d')
+                        throw new GradleException('Uncorrected/stale AdPother runtime coremods registration')
+                }
+            }
+        }
+        if (candidates.size() != 1) throw new GradleException('Expected exactly one corrected AdPother SDK runtime: ' + candidates)
+    }
+}
+
+tasks.register('verifyFuelSdkAdpother', Exec) {
+    group = 'verification'
+    commandLine('python3', '-B', project.file('scripts/test_prepare_fuel_sdk_adpother.py'),
+            '--original', originalJar,
+            '--evidence', layout.buildDirectory.dir('fuel-sdk-adpother-controls/' + UUID.randomUUID()).get().asFile)
+}
+tasks.matching { it.name == 'verifyFast' }.configureEach { dependsOn('verifyFuelSdkAdpother') }

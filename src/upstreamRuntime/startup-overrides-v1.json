@@ -1,0 +1,38 @@
+{
+  "schema": "bc.upstream_startup_runtime_overrides.v1",
+  "revision": "bc-startup.1",
+  "legacy_builder_sha256": "09669c8333ce94358b30f8c303f9885a459388ccfd02d0c867b8b77ece472ed6",
+  "artifact": {
+    "input": "alltheleaks-1.1.1+1.20.1-forge.jar",
+    "output": "alltheleaks-1.1.1+1.20.1-forge-bc-startup.1.jar",
+    "manifest": "alltheleaks.pw.toml",
+    "project_id": 1091339,
+    "file_id": 7235989,
+    "sha1": "3c43c2e76093dc7ef5ad6e456d20da9674c653aa",
+    "sha256": "7b8e945da294b745e6aed9f88f28e232a767e032d7c2b8137a8ef36421d9fb33",
+    "url": "https://mediafilez.forgecdn.net/files/7235/989/alltheleaks-1.1.1%2B1.20.1-forge.jar",
+    "license": "MIT declared by META-INF/mods.toml; all original notices and bundled components retained unchanged",
+    "redistribution": "LOCAL_ONLY_NOT_AUTHORIZED"
+  },
+  "citadel": {
+    "input": "citadel-2.6.3-1.20.1.jar",
+    "manifest": "citadel.pw.toml",
+    "project_id": 331936,
+    "file_id": 7476570,
+    "sha1": "fb0b1fa96ce28e4be77b38ad95d83c3da7ec8316",
+    "sha256": "56c7ab87348a5292583aac787b6cf11b5193e77f02af1d17ea75a96f8640b3ce",
+    "url": "https://mediafilez.forgecdn.net/files/7476/570/citadel-2.6.3-1.20.1.jar",
+    "class": "com/github/alexthe666/citadel/server/world/CitadelServerData.class",
+    "class_sha256": "2c936c4639e7fe5e23f5a8075d658e779fcca3540eca6b59f91a108820c37048"
+  },
+  "patch": {
+    "path": "dev/uncandango/alltheleaks/leaks/common/mods/citadel/UntrackedIssue001.class",
+    "before_sha256": "16a640ec027ac79f45761828e310af3e65166334bed9489977dc40e1d7b1fbc5",
+    "annotation": "Ldev/uncandango/alltheleaks/annotation/Issue;",
+    "mod_id": "citadel",
+    "element": "versionRange",
+    "before": "[2.5.4,)",
+    "after": "[2.5.4,2.6.3),(2.6.3,)"
+  },
+  "scope": "Only the common Citadel issue annotation string operand changes. Preserve every method, field, Code, other attribute, class, resource, nested archive, notice and ZIP metadata. No IssueManager mixin, reflection fallback or constructor suppression. Maven version equivalence applies; future and adjacent versions remain eligible. Actual Forge scan and Maven controls are qualification prerequisites, not pack runtime acceptance."
+}

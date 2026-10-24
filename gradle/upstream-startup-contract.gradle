@@ -1,0 +1,50 @@
+// Independent exact ATL annotation-applicability correction; no early-loader mixin.
+import groovy.json.JsonSlurper
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
+import java.util.UUID
+
+def startupSpec = file('src/upstreamRuntime/startup-overrides-v1.json')
+def startupBuilder = file('scripts/build_upstream_startup_overrides.py')
+def startupControls = file('scripts/test_upstream_startup_overrides.py')
+def startupLegacy = file('scripts/build_upstream_runtime_overrides.py')
+def startupDigest = { File path -> MessageDigest.getInstance('SHA-256').digest(path.bytes).encodeHex().toString() }
+def startupSafe = { File file ->
+    def path = file.toPath().toAbsolutePath()
+    while (path != null) {
+        if (Files.isSymbolicLink(path)) throw new GradleException("Symlink startup qualification path: ${path}")
+        path = path.parent
+    }
+    file
+}
+
+def qualifyUpstreamStartupOverrides = tasks.register('qualifyUpstreamStartupOverrides') {
+    group = 'verification'
+    description = 'Qualifies exact ATL Citadel issue applicability with real Forge scan and Maven range controls.'
+    dependsOn('stageRuntimeJar')
+    inputs.files(startupSpec, startupBuilder, startupControls, startupLegacy)
+    outputs.upToDateWhen { false }
+    doLast {
+        def retained = startupSafe(layout.buildDirectory.dir('upstream-startup-evidence').get().asFile)
+        retained.mkdirs()
+        def originals = startupSafe(new File(retained, "originals-${startupDigest(startupSpec)}"))
+        if (!originals.exists()) {
+            exec { commandLine('python3', '-B', startupBuilder.absolutePath, '--fetch-originals', originals.absolutePath) }
+        }
+        def attempt = startupSafe(new File(retained, "attempt-${UUID.randomUUID()}"))
+        if (!attempt.mkdir()) throw new GradleException('Fresh startup qualification evidence required')
+        exec { commandLine('python3', '-B', startupControls.absolutePath, '--inputs', originals.absolutePath,
+            '--evidence', new File(attempt, 'controls').absolutePath) }
+        def output = new File(attempt, 'qualified')
+        exec { commandLine('python3', '-B', startupBuilder.absolutePath, '--inputs', originals.absolutePath, '--output', output.absolutePath) }
+        def spec = new JsonSlurper().parse(startupSpec)
+        def destination = startupSafe(layout.buildDirectory.dir('upstream-startup-overrides').get().asFile)
+        destination.mkdirs()
+        [spec.artifact.output, 'receipt.json'].each { name ->
+            Files.copy(new File(output, name).toPath(), startupSafe(new File(destination, name)).toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+        logger.lifecycle("Qualified local-only ATL startup applicability support; runtime acceptance NOT_EVALUATED; evidence ${attempt}")
+    }
+}
+tasks.named('verifyFast') { dependsOn(qualifyUpstreamStartupOverrides) }

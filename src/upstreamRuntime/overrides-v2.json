@@ -1,0 +1,65 @@
+{
+  "schema": "bc.upstream_runtime_overrides.v2",
+  "revision": "bc-runtime.2",
+  "scope": "Only seven minVersion fields, three client-list relocations, and four obsolete AdPother registrations; no class, script, logger or license edits.",
+  "required_compat": {
+    "condition": "AdPother correction requires these existing Compat replacement mixins registered under its production plugin, AdPother 8.1.49.0, Cold Sweat 2.4 and Little Logistics 1.20.1.2. Do not also repair/re-enable the superseded coremods: that double-counts emissions. Runtime behavior must be qualified separately.",
+    "config": "better_compat_fixes.mixins.json",
+    "config_required": false,
+    "plugin": "com.bettercontent.bettercompatfixes.compat.plugin.BetterContentMixinPlugin",
+    "plugin_sha256": "eec012bd9e1a6ec1a3f3590081819232fd6b057eb9c3a5f3f43987363a147f80",
+    "classes": {
+      "adpother.coldsweat.HearthBlockEntityMixin": "efd764d6ac2728e429a8788b09e744e0a5c54f18c86ccfda1ff9ea64940823ce",
+      "adpother.littlelogistics.SteamLocomotiveEntityMixin": "09d163884121ff0bb52f0b024715036c0b1a4c03ae00ff90bbec3bf9ca71995c",
+      "adpother.littlelogistics.SteamTugEntityMixin": "d907f62a44cb7be6f6b277701e958100568f7ab8e9bf5578248ff5864c1091ea"
+    }
+  },
+  "artifacts": [
+    {
+      "input": "fabric-api-0.92.6+1.11.14+1.20.1.jar",
+      "output": "fabric-api-0.92.6+1.11.14+1.20.1-bc-runtime.1.jar",
+      "sha256": "9b140af437581d32e5ee17d20f8fe882000e6a34cba85c152ae5bccc9570cc03",
+      "sha1": "285c22b2567b9fdf98ef9808eceb5557de9611d3",
+      "curseforge": {"project": 889079, "file": 6885853},
+      "url": "https://mediafilez.forgecdn.net/files/6885/853/fabric-api-0.92.6%2B1.11.14%2B1.20.1.jar",
+      "license": "Apache-2.0; bundled LICENSE-fabric-api and nested license notices must be retained; mark modifications and provide notices before redistribution.",
+      "redistribution": "CONDITIONAL_NOTICE_REVIEW",
+      "patches": [
+        {"path": ["META-INF/jarjar/fabric-screen-api-v1-2.0.9+45a670a577.jar", "fabric-screen-api-v1.mixins.json"], "parents": ["6677a78755727321192b9eb420ae5b23c3bdb7e966a0ee083d6271eb6b832032"], "sha256": "1262a98ac496ead11ae0d5a74e5a11e3fbd04203e64f5da3c7a2dc2b8ed262da", "before": {"required": true, "package": "net.fabricmc.fabric.mixin.screen", "compatibilityLevel": "JAVA_16", "client": ["MinecraftClientMixin", "ScreenMixin"], "injectors": {"defaultRequire": 1}, "mixins": ["MouseMixin", "ScreenAccessor"], "minVersion": "0.8.5", "refmap": "fabric-screen-api-v1-refmap.json"}, "move_to_client": ["MouseMixin", "ScreenAccessor"]},
+        {"path": ["META-INF/jarjar/fabric-item-group-api-v1-4.0.14+c9161c2d77.jar", "fabric-item-group-api-v1.client.mixins.json"], "parents": ["13e0a4f022c66a603dd4faa6450a898989e548f8d0eaf82d1874b52f44636478"], "sha256": "93f8628701a7a69e4389a56cb2f657567cf919ddd3e8591fdb414c26879d152f", "before": {"required": true, "package": "net.fabricmc.fabric.mixin.itemgroup.client", "compatibilityLevel": "JAVA_17", "client": ["CreativeInventoryScreenMixin"], "injectors": {"defaultRequire": 1}, "refmap": "fabric-item-group-api-v1-refmap.json"}, "add_min_version": "0.8.5"},
+        {"path": ["META-INF/jarjar/fabric-item-group-api-v1-4.0.14+c9161c2d77.jar", "fabric-item-group-api-v1.mixins.json"], "parents": ["13e0a4f022c66a603dd4faa6450a898989e548f8d0eaf82d1874b52f44636478"], "sha256": "212dbbb6b498188b0db5db1aa69c7307e540081fca084ab5d0f7cc097ba7ac2a", "before": {"required": true, "package": "net.fabricmc.fabric.mixin.itemgroup", "compatibilityLevel": "JAVA_17", "mixins": ["ItemGroupMixin"], "injectors": {"defaultRequire": 1}, "refmap": "fabric-item-group-api-v1-refmap.json"}, "add_min_version": "0.8.5"},
+        {"path": ["META-INF/jarjar/fabric-item-api-v1-2.1.29+4d0bbcfa77.jar", "fabric-item-api-v1.client.mixins.json"], "parents": ["a2440527de3052730e81f6673799a827d334f04781a4c74370f68b382ebbe95b"], "sha256": "cabd432b8e41fef0db4cd3dc71527490cd2b6f657da6dcccb535f2873c6dd53e", "before": {"required": true, "package": "net.fabricmc.fabric.mixin.item.client", "compatibilityLevel": "JAVA_16", "client": ["ClientPlayerInteractionManagerMixin"], "injectors": {"defaultRequire": 1}, "refmap": "fabric-item-api-v1-refmap.json"}, "add_min_version": "0.8.5"},
+        {"path": ["META-INF/jarjar/fabric-data-attachment-api-v1-1.0.2+30ef839e77.jar", "fabric-data-attachment-api-v1.client.mixins.json"], "parents": ["10713426ddb41bdf666456d45d7edf967cb47b5796e00201fcefd4562929906f"], "sha256": "455257b4c0f3b05c113903e269e0a3d223bb52d0ba47d62f2f1f067015b4178c", "before": {"required": true, "package": "net.fabricmc.fabric.mixin.attachment.client", "compatibilityLevel": "JAVA_17", "mixins": [], "injectors": {"defaultRequire": 1}, "client": ["ClientPlayNetworkHandlerMixin"], "refmap": "fabric-data-attachment-api-v1-refmap.json"}, "add_min_version": "0.8.5"},
+        {"path": ["META-INF/jarjar/fabric-data-attachment-api-v1-1.0.2+30ef839e77.jar", "fabric-data-attachment-api-v1.mixins.json"], "parents": ["10713426ddb41bdf666456d45d7edf967cb47b5796e00201fcefd4562929906f"], "sha256": "d6eca41f5520161d86a1ef11bc52e3d6ce2e86ea3facc498a805a8f459ed6859", "before": {"required": true, "package": "net.fabricmc.fabric.mixin.attachment", "compatibilityLevel": "JAVA_17", "mixins": ["AttachmentTargetsMixin", "BlockEntityMixin", "BlockEntityUpdateS2CPacketMixin", "ChunkSerializerMixin", "EntityMixin", "ServerWorldMixin", "WorldChunkMixin", "WrapperProtoChunkMixin"], "injectors": {"defaultRequire": 1}, "refmap": "fabric-data-attachment-api-v1-refmap.json"}, "add_min_version": "0.8.5"}
+      ]
+    },
+    {
+      "input": "emi_loot-0.7.9+1.20.1+forge.jar", "output": "emi_loot-0.7.9+1.20.1+forge-bc-runtime.1.jar",
+      "sha256": "c9910f6cd256a68c7eabec8ba24c39b71595856c2e80e44001484b0702563034", "sha1": "e3f6289abd4de8ebbbb0ffc162b35346c3acd54f",
+      "curseforge": {"project": 681783, "file": 7417249}, "url": "https://mediafilez.forgecdn.net/files/7417/249/emi_loot-0.7.9%2B1.20.1%2Bforge.jar",
+      "license": "MIT declared by META-INF/mods.toml; no bundled license text found. Obtain and retain upstream copyright/permission notice before redistribution.", "redistribution": "CONDITIONAL_NOTICE_REVIEW",
+      "patches": [{"path": ["emi_loot.mixins.json"], "parents": [], "sha256": "f2e0deb847c2c996281a53b5964012fc71ea36fb942bd876e9c4180bb6fbcb8c", "before": {"required": true, "package": "fzzyhmstrs.emi_loot.mixins", "compatibilityLevel": "JAVA_17", "mixins": ["AlternativeLootConditionAccessor", "ApplyBonusLootFunctionAccessor", "BinomialLootNumberProviderAccessor", "BlockPredicateAccessor", "BlockStatePropertyLootConditionAccessor", "BoundedIntUnaryOperatorAccessor", "CombinedEntryAccessor", "ConditionalLootFunctionAccessor", "ConstantLootNumberProviderAccessor", "CopyNameLootFunctionAccessor", "DamageSourcePredicateAccessor", "DamageSourcePropertiesLootConditionAccessor", "DataPackContentsMixin", "DistancePredicateAccessor", "EffectDataAccessor", "EnchantmentPredicateAccessor", "EntityEffectPredicateAccessor", "EntityEquipmentPredicateAccessor", "EntityFlagsPredicateAccessor", "EntityPredicateAccessor", "EntityPropertiesLootConditionAccessor", "ExplorationMapLootFunctionAccessor", "FishingHookPredicateAccessor", "FluidPredicateAccessor", "InvertedLootConditionAccessor", "ItemEntryAccessor", "ItemPredicateAccessor", "LeafEntryAccessor", "LightningBoltPredicateAccessor", "LightPredicateAccessor", "LimitCountLootFunctionAccessor", "LocationCheckLootConditionAccessor", "LocationPredicateAccessor", "LootManagerMixin", "LootPoolAccessor", "LootPoolEntryAccessor", "LootTableEntryAccessor", "LootTableMixin", "MatchToolLootConditionAccessor", "NbtPredicateAccessor", "PlayerPredicateAccessor", "ProfiledResourceReloadMixin", "RandomChanceLootConditionAccessor", "RandomChanceWithLootingLootConditionAccessor", "ReferenceLootConditionAccessor", "ReferenceLootFunctionAccessor", "ScoreLootNumberProviderAccessor", "SetAttributesLootFunctionAccessor", "SetCountLootFunctionAccessor", "SetDamageLootFunctionAccessor", "SetEnchantmentsLootFunctionAccessor", "SetInstrumentLootFunctionAccessor", "SetLootTableLootFunctionAccessor", "SetNameLootFunctionAccessor", "SetNbtLootFunctionAccessor", "SetPotionLootFunctionAccessor", "SetStewEffectLootFunctionAccessor", "SimpleResourceReloadMixin", "SlimePredicateAccessor", "StatePredicateAccessor", "TableBonusLootConditionAccessor", "TagEntryAccessor", "TimeCheckLootConditionAccessor", "UniformLootNumberProviderAccessor", "ValueCheckLootConditionAccessor", "WeatherCheckLootConditionAccessor"], "injectors": {"defaultRequire": 1}, "refmap": "emi_loot-xplat-refmap.json"}, "add_min_version": "0.8.5"}]
+    },
+    {
+      "input": "yet_another_config_lib_v3-3.6.6+1.20.1-forge.jar", "output": "yet_another_config_lib_v3-3.6.6+1.20.1-forge-bc-runtime.1.jar",
+      "sha256": "bd05da3d9df29b914165583f1c6dfd918a138996447ff32c0418329824027a8f", "sha1": "644731e321c53a35a0b3177a3cc6347fe38002f4",
+      "curseforge": {"project": 667299, "file": 6336646}, "url": "https://mediafilez.forgecdn.net/files/6336/646/yet_another_config_lib_v3-3.6.6%2B1.20.1-forge.jar",
+      "license": "LGPL-3.0-or-later declared by META-INF/mods.toml; no bundled license text found. Corresponding-source, license/notice and modification obligations require review before redistribution.", "redistribution": "CONDITIONAL_SOURCE_AND_NOTICE_REVIEW",
+      "patches": [{"path": ["yacl.mixins.json"], "parents": [], "sha256": "5ff10ee3a14613e5323d069626065931b647dcbc454ee47db4318dd4f9c7829f", "before": {"required": true, "package": "dev.isxander.yacl3.mixin", "compatibilityLevel": "JAVA_17", "refmap": "yet_another_config_lib_v3.refmap.json", "injectors": {"defaultRequire": 1}, "client": ["AbstractSelectionListAccessor", "AbstractSelectionListMixin", "MinecraftMixin", "OptionInstanceAccessor", "TabNavigationBarAccessor"]}, "add_min_version": "0.8.5"}]
+    },
+    {
+      "input": "relics-1.20.1-0.8.0.13.jar", "output": "relics-1.20.1-0.8.0.13-bc-runtime.1.jar",
+      "sha256": "2731d3b81533564c5d206faf94e4e8afaf928d97b47b720e5d6aaa017333096f", "sha1": "940358d190780a9a59a69dd7e75a5e7cf07e4209",
+      "curseforge": {"project": 445274, "file": 7708970}, "url": "https://mediafilez.forgecdn.net/files/7708/970/relics-1.20.1-0.8.0.13.jar",
+      "license": "All Rights Reserved declared by META-INF/mods.toml; no bundled license grant found. Modified artifact public redistribution requires explicit permission or independently verified applicable grant.", "redistribution": "BLOCKED_NO_GRANT",
+      "patches": [{"path": ["relics.mixins.json"], "parents": [], "sha256": "490f510aa3ac8c4433bf6e851238c39b15928f16f93f5648b96395ae1c48beb3", "before": {"required": true, "package": "it.hurts.sskirillss.relics.mixin", "compatibilityLevel": "JAVA_8", "refmap": "relics.refmap.json", "mixins": ["AbstractChestedHorseMixin", "AbstractContainerMenuMixin", "EnderManMixin", "EntityMixin", "ItemMixin", "ItemStackMixin", "LivingEntityMixin", "PiglinAiMixin", "PowderSnowBlockMixin", "ScreenMixin"], "minVersion": "0.8", "client": ["CameraMixin", "GuiGraphicsMixin", "KeyboardHandlerMixin", "MouseHandlerMixin", "WindowMixin"]}, "move_to_client": ["ScreenMixin"]}]
+    },
+    {
+      "input": "AdPother-1.20.1-8.1.49.0-build.2294.jar", "output": "AdPother-1.20.1-8.1.49.0-build.2294-bc-runtime.2.jar",
+      "sha256": "4d66ceb91116d2f1dbc55a125cf8b237a11e3eba7787908c066e3ee9d18f4de5", "sha1": "fa630492fadb60027176fd73a3a1a95c295f295d",
+      "curseforge": {"project": 269973, "file": 8554528}, "url": "https://mediafilez.forgecdn.net/files/8554/528/AdPother-1.20.1-8.1.49.0-build.2294.jar",
+      "license": "All rights reserved declared by META-INF/mods.toml; no bundled license grant found. Modified artifact public redistribution requires explicit permission or independently verified applicable grant.", "redistribution": "BLOCKED_NO_GRANT", "requires_compat": true,
+      "patches": [{"path": ["META-INF/coremods.json"], "parents": [], "sha256": "1e4b8da00a8882218280d40a2f94a8e8c36c49ed88b2eecc4f5908c8e8678681", "before_fields": {"coldsweat$hearth": "coremods/coldsweat/hearth_fuel_burnout_hook.js", "coldsweat$boiler": "coremods/coldsweat/boiler_fuel_burnout_hook.js", "littlelogistics$steam_locomotive": "coremods/littlelogistics/steam_locomotive_fuel_burnout_hook.js", "littlelogistics$steam_tug": "coremods/littlelogistics/steam_tug_fuel_burnout_hook.js"}, "remove_keys": ["coldsweat$hearth", "coldsweat$boiler", "littlelogistics$steam_locomotive", "littlelogistics$steam_tug"]}]
+    }
+  ]
+}

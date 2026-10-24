@@ -14,12 +14,12 @@ public abstract class HearthBlockEntityMixin {
     @Unique
     private int betterContentFixes$hotFuelBeforeDrain;
 
-    @Inject(method = "drainFuel", at = @At("HEAD"), require = 1)
+    @Inject(method = "drainFuel()V", at = @At("HEAD"), require = 1)
     private void betterContentFixes$captureHotFuel(final CallbackInfo ci) {
         betterContentFixes$hotFuelBeforeDrain = ((HearthBlockEntity) (Object) this).getHotFuel();
     }
 
-    @Inject(method = "drainFuel", at = @At("RETURN"), require = 1)
+    @Inject(method = "drainFuel()V", at = @At("RETURN"), require = 1)
     private void betterContentFixes$emitHotFuelPollution(final CallbackInfo ci) {
         final int consumed = betterContentFixes$hotFuelBeforeDrain
                 - ((HearthBlockEntity) (Object) this).getHotFuel();

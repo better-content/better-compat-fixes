@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.bettercontent.bettercompatfixes.mixin.startupabi",
+  "plugin": "com.bettercontent.bettercompatfixes.compat.startupabi.EpicFightServerAbiPlugin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [],
+  "client": [],
+  "server": ["EpicFightCapabilitiesServerAbiMixin"],
+  "injectors": {"defaultRequire": 1}
+}

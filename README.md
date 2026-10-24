@@ -92,22 +92,42 @@ bone templates. Its pre-repair negative must fail; it does not suppress native e
 
 ## Local-only upstream runtime resources
 
-`qualifyUpstreamRuntimeOverrides` is part of `verifyFast`. It fetches only the five exact pinned
-originals into a separate immutable input directory, then runs all 17 resource controls against
+Active `qualifyUpstreamRuntimeOverridesV2` is part of `verifyFast`. It fetches only the five exact
+pinned originals into a separate immutable input directory, then runs 19 resource controls against
 the current production Compat JAR. Two independently built copies must match; 3,144 recursive
 class bytes, untouched compressed records, licenses and scripts remain invariant. The reviewed
-recipe changes seven missing `minVersion` fields, three client-only Mixin list entries, and three
-obsolete AdPother coremod registrations already replaced by exact-gated production hooks.
-It does not repair both emission paths or alter logging/error handlers.
+successor changes seven missing `minVersion` fields, three client-only Mixin list entries, and four
+obsolete AdPother registrations, including Boiler's inherited Hearth path. The two Hearth selectors
+are explicitly `drainFuel()V`; old selector controls establish order-safety, not historic doubling.
+Only AdPother receives a `bc-runtime.2` output name; the other four outputs stay byte-identical.
+Legacy v1 builder/specification/policy/receiver and retained outputs/receipts are not rewritten.
+Neither recipe repairs both emission paths or alters logging/error handlers.
 
-Fresh outputs/receipts remain in `build/upstream-runtime-evidence/`; successful stable support
-paths are `build/upstream-runtime-overrides/`. Root source qualification binds those support
+Fresh successor outputs/receipts remain in `build/upstream-runtime-v2-evidence/`; successful stable
+support paths are `build/upstream-runtime-overrides-v2/`. Root source qualification binds those support
 hashes, the recipe and actual staged replacement classes before its existing packager assembles
 local candidates. Originals, existing `.pw.toml` identities and download caches remain immutable.
 These outputs are **local only**: Relics and AdPother declare All Rights Reserved without a found
 grant, and other artifacts have notice/source obligations. Neither the recipe nor a receipt grants
 public redistribution rights. No corrected third-party binary is committed or publicly hosted.
-See [the exact resource/rights contract](src/upstreamRuntime/README.md).
+See [the retained v1 resource/rights contract](src/upstreamRuntime/README.md) and
+[the current pack contract](../../better-content-modpack/docs/upstream-runtime-overrides.md).
+
+A separate required physical-server-only Epic startup ABI config removes only the exact client-only
+method before Rhino member enumeration, preserving the other 14 methods/four fields and clients.
+Its eight standalone controls and application-phase fail-closed checks are not native binding proof.
+Independent `qualifyUpstreamStartupOverrides` corrects one exact ATL applicability annotation before
+issue initialization; actual Forge scan and Maven controls preserve all other classes/Code/resources.
+Its two-file support namespace is `build/upstream-startup-overrides/`, not a change to either resource
+or interface correction pipelines.
+
+Four additive nonshipping fuel GameTests exercise actual Hearth/Boiler/locomotive/tug consumption
+and original AdPother integer-plus-fraction emission state against real single/doubled references,
+with empty/cold/manual/continued-burn/invalid controls. The fixture uses a separately named local
+corrected SDK Maven artifact; no original download or cached mapped artifact is overwritten. These
+new cases require compilation and native execution; authored source and pure controls are not
+runtime acceptance. Required populations become default/no-Heat85, no-Bees83, no-Curios82 and
+Registrate-present87 without removing any prior required identity.
 
 Resource controls and source-native profiles are not exact-candidate client/server acceptance;
 Root must still qualify the full real pack and strict logs without exemptions.
