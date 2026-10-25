@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.bettercontent.bettercompatfixes.mixin.deepvoid",
+  "plugin": "com.bettercontent.bettercompatfixes.compat.deepvoid.DeepVoidMetadataMixinPlugin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "TemplateMetadataAccessor",
+    "TemplateMetadataSrgAccessor",
+    "IgnoreMetadataAccessor",
+    "IgnoreMetadataSrgAccessor",
+    "RegionWriteRadiusAccessor",
+    "RegionWriteRadiusSrgAccessor"
+  ],
+  "injectors": { "defaultRequire": 1 }
+}

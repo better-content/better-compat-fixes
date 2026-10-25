@@ -28,33 +28,47 @@ final class DeepVoidMetadataNamespaceTest {
     }
 
     @Test void bothNamespaceImplementationsAreRegisteredExactlyOnce() throws Exception {
-        try (var input = getClass().getResourceAsStream("/better_compat_fixes.mixins.json")) {
+        try (var input = getClass().getResourceAsStream("/better_compat_fixes.deepvoid_metadata.mixins.json");
+             var legacy = getClass().getResourceAsStream("/better_compat_fixes.mixins.json")) {
             assertNotNull(input);
-            var mixins = JsonParser.parseReader(new InputStreamReader(input, StandardCharsets.UTF_8))
+            assertNotNull(legacy);
+            var config = JsonParser.parseReader(new InputStreamReader(input, StandardCharsets.UTF_8)).getAsJsonObject();
+            assertEquals(PREFIX.substring(0, PREFIX.length() - 1), config.get("package").getAsString());
+            assertTrue(config.get("required").getAsBoolean());
+            assertEquals(1, config.getAsJsonObject("injectors").get("defaultRequire").getAsInt());
+            assertEquals("com.bettercontent.bettercompatfixes.compat.deepvoid.DeepVoidMetadataMixinPlugin", config.get("plugin").getAsString());
+            var mixins = config.getAsJsonArray("mixins");
+            assertEquals(6, mixins.size());
+            var legacyMixins = JsonParser.parseReader(new InputStreamReader(legacy, StandardCharsets.UTF_8))
                     .getAsJsonObject().getAsJsonArray("mixins");
             for (String bridge : BRIDGES) for (String suffix : new String[]{"Accessor", "SrgAccessor"}) {
                 long count = java.util.stream.StreamSupport.stream(mixins.spliterator(), false)
-                        .filter(value -> value.getAsString().equals("deepvoid." + bridge + suffix)).count();
+                        .filter(value -> value.getAsString().equals(bridge + suffix)).count();
                 assertEquals(1, count);
+                assertEquals(0, java.util.stream.StreamSupport.stream(legacyMixins.spliterator(), false)
+                        .filter(value -> value.getAsString().equals("deepvoid." + bridge + suffix)).count());
             }
         }
     }
 
     @Test void actualPluginUsesForgeProductionStateAndNamespacePolicy() throws Exception {
-        try (var input = getClass().getResourceAsStream("/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.class")) {
+        try (var input = getClass().getResourceAsStream("/com/bettercontent/bettercompatfixes/compat/deepvoid/DeepVoidMetadataMixinPlugin.class")) {
             assertNotNull(input);
             var type = new ClassNode();
             new ClassReader(input).accept(type, 0);
             var method = type.methods.stream().filter(value -> value.name.equals("shouldApplyMixin")).findFirst().orElseThrow();
-            int policyCalls = 0, nativeStateReads = 0;
+            int policyCalls = 0, nativeStateReads = 0, providerPolicyCalls = 0;
             for (var instruction : method.instructions) {
                 if (instruction instanceof MethodInsnNode call && call.owner.endsWith("/DeepVoidMetadataNamespace")
                         && call.name.equals("applies") && call.desc.equals("(Ljava/lang/String;Z)Z")) policyCalls++;
+                if (instruction instanceof MethodInsnNode call && call.owner.endsWith("/BetterContentMixinPlugin")
+                        && call.name.equals("shouldApplyMixin") && call.desc.equals("(Ljava/lang/String;Ljava/lang/String;)Z")) providerPolicyCalls++;
                 if (instruction instanceof FieldInsnNode field && field.owner.equals("net/minecraftforge/fml/loading/FMLEnvironment")
                         && field.name.equals("production") && field.desc.equals("Z")) nativeStateReads++;
             }
             assertEquals(1, policyCalls);
             assertEquals(1, nativeStateReads);
+            assertEquals(1, providerPolicyCalls);
         }
     }
 }

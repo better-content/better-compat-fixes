@@ -50,8 +50,18 @@ tasks.named('jar', org.gradle.api.tasks.bundling.Jar).configure {
             def ids = ['FleshStructureFeatureMixin', 'TemplateMetadataAccessor', 'TemplateMetadataSrgAccessor',
                        'IgnoreMetadataAccessor', 'IgnoreMetadataSrgAccessor', 'RegionWriteRadiusAccessor', 'RegionWriteRadiusSrgAccessor']
             def json = new groovy.json.JsonSlurper().parse(archive.getInputStream(archive.getEntry('better_compat_fixes.mixins.json')))
+            def metadataName = 'better_compat_fixes.deepvoid_metadata.mixins.json'
+            def metadata = new groovy.json.JsonSlurper().parse(archive.getInputStream(archive.getEntry(metadataName)))
+            if (metadata.required != true || metadata.injectors?.defaultRequire != 1 || metadata.plugin != 'com.bettercontent.bettercompatfixes.compat.deepvoid.DeepVoidMetadataMixinPlugin' ||
+                    metadata.package != 'com.bettercontent.bettercompatfixes.mixin.deepvoid')
+                throw new GradleException('DeepVoid namespace/provider admission changed')
+            def manifest = new java.util.jar.Manifest(archive.getInputStream(archive.getEntry('META-INF/MANIFEST.MF')))
+            if (manifest.mainAttributes.getValue('MixinConfigs').split(',').count { it == metadataName } != 1)
+                throw new GradleException('Production manifest must register the DeepVoid metadata config exactly once')
             ids.each { id ->
-                if (json.mixins.count { it == 'deepvoid.' + id } != 1 || archive.getEntry('com/bettercontent/bettercompatfixes/mixin/deepvoid/' + id + '.class') == null)
+                def count = id == 'FleshStructureFeatureMixin' ? json.mixins.count { it == 'deepvoid.' + id } : metadata.mixins.count { it == id }
+                if (count != 1 || (id != 'FleshStructureFeatureMixin' && json.mixins.contains('deepvoid.' + id)) ||
+                        archive.getEntry('com/bettercontent/bettercompatfixes/mixin/deepvoid/' + id + '.class') == null)
                     throw new GradleException('Missing/duplicate production DeepVoid metadata/placement Mixin: ' + id)
             }
             if (archive.entries().toList().any { it.name.contains('DeepVoidPlacementControl') || it.name.contains('NativeGeometryControl') })
