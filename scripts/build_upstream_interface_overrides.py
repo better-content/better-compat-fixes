@@ -73,7 +73,7 @@ def method_access_offsets(data):
     return methods
 
 
-def promote_static_handlers(data):
+def retain_private_synthetic_handlers(data):
     base.digest_matches(data, ORIGINAL_CLASS)
     methods = method_access_offsets(data)
     revised = bytearray(data); edits = []
@@ -82,10 +82,13 @@ def promote_static_handlers(data):
     for name, desc in METHODS.items():
         offset, flags = methods[(name.encode('ascii'), desc.encode('ascii'))]
         require(flags == 0x000a, 'handler must be exactly PRIVATE|STATIC')
-        struct.pack_into('>H', revised, offset, 0x0009)
-        edits.append({'method': name, 'descriptor': desc, 'offset': offset, 'before': 10, 'after': 9})
+        # Mixin 0.8.5 permits private SYNTHETIC interface helpers, while its
+        # applicator rejects non-private static helpers. Preserve PRIVATE|STATIC
+        # and add only SYNTHETIC; widening to PUBLIC passes one phase but crashes the next.
+        struct.pack_into('>H', revised, offset, 0x100a)
+        edits.append({'method': name, 'descriptor': desc, 'offset': offset, 'before': 10, 'after': 4106})
     after = method_access_offsets(bytes(revised))
-    require(all(after[key] == (offset, 9) for key, (offset, _) in methods.items()), 'static access proof failed')
+    require(all(after[key] == (offset, 0x100a) for key, (offset, _) in methods.items()), 'private static synthetic proof failed')
     # Bytes outside these exact access words are untouched by construction.
     return bytes(revised), edits
 
@@ -107,7 +110,7 @@ def relocate(data, patch):
 def load_spec(path=SPEC):
     spec = base.parse_json(base.read_file(path, base.MAX_JSON))
     require(spec.get('schema') == 'bc.upstream_interface_runtime_overrides.v1' and
-            spec.get('revision') == 'bc-interface.1', 'unsupported independent spec')
+            spec.get('revision') == 'bc-interface.2', 'unsupported independent spec')
     artifacts = spec.get('artifacts')
     require(isinstance(artifacts, list) and len(artifacts) == 2, 'exactly two reviewed artifacts')
     expected = {'epic x parcool-forge-20.12.0.1-1.20.1.jar', 'valkyrienskies-120-2.4.11.jar'}
@@ -115,7 +118,7 @@ def load_spec(path=SPEC):
     for a in artifacts:
         for field in ('input', 'output'):
             base.safe_name(a[field]); require('/' not in a[field], 'artifact basename required')
-        require(a['output'] == a['input'][:-4] + '-bc-interface.1.jar', 'separate corrected filename')
+        require(a['output'] == a['input'][:-4] + '-bc-interface.2.jar', 'separate corrected filename')
         require(len(a['patches']) == 1 and a['url'].startswith('https://mediafilez.forgecdn.net/files/'), 'exact JSON/origin scope')
         p = a['patches'][0]
         require(set(p) == {'path', 'sha256', 'before', 'move_to_client'}, 'JSON patch shape')
@@ -124,7 +127,7 @@ def load_spec(path=SPEC):
                     ['mod_compat.create.blockentity.MixinChainConveyorInteractionHandler'], 'VS side scope')
             c = a['class_access']
             require(c == {'path': CLASS, 'before_sha256': ORIGINAL_CLASS, 'methods': METHODS,
-                          'before': 10, 'after': 9}, 'exact STATIC visibility scope')
+                          'before': 10, 'after': 4106}, 'exact PRIVATE STATIC SYNTHETIC scope')
         else:
             require(p['path'] == 'mixins.epicparcool.json' and p['move_to_client'] == ['ParCoolMixinAnimation'] and
                     'class_access' not in a, 'Epic accessor-only scope')
@@ -146,7 +149,7 @@ def build(inputs, output, spec_path=SPEC):
         access = []
         if 'class_access' in a:
             require(CLASS in entries, 'missing exact interface')
-            revised, edits = promote_static_handlers(entries[CLASS]); changed[CLASS] = revised
+            revised, edits = retain_private_synthetic_handlers(entries[CLASS]); changed[CLASS] = revised
             access = [{'path': CLASS, 'before_sha256': sha(entries[CLASS]), 'after_sha256': sha(revised),
                        'edits': edits, 'all_other_class_bytes_invariant': True}]
         revised = base.rewrite_zip(original, changed)

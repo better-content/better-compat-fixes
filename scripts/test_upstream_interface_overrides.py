@@ -47,16 +47,25 @@ class Controls(unittest.TestCase):
         self.assertEqual(sum(r['class_count'] for r in self.receipt['artifacts']), 8062)
 
     def test_02_exact_three_static_words_and_every_other_byte(self):
-        new, edits = m.promote_static_handlers(self.class_data)
+        new, edits = m.retain_private_synthetic_handlers(self.class_data)
         self.assertEqual({e['method'] for e in edits}, set(m.METHODS))
         self.assertEqual([i for i,(a,b) in enumerate(zip(self.class_data,new)) if a != b],
-                         sorted(e['offset']+1 for e in edits))
+                         sorted(e['offset'] for e in edits))
         for e in edits:
             self.assertEqual(struct.unpack_from('>H',self.class_data,e['offset'])[0],10)
-            self.assertEqual(struct.unpack_from('>H',new,e['offset'])[0],9)
+            self.assertEqual(struct.unpack_from('>H',new,e['offset'])[0],0x100a)
         expected = bytearray(self.class_data)
-        for e in edits: struct.pack_into('>H',expected,e['offset'],9)
+        for e in edits: struct.pack_into('>H',expected,e['offset'],0x100a)
         self.assertEqual(bytes(expected),new)
+
+    def test_both_mixin_phase_predicates_not_visibility_promotion(self):
+        # Predicates from pinned Mixin 0.8.5 prepareMethod/applyNormalMethod;
+        # this is a structural regression control, NOT a native transformation receipt.
+        def interface_prepares(flags): return bool(flags & (0x0001 | 0x1000))
+        def static_applies(flags): return not bool(flags & 0x0008) or bool(flags & 0x0002)
+        self.assertFalse(interface_prepares(0x000a))
+        self.assertTrue(interface_prepares(0x0009)); self.assertFalse(static_applies(0x0009))
+        self.assertTrue(interface_prepares(0x100a)); self.assertTrue(static_applies(0x100a))
 
     def test_03_all_recursive_classes_except_exact_interface_invariant(self):
         for a in self.spec['artifacts']:
@@ -83,11 +92,14 @@ class Controls(unittest.TestCase):
     def test_05_unknown_class_byte_or_trailer_rejected(self):
         for offset in (0,100,3687,len(self.class_data)-1):
             bad=bytearray(self.class_data);bad[offset]^=1
-            self.rejects(lambda:m.promote_static_handlers(bytes(bad)))
-        self.rejects(lambda:m.promote_static_handlers(self.class_data+b'\x00'))
+            self.rejects(lambda:m.retain_private_synthetic_handlers(bytes(bad)))
+        self.rejects(lambda:m.retain_private_synthetic_handlers(self.class_data+b'\x00'))
 
     def test_06_static_preservation_and_exact_methods_are_not_optional(self):
         for name,mutate in [('nonstatic',lambda s:s['artifacts'][1]['class_access'].update(after=1)),
+                            ('public-static-old-broken',lambda s:s['artifacts'][1]['class_access'].update(after=9)),
+                            ('nonsynthetic-private',lambda s:s['artifacts'][1]['class_access'].update(after=10)),
+                            ('public-synthetic',lambda s:s['artifacts'][1]['class_access'].update(after=0x1009)),
                             ('extra',lambda s:s['artifacts'][1]['class_access']['methods'].update(other='()V')),
                             ('missing',lambda s:s['artifacts'][1]['class_access']['methods'].pop('destSourcePos')),
                             ('descriptor',lambda s:s['artifacts'][1]['class_access']['methods'].update(destWorldPos='()V')),

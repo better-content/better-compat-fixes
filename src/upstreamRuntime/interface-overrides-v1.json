@@ -1,10 +1,10 @@
 {
   "schema": "bc.upstream_interface_runtime_overrides.v1",
-  "revision": "bc-interface.1",
+  "revision": "bc-interface.2",
   "artifacts": [
     {
       "input": "epic x parcool-forge-20.12.0.1-1.20.1.jar",
-      "output": "epic x parcool-forge-20.12.0.1-1.20.1-bc-interface.1.jar",
+      "output": "epic x parcool-forge-20.12.0.1-1.20.1-bc-interface.2.jar",
       "manifest": "epic-parcool.pw.toml",
       "project_id": 1259252,
       "file_id": 6870242,
@@ -51,7 +51,7 @@
     },
     {
       "input": "valkyrienskies-120-2.4.11.jar",
-      "output": "valkyrienskies-120-2.4.11-bc-interface.1.jar",
+      "output": "valkyrienskies-120-2.4.11-bc-interface.2.jar",
       "manifest": "valkyrien-skies.pw.toml",
       "project_id": 258371,
       "file_id": 7906689,
@@ -413,7 +413,7 @@
           "destReloadSourcePos": "(Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$User;Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;Lnet/minecraft/server/level/ServerLevel;)Lnet/minecraft/world/level/gameevent/PositionSource;"
         },
         "before": 10,
-        "after": 9
+        "after": 4106
       }
     }
   ]
