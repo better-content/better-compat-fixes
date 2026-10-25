@@ -1,0 +1,36 @@
+// With a project AT, ForgeGradle places its SDK Maven repository in build/fg_cache.
+// Our ABI contracts resolve that SDK during configuration. `clean verifyFull` must
+// not delete a resolved dependency before javac, nor erase retained native worlds.
+// Every compiled class/resource, runtime JAR, report and other build output is cleaned.
+def retained = ['fg_cache', 'gametest'] as Set
+def cleanTargets = { File directory ->
+    (directory.listFiles() ?: [] as File[]).findAll { !retained.contains(it.name) }
+}
+tasks.named('clean', Delete).configure {
+    setDelete(providers.provider { cleanTargets(layout.buildDirectory.get().asFile) })
+}
+def retentionGuard = tasks.register('verifyNativeCleanRetention') {
+    group = 'verification'
+    doLast {
+        File fixture = layout.buildDirectory.dir('clean-retention-guard/' + UUID.randomUUID()).get().asFile
+        def marker = { String path, String value ->
+            File file = new File(fixture, path); file.parentFile.mkdirs(); file.text = value; file
+        }
+        def sdk = marker('fg_cache/cache.marker', 'PURE CONTROL: dependency cache')
+        def world = marker('gametest/failed/world/retained.marker', 'PURE CONTROL: retained native attempt')
+        def generated = [marker('classes/main/stale.class', 'PURE CONTROL: stale class'),
+                         marker('libs/stale.jar', 'PURE CONTROL: stale archive'),
+                         marker('resources/main/stale.json', 'PURE CONTROL: stale resource'),
+                         marker('reports/stale.txt', 'PURE CONTROL: stale report')]
+        def targets = cleanTargets(fixture)
+        if (targets.collect { it.name }.sort() != ['classes', 'libs', 'reports', 'resources'])
+            throw new GradleException('Clean retention selection changed')
+        project.delete(targets)
+        if (generated.any { it.exists() } || sdk.text != 'PURE CONTROL: dependency cache' ||
+                world.text != 'PURE CONTROL: retained native attempt')
+            throw new GradleException('Clean retained outputs or deleted SDK/native evidence')
+        logger.lifecycle('Pure clean control PASS: all generated outputs removed; SDK cache and native evidence retained')
+    }
+}
+tasks.named('clean').configure { dependsOn(retentionGuard) }
+tasks.named('verifyFast').configure { dependsOn(retentionGuard) }

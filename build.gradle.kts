@@ -1395,6 +1395,7 @@ val verifyRuntimeStartupAbi by tasks.registering {
 }
 tasks.named("verifyFast") { dependsOn(verifyRuntimeStartupAbi) }
 
+apply(from = "gradle/native-clean-retention.gradle")
 apply(from = "gradle/native-gametest-fixture.gradle")
 apply(from = "gradle/treasure-urn-contract.gradle")
 apply(from = "gradle/registrate-contract.gradle")
