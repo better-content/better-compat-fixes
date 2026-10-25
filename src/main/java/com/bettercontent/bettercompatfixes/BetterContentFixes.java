@@ -50,6 +50,7 @@ public final class BetterContentFixes {
 
     public BetterContentFixes() {
         MixinExtrasBootstrap.init();
+        com.bettercontent.bettercompatfixes.compat.bumblezone.BumblezoneAtomicConfig.register();
         if (ModList.get().isLoaded("epicfight")) {
             StyleNetwork.register();
             MinecraftForge.EVENT_BUS.register(StyleEvents.class);

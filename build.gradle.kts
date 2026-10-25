@@ -1406,6 +1406,7 @@ apply(from = "gradle/mixin-namespace-contract.gradle")
 apply(from = "gradle/death-worm-contract.gradle")
 apply(from = "gradle/deepvoid-contract.gradle")
 apply(from = "gradle/village-animal-pool-contract.gradle")
+apply(from = "gradle/bumblezone-config-contract.gradle")
 apply(from = "gradle/rooty-soil-contract.gradle")
 apply(from = "gradle/chunk-io-contract.gradle")
 

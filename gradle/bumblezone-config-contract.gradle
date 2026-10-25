@@ -1,0 +1,17 @@
+// Pinned dual-loader evidence and fail-closed production bridge controls. Raw pin is NOT a native/runtime dependency.
+def bumblezoneConfigRaw = configurations.create('bumblezoneConfigRawAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+dependencies.add(bumblezoneConfigRaw.name, 'curse.maven:the-bumblezone-362479:8548194')
+def bumblezoneConfigContract = tasks.register('verifyBumblezoneConfigAbi', JavaExec) {
+    group = 'verification'
+    dependsOn('stageRuntimeJar')
+    classpath = files(fileTree(new File(gradle.gradleHomeDir, 'lib')) { include('groovy-*.jar', 'asm-*.jar') })
+    mainClass.set('groovy.ui.GroovyMain')
+    doFirst {
+        setArgs([file('scripts/verify-bumblezone-config-abi.groovy').absolutePath,
+            layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar").get().asFile.absolutePath,
+            bumblezoneConfigRaw.singleFile.absolutePath])
+    }
+}
+tasks.named('verifyFast').configure { dependsOn(bumblezoneConfigContract) }

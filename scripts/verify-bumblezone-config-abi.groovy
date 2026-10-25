@@ -1,0 +1,72 @@
+import java.security.MessageDigest
+import java.util.zip.ZipFile
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.Opcodes
+import org.objectweb.asm.tree.*
+
+String sha(byte[] bytes) { MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString() }
+ClassNode node(byte[] bytes) { def n = new ClassNode(); new ClassReader(bytes).accept(n, 0); n }
+byte[] entry(ZipFile zip, String path) { def e = zip.getEntry(path); assert e != null : path; zip.getInputStream(e).withCloseable { it.bytes } }
+def calls = { method -> method.instructions.toArray().findAll { it instanceof MethodInsnNode } }
+def method = { n, name -> def found = n.methods.findAll { it.name == name }; assert found.size() == 1 : name; found[0] }
+def rejected = { Closure control -> boolean failed = false; try { control() } catch (AssertionError expected) { failed = true }; assert failed : 'negative control accepted' }
+def upstream = { ClassNode n ->
+    def create = method(n, 'createAndLoadConfigs'); def invoked = calls(create)
+    def expected = [
+        ['net/minecraftforge/fml/ModLoadingContext', 'registerConfig'],
+        ['com/electronwill/nightconfig/core/file/GenericBuilder', 'autoreload'],
+        ['com/electronwill/nightconfig/core/file/GenericBuilder', 'sync'],
+        ['com/electronwill/nightconfig/core/file/CommentedFileConfig', 'load'],
+        ['net/minecraftforge/common/ForgeConfigSpec', 'setConfig']]
+    def positions = expected.collect { pair ->
+        def matches = invoked.findAll { it.owner == pair[0] && it.name == pair[1] }
+        assert matches.size() == 1 : pair
+        invoked.indexOf(matches[0])
+    }
+    assert positions == positions.sort(false)
+    def setup = method(n, 'setup')
+    def names = setup.instructions.toArray().findAll { it instanceof LdcInsnNode && it.cst instanceof String }.collect { it.cst }
+    assert names.findAll { it.startsWith('the_bumblezone/') }.toSet() == [
+        'the_bumblezone/client.toml','the_bumblezone/general.toml','the_bumblezone/worldgen.toml',
+        'the_bumblezone/dimension.toml','the_bumblezone/bee_aggression.toml','the_bumblezone/mod_compatibility.toml'].toSet()
+    assert calls(setup).count { it.name == 'createAndLoadConfigs' } == 6
+}
+def writerContract = { ClassNode n ->
+    def write = n.methods.find { it.name == 'write' && it.desc.contains('Ljava/nio/file/Path;') }; assert write != null
+    def invoked = calls(write)
+    assert invoked.count { it.owner == 'com/electronwill/nightconfig/core/io/ConfigWriter' && it.name == 'write' } == 1
+    assert invoked.count { it.owner == 'java/nio/channels/FileChannel' && it.name == 'force' } == 1
+    def move = invoked.find { it.owner == 'java/nio/file/Files' && it.name == 'move' }; assert move != null
+    def touch = invoked.find { it.owner == 'java/nio/file/Files' && it.name == 'setLastModifiedTime' }; assert touch != null
+    assert invoked.indexOf(move) < invoked.indexOf(touch)
+    def fields = write.instructions.toArray().findAll { it instanceof FieldInsnNode && it.owner == 'java/nio/file/StandardCopyOption' }*.name
+    assert fields.toSet() == ['ATOMIC_MOVE','REPLACE_EXISTING'].toSet()
+    assert !invoked.any { it.owner.contains('FileWatcher') || it.name == 'sleep' }
+}
+new ZipFile(args[1]).withCloseable { raw ->
+    byte[] bytes = entry(raw, 'com/telepathicgrunt/the_bumblezone/configs/forge/BzConfigHandler.class')
+    def pinned = { byte[] candidate -> assert sha(candidate) == '7055df824f0a9af3221846c3189bfa1b1a7e23f5209b33c6a5b11476dc9d1fcf' }
+    pinned(bytes); upstream(node(bytes))
+    byte[] changed = Arrays.copyOf(bytes, bytes.length); changed[changed.length - 1] = (byte)(changed[changed.length - 1] ^ 1); rejected { pinned(changed) }
+    for (String removed : ['registerConfig','autoreload','load','setConfig']) {
+        def mutant = node(bytes); def call = calls(method(mutant, 'createAndLoadConfigs')).find { it.name == removed }
+        call.name = 'unreviewed'; rejected { upstream(mutant) }
+    }
+}
+new ZipFile(args[0]).withCloseable { runtime ->
+    byte[] bytes = entry(runtime, 'com/bettercontent/bettercompatfixes/compat/bumblezone/AtomicConfigWriter.class')
+    writerContract(node(bytes))
+    for (String removed : ['move','setLastModifiedTime','force']) {
+        def mutant = node(bytes); def write = mutant.methods.find { it.name == 'write' && it.desc.contains('Ljava/nio/file/Path;') }
+        calls(write).find { it.name == removed }.name = 'unreviewed'; rejected { writerContract(mutant) }
+    }
+    def main = node(entry(runtime, 'com/bettercontent/bettercompatfixes/BetterContentFixes.class'))
+    assert calls(method(main, '<init>')).count { it.owner == 'com/bettercontent/bettercompatfixes/compat/bumblezone/BumblezoneAtomicConfig' && it.name == 'register' } == 1
+    def bridge = node(entry(runtime, 'com/bettercontent/bettercompatfixes/compat/bumblezone/BumblezoneAtomicConfig.class'))
+    def all = bridge.methods.collectMany { calls(it) }
+    assert all.any { it.owner == 'net/minecraftforge/fml/javafmlmod/FMLModContainer' && it.name == 'getEventBus' }
+    assert all.any { it.name == 'addListener' }
+    assert !all.any { it.owner.contains('FileWatcher') || it.name in ['removeWatch','setWatch','stop'] }
+    assert !runtime.entries().toList().any { it.name.startsWith('com/bettercontent/bettercompatfixes/nativefixture/') }
+}
+println 'Bumblezone pinned dual-loader ABI, atomic writer/publication+watch notification, registration and negative controls PASS'
