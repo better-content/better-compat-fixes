@@ -128,7 +128,7 @@ val registrateFixture by sourceSets.creating {
 // Defense in depth for production, jarJar and any current/future sources archives.
 // The fixture is attached only as gameTestServer source directories, never an archive.
 tasks.withType<Jar>().configureEach {
-    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "**/fuelfixture/**", "**/nativeforgeapifixture/**", "**/nativeForgeApiFixture/**", "**/gametest/MoonlightNativeForgeGameTests*", "better_compat_fixes.native_forge_api_fixture.mixins.json", "**/gametest/PollutionFuelGameTests*", "better_compat_fixes.fuel_fixture.mixins.json", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
+    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "**/fuelfixture/**", "**/nativeforgeapifixture/**", "**/nativeForgeApiFixture/**", "**/gametest/MoonlightNativeForgeGameTests*", "**/gametest/VillageAnimalPoolGameTests*", "better_compat_fixes.native_forge_api_fixture.mixins.json", "**/gametest/PollutionFuelGameTests*", "better_compat_fixes.fuel_fixture.mixins.json", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
     doLast {
         ZipFile(archiveFile.get().asFile).use { archive ->
             check(archive.entries().asSequence().none {
@@ -136,7 +136,7 @@ tasks.withType<Jar>().configureEach {
                     || it.name == "better_compat_fixes.native_fixture.mixins.json"
                     || it.name.contains("/fuelfixture/") || it.name.contains("/gametest/PollutionFuelGameTests")
                     || it.name.contains("/nativeforgeapifixture/") || it.name.contains("/nativeForgeApiFixture/")
-                    || it.name.contains("/gametest/MoonlightNativeForgeGameTests") || it.name == "better_compat_fixes.native_forge_api_fixture.mixins.json"
+                    || it.name.contains("/gametest/MoonlightNativeForgeGameTests") || it.name.contains("/gametest/VillageAnimalPoolGameTests") || it.name == "better_compat_fixes.native_forge_api_fixture.mixins.json"
                     || it.name == "better_compat_fixes.fuel_fixture.mixins.json"
             }) { "Nonshipping Native witness/fixture leaked into archive" }
         }

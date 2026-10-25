@@ -1,4 +1,4 @@
-package com.bettercontent.bettercompatfixes.nativefixture;
+package com.bettercontent.bettercompatfixes.gametest;
 
 import com.bettercontent.bettercompatfixes.BetterContentFixes;
 import com.google.common.collect.ImmutableList;
