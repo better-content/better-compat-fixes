@@ -8,10 +8,10 @@ def expectedBase = project.name == 'better-block-placement-preview' ? 6 :
         project.name == 'better-rpg-progression' ? 6 :
         project.findProperty('colonyWithoutBees') == 'true' ? 79 :
         project.findProperty('backpackWithoutCurios') == 'true' ? 78 : 81
-// Four real consumption/emission tests are additive in every Compat population;
+// Four real consumption/emission tests and one actual village-pool test are additive in every Compat population;
 // none of the established optional-profile identities or requirements is removed.
 def expected = expectedBase + (project.findProperty('withRegistrateFixture') == 'true' ? 2 : 0) +
-        (project.name == 'better-compat-fixes' ? 4 : 0) +
+        (project.name == 'better-compat-fixes' ? 5 : 0) +
         (project.findProperty('withNativeForgeApiFixture') == 'true' ? 2 : 0)
 
 def ensureNativeProperties = { File directory ->

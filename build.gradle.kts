@@ -161,6 +161,7 @@ tasks.named<ProcessResources>(nativeFixture.processResourcesTaskName) {
 }
 
 minecraft {
+    accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     mappings("official", property("minecraft_version") as String)
     copyIdeResources = true
     jarJar.enable()
@@ -190,6 +191,7 @@ minecraft {
             property("better_compat_fixes.nativeRootySoilWitness", nativeRootySoilWitness.toString())
             property("forge.enabledGameTestNamespaces", property("mod_id") as String)
             property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
+            property("better_compat_fixes.expectGeneticAnimalsAbsent", providers.gradleProperty("withoutGeneticAnimalsFixture").getOrElse("false"))
             property("better_compat_fixes.expectHeatAbsent", spoilageWithoutHeat.toString())
             mods { named(property("mod_id") as String) {
                 source(nativeFixture)
@@ -408,6 +410,10 @@ dependencies {
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:[$mixinExtrasVersion,0.6.0)")!!)
     testImplementation("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
+    // The pinned optional village listener is exercised only in source-native fixtures.
+    if (!providers.gradleProperty("withoutGeneticAnimalsFixture").map(String::toBooleanStrict).getOrElse(false)) {
+        add(nativeFixture.runtimeOnlyConfigurationName, fg.deobf("curse.maven:genetic-animals-313213:6134040"))
+    }
     // Pure scalar-ledger tests reuse its actual nonshipping source output; no Native engine starts.
     testImplementation(files(nativeFixture.output))
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
@@ -425,6 +431,7 @@ tasks.named<Jar>("jar") {
     from(caravanMixins.output)
     from(urnMixins.output)
     from(chunkIoMixins.output)
+    manifest.attributes("FMLAT" to "accesstransformer.cfg")
     manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json,better_compat_fixes.deepvoid_metadata.mixins.json")
     filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -1397,6 +1404,7 @@ apply(from = "gradle/upstream-interface-contract.gradle")
 apply(from = "gradle/mixin-namespace-contract.gradle")
 apply(from = "gradle/death-worm-contract.gradle")
 apply(from = "gradle/deepvoid-contract.gradle")
+apply(from = "gradle/village-animal-pool-contract.gradle")
 apply(from = "gradle/rooty-soil-contract.gradle")
 apply(from = "gradle/chunk-io-contract.gradle")
 

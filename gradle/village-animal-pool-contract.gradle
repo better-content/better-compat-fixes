@@ -1,0 +1,17 @@
+// Exact raw upstream and production-byte controls; no shipping upstream binary modification.
+def geneticRaw = configurations.create('geneticAnimalsVillageRawAbi') {
+    canBeResolved = true; canBeConsumed = false; transitive = false
+}
+dependencies.add(geneticRaw.name, 'curse.maven:genetic-animals-313213:6134040')
+def villageContract = tasks.register('verifyVillageAnimalPoolAbi', JavaExec) {
+    group = 'verification'
+    dependsOn('stageRuntimeJar')
+    classpath = files(fileTree(new File(gradle.gradleHomeDir, 'lib')) { include('groovy-*.jar', 'asm-*.jar') })
+    mainClass.set('groovy.ui.GroovyMain')
+    doFirst {
+        setArgs([file('scripts/verify-village-animal-pool-abi.groovy').absolutePath,
+            layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar").get().asFile.absolutePath,
+            geneticRaw.singleFile.absolutePath])
+    }
+}
+tasks.named('verifyFast').configure { dependsOn(villageContract) }
