@@ -159,7 +159,11 @@
     "weather2.FogAdjusterMixin",
     "tacz.ClientIndexManagerMixin",
     "tacz.ClientAssetsManagerAccessor",
-    "trashslot.TrashSlotSaveStateMixin"
+    "trashslot.TrashSlotSaveStateMixin",
+    "iceandfire.TabulaModelHandlerHelperMixin",
+    "distanthorizons.AbstractDhTintGetterMixin",
+    "distanthorizons.TintGetterOverrideMixin",
+    "epicfight.OptionalTinkerItemSkinsMixin"
   ],
   "injectors": {
     "defaultRequire": 0

@@ -249,6 +249,7 @@ apply(from = "gradle/native-forge-api-fixture.gradle")
 
 val pneumaticNativePins = configurations.create("pneumaticNativePins") { isTransitive = false }
 val dhDepthNativePins = configurations.create("dhDepthNativePins") { isTransitive = false }
+val clientReloadNativePins = configurations.create("clientReloadNativePins") { isTransitive = false }
 val markerRenderNativePins = configurations.create("markerRenderNativePins") { isTransitive = false }
 val parCoolNativePins = configurations.create("parCoolNativePins") { isTransitive = false }
 val epicParCoolNativePins = configurations.create("epicParCoolNativePins") { isTransitive = false }
@@ -306,6 +307,8 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:realistic-physics-1030082:6026115"))
     add(dhDepthNativePins.name, "curse.maven:oculus-581495:6020952")
     add(dhDepthNativePins.name, "curse.maven:distant-horizons-508933:7375280")
+    add(clientReloadNativePins.name, "curse.maven:ice-and-fire-dragons-264231:5633453")
+    add(clientReloadNativePins.name, "curse.maven:epic-fight-tinker-compat-1491531:8684759")
     add(pneumaticNativePins.name, "curse.maven:pretty-pipes-376737:4769646")
     add(pneumaticNativePins.name, "curse.maven:pneumaticcraft-repressurized-281849:7307654")
     add(starcatcherNativePins.name, "curse.maven:starcatcher-1357603:7582886")
@@ -372,6 +375,7 @@ dependencies {
     add(epicParCoolNativePins.name, "curse.maven:epic-parcool-1259252:6870242")
     compileOnly(fg.deobf("curse.maven:sleeping-overhaul-2-887716:6471182"))
     compileOnly(fg.deobf("curse.maven:distant-horizons-508933:7375280"))
+    testImplementation(fg.deobf("curse.maven:distant-horizons-508933:7375280"))
     compileOnly(fg.deobf("curse.maven:structure-generation-improver-1473087:8102460"))
     compileOnly(fg.deobf("curse.maven:yungs-better-caves-340583:8686226"))
     compileOnly(fg.deobf("curse.maven:fallout-wastelands-431248:7127023"))
@@ -1051,7 +1055,7 @@ val verifyPneumaticNativePins by tasks.registering {
 }
 tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
-    inputs.files(dhDepthNativePins, markerRenderNativePins, parCoolNativePins, epicParCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
+    inputs.files(clientReloadNativePins, dhDepthNativePins, markerRenderNativePins, parCoolNativePins, epicParCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
         starcatcherNativePins, aetherRenderNativePins, colonyEmiNativePins, authoredStarcatcherFillet, authoredSpawnerTier, authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
@@ -1074,6 +1078,9 @@ tasks.test {
         for (id in listOf("6393411", "6026115", "8049910")) {
             systemProperty("bc.markerRender.$id", markerNatives.single { it.name.contains(id) }.absolutePath)
         }
+        val reloadNatives = clientReloadNativePins.resolve()
+        systemProperty("bc.clientReload.iceandfire", reloadNatives.single { it.name.contains("5633453") }.absolutePath)
+        systemProperty("bc.clientReload.tinkercompat", reloadNatives.single { it.name.contains("8684759") }.absolutePath)
         val natives = dhDepthNativePins.resolve()
         systemProperty("bc.dhDepth.oculus", natives.single { it.name.contains("6020952") }.absolutePath)
         systemProperty("bc.dhDepth.dh", natives.single { it.name.contains("7375280") }.absolutePath)

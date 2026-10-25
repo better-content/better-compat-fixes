@@ -248,6 +248,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.startsWith(PARCOOL_MIXIN_PREFIX)) {
             return hasVersion(mods, "parcool", "3.4.3.3");
         }
+        if ((EPIC_FIGHT_MIXIN_PREFIX + "OptionalTinkerItemSkinsMixin").equals(mixinClassName)) {
+            return hasVersion(mods, "epicfight", "20.14.17")
+                    && hasVersion(mods, "epicfighttinkercompat", "20.2.8");
+        }
         if (mixinClassName.startsWith(EPIC_FIGHT_MIXIN_PREFIX)) {
             return mods != null && mods.getModFileById("epicfight") != null;
         }
