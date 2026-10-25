@@ -42,19 +42,30 @@ def sites={ClassNode target,ClassNode mixin->
  new ZipFile(args[i+3]).withCloseable{z->
   p.fields.each{mixinName,spec->
    byte[] bytes=z.getInputStream(z.getEntry(spec.target.replace('.','/')+'.class')).bytes
-   pin(bytes,p[role].classes[spec.target]);def target=node(bytes);def mixin=compiled('mixin/deepvoid/'+mixinName)
+   pin(bytes,p[role].classes[spec.target]);def target=node(bytes)
+   def selectedName=role=='sdk-srg'?mixinName.replace('Accessor','SrgAccessor'):mixinName
+   def mixin=compiled('mixin/deepvoid/'+selectedName)
    spec.fields.each{primary,pair->
-    def shadow=mixin.fields.find{it.name==primary&&it.desc==pair[1]};need(shadow!=null,'Missing typed metadata field')
+    def fieldName=role=='sdk-srg'?pair[0]:primary
+    def shadow=mixin.fields.find{it.name==fieldName&&it.desc==pair[1]};need(shadow!=null,'Missing namespace-exact typed metadata field')
     def a=vals(anns(shadow).find{it.desc=='Lorg/spongepowered/asm/mixin/Shadow;'})
-    need(a.remap==false&&a.aliases.contains(pair[0])&&anns(shadow).any{it.desc=='Lorg/spongepowered/asm/mixin/Final;'},'Missing required SRG field alias/finality')
+    def shadowRule={v->need(v.remap==false&&!v.aliases&&anns(shadow).any{it.desc=='Lorg/spongepowered/asm/mixin/Final;'},'Metadata bridge must use exact fields, never non-private aliases')}
+    shadowRule(a)
     def resolve={names->need(target.fields.count{it.desc==pair[1]&&names.contains(it.name)}==1,'Unknown/ambiguous actual metadata field')}
-    resolve([primary]+a.aliases)
-    def getters=mixin.methods.findAll{it.name.startsWith('better_compat_fixes$')&&it.instructions.toArray().any{it instanceof FieldInsnNode&&it.name==primary}}
+    resolve([fieldName])
+    // Production access transformers may widen these fields. Exact selectors
+    // remain valid; an alias fallback would be rejected by Mixin in that case.
+    def actual=target.fields.find{it.desc==pair[1]&&it.name==fieldName};int access=actual.access
+    actual.access=(access&~Opcodes.ACC_PRIVATE)|Opcodes.ACC_PUBLIC
+    resolve([fieldName]);actual.access=access
+    boolean aliasRejected=false;try{shadowRule(a+[aliases:['futureAlias']])}catch(IllegalStateException expected){aliasRejected=true}
+    need(aliasRejected,'Former non-private alias regression admitted')
+    def getters=mixin.methods.findAll{it.name.startsWith('better_compat_fixes$')&&it.instructions.toArray().any{it instanceof FieldInsnNode&&it.name==fieldName}}
     need(getters.size()==1,'Missing readonly getter')
     def body=getters[0].instructions.toArray().findAll{it.opcode>=0}
     need(body.collect{it.opcode}==[Opcodes.ALOAD,Opcodes.GETFIELD,pair[1]=='I'?Opcodes.IRETURN:Opcodes.ARETURN],'Metadata getter mutates/queries')
     boolean fieldRejected=false;try{resolve(['unknownNegativeField'])}catch(IllegalStateException expected){fieldRejected=true}
-    need(fieldRejected,'Unknown field negative accepted');checks+=2
+    need(fieldRejected,'Unknown field negative accepted');checks+=4
    }
    byte[] changed=Arrays.copyOf(bytes,bytes.length);changed[changed.length-1]=(byte)(changed[changed.length-1]^1)
    boolean rejected=false;try{pin(changed,p[role].classes[spec.target])}catch(IllegalStateException expected){rejected=true};need(rejected,'Unknown class negative accepted');checks++
