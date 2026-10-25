@@ -14,11 +14,20 @@ def expected = expectedBase + (project.findProperty('withRegistrateFixture') == 
         (project.name == 'better-compat-fixes' ? 5 : 0) +
         (project.findProperty('withNativeForgeApiFixture') == 'true' ? 2 : 0)
 
+// These tests author their own bounded scenes/dimensions; incidental random
+// overworld structures are not test inputs. Keep their diagnostics fatal, and
+// use the same deterministic no-feature flat fixture as the resource fixtures.
+def nativeFlat = [layers: [[block: 'minecraft:bedrock', height: 1], [block: 'minecraft:dirt', height: 2],
+                          [block: 'minecraft:grass_block', height: 1]], biome: 'minecraft:plains',
+                  lakes: false, features: false, structure_overrides: []]
+def nativePropertiesText = '# Nonshipping deterministic authored-scene fixture.\n' +
+        'level-type=minecraft:flat\ngenerate-structures=false\nlevel-seed=0\n' +
+        'generator-settings=' + groovy.json.JsonOutput.toJson(nativeFlat) + '\n'
 def ensureNativeProperties = { File directory ->
     java.nio.file.Files.createDirectories(directory.toPath())
     try {
         java.nio.file.Files.writeString(directory.toPath().resolve('server.properties'),
-                '# Native GameTest defaults; populated by Minecraft.\n',
+                nativePropertiesText,
                 java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE)
     } catch (java.nio.file.FileAlreadyExistsException alreadyPresent) {
         // Preserve original effective settings and exact bytes.
@@ -119,8 +128,13 @@ def guard = tasks.register('verifyColdNativeFixtureGuard') {
         def root = layout.buildDirectory.dir('native-fixture-guard/' + UUID.randomUUID()).get().asFile
         ensureNativeProperties(root)
         def props = new File(root, 'server.properties')
-        if (props.getText('UTF-8') != '# Native GameTest defaults; populated by Minecraft.\n')
+        if (props.getText('UTF-8') != nativePropertiesText)
             throw new GradleException('Absent properties creation failed')
+        def settings = new Properties(); props.withInputStream { settings.load(it) }
+        if (settings.getProperty('level-type') != 'minecraft:flat' || settings.getProperty('level-seed') != '0' ||
+                settings.getProperty('generate-structures') != 'false' ||
+                new groovy.json.JsonSlurper().parseText(settings.getProperty('generator-settings')) != nativeFlat)
+            throw new GradleException('Deterministic authored-scene fixture drift')
         byte[] custom = '# retained\r\nonline-mode=true\r\n'.getBytes('UTF-8')
         props.bytes = custom
         ensureNativeProperties(root)

@@ -25,6 +25,11 @@ public final class VillageAnimalPoolGameTests {
 
     @GameTest(templateNamespace = BetterContentFixes.MOD_ID, template = "empty", batch = "village_animals", timeoutTicks = 20)
     public static void originalListenerRegistersAllFiveRawAndThirteenWeightedEntries(GameTestHelper helper) {
+        helper.assertTrue(helper.getLevel().getChunkSource().getGenerator() instanceof net.minecraft.world.level.levelgen.FlatLevelSource,
+                "Authored-scene fixture must use actual flat generation, not random incidental structures");
+        helper.assertTrue(helper.getLevel().getSeed() == 0L &&
+                !helper.getLevel().getServer().getWorldData().worldGenOptions().generateStructures(),
+                "Authored-scene fixture must use seed zero without incidental structures");
         boolean absent = Boolean.getBoolean("better_compat_fixes.expectGeneticAnimalsAbsent");
         helper.assertTrue(ModList.get().isLoaded("eanimod") != absent, "Genetic Animals fixture population differs");
         var pool = helper.getLevel().registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
