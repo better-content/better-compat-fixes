@@ -432,7 +432,7 @@ tasks.named<Jar>("jar") {
     from(urnMixins.output)
     from(chunkIoMixins.output)
     manifest.attributes("FMLAT" to "accesstransformer.cfg")
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json,better_compat_fixes.deepvoid_metadata.mixins.json,better_compat_fixes.bumblezone_config.mixins.json")
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json,better_compat_fixes.deepvoid_metadata.mixins.json,better_compat_fixes.bumblezone_config.mixins.json,better_compat_fixes.vibration_interface.mixins.json")
     filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
@@ -580,6 +580,7 @@ mixin {
     add(chunkIoMixins, "better_compat_fixes.chunk_io.refmap.json")
     config("better_compat_fixes.deepvoid_metadata.mixins.json")
     config("better_compat_fixes.bumblezone_config.mixins.json")
+    config("better_compat_fixes.vibration_interface.mixins.json")
     config("better_compat_fixes.startup_abi.mixins.json")
     config("better_compat_fixes.moonlight_platform.mixins.json")
     config("better_compat_fixes.chunk_io.mixins.json")
@@ -1408,6 +1409,7 @@ apply(from = "gradle/death-worm-contract.gradle")
 apply(from = "gradle/deepvoid-contract.gradle")
 apply(from = "gradle/village-animal-pool-contract.gradle")
 apply(from = "gradle/bumblezone-config-contract.gradle")
+apply(from = "gradle/vibration-interface-contract.gradle")
 apply(from = "gradle/rooty-soil-contract.gradle")
 apply(from = "gradle/chunk-io-contract.gradle")
 

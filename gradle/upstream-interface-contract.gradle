@@ -1,4 +1,4 @@
-// Independent interface-access / client-list corrections. The existing five-artifact
+// Independent source-owned interface-injection transfer / client-list corrections. The existing five-artifact
 // resource-only contract and its controls remain unchanged and independently required.
 import groovy.json.JsonSlurper
 import java.nio.file.Files
@@ -9,6 +9,7 @@ import java.util.UUID
 def interfaceSpec = file('src/upstreamRuntime/interface-overrides-v1.json')
 def interfaceBuilder = file('scripts/build_upstream_interface_overrides.py')
 def interfaceControls = file('scripts/test_upstream_interface_overrides.py')
+def interfaceProvider = tasks.named('jar').flatMap { it.archiveFile }
 def legacyBuilder = file('scripts/build_upstream_runtime_overrides.py')
 def interfaceSupport = layout.buildDirectory.dir('upstream-interface-overrides')
 def interfaceDigest = { File path -> MessageDigest.getInstance('SHA-256').digest(path.bytes).encodeHex().toString() }
@@ -26,6 +27,7 @@ def qualifyUpstreamInterfaceOverrides = tasks.register('qualifyUpstreamInterface
     description = 'Qualifies the independent two-archive local-only interface/client-list recipe.'
     dependsOn('stageRuntimeJar')
     inputs.files(interfaceSpec, interfaceBuilder, interfaceControls, legacyBuilder)
+    inputs.file(interfaceProvider)
     outputs.upToDateWhen { false }
     doLast {
         def retained = interfaceSafe(layout.buildDirectory.dir('upstream-interface-evidence').get().asFile)
@@ -40,10 +42,12 @@ def qualifyUpstreamInterfaceOverrides = tasks.register('qualifyUpstreamInterface
         def attempt = interfaceSafe(new File(retained, "attempt-${UUID.randomUUID()}"))
         if (!attempt.mkdir()) throw new GradleException('Fresh interface qualification evidence required')
         exec { commandLine('python3', '-B', interfaceControls.absolutePath,
-            '--inputs', originals.absolutePath, '--evidence', new File(attempt, 'controls').absolutePath) }
+            '--inputs', originals.absolutePath, '--provider-jar', interfaceProvider.get().asFile.absolutePath,
+            '--evidence', new File(attempt, 'controls').absolutePath) }
         def output = new File(attempt, 'qualified')
         exec { commandLine('python3', '-B', interfaceBuilder.absolutePath,
-            '--inputs', originals.absolutePath, '--output', output.absolutePath) }
+            '--inputs', originals.absolutePath, '--provider-jar', interfaceProvider.get().asFile.absolutePath,
+            '--output', output.absolutePath) }
         def spec = new JsonSlurper().parse(interfaceSpec)
         def destination = interfaceSafe(interfaceSupport.get().asFile)
         destination.mkdirs()

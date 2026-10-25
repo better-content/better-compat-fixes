@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Independent, exact two-artifact local compatibility corrections.
 
-The earlier five-artifact resource-only builder/spec remain untouched. Here one
-reviewed Java interface changes precisely three method access words; ALL remaining
-class bytes (including every Code/annotation/descriptor) remain byte-identical.
+The earlier five-artifact builder/spec remain untouched. Revision 3 preserves ALL
+upstream class bytes, relocates two exact client entries and transfers one unsupported
+interface injector to a byte-bound source-owned three-operation replacement.
 Never publishes, edits original caches, or substitutes the global Mixin bootstrap.
 """
 from __future__ import annotations
@@ -73,27 +73,43 @@ def method_access_offsets(data):
     return methods
 
 
-def retain_private_synthetic_handlers(data):
+TRANSFER_MIXIN = 'feature.sculk.MixinVibrationSystemTicker'
+PROVIDER = 'better-compat-fixes-0.1.9.jar'
+PROVIDER_CONFIG = 'better_compat_fixes.vibration_interface.mixins.json'
+PROVIDER_PREFIX = 'com/bettercontent/bettercompatfixes/'
+PROVIDER_ENTRIES = {PROVIDER_CONFIG, *(PROVIDER_PREFIX + 'compat/vibration/' + name + '.class' for name in
+                    ('VibrationInterfaceMixinPlugin', 'VibrationInterfaceTransform', 'VibrationWorldCoordinates')),
+                    PROVIDER_PREFIX + 'mixin/vibration/VibrationTickerMixin.class'}
+PROVIDER_CONFIG_VALUE = {'required': True, 'minVersion': '0.8', 'package': 'com.bettercontent.bettercompatfixes.mixin.vibration',
+                         'compatibilityLevel': 'JAVA_17', 'refmap': 'better_compat_fixes.refmap.json',
+                         'plugin': 'com.bettercontent.bettercompatfixes.compat.vibration.VibrationInterfaceMixinPlugin',
+                         'mixins': ['VibrationTickerMixin'], 'injectors': {'defaultRequire': 1}}
+
+
+def validate_original_handlers(data):
     base.digest_matches(data, ORIGINAL_CLASS)
     methods = method_access_offsets(data)
-    revised = bytearray(data); edits = []
     expected = {(name.encode('ascii'), desc.encode('ascii')) for name, desc in METHODS.items()}
-    require(set(methods) == expected, 'exact three handler signatures required')
-    for name, desc in METHODS.items():
-        offset, flags = methods[(name.encode('ascii'), desc.encode('ascii'))]
-        require(flags == 0x000a, 'handler must be exactly PRIVATE|STATIC')
-        # Mixin 0.8.5 permits private SYNTHETIC interface helpers, while its
-        # applicator rejects non-private static helpers. Preserve PRIVATE|STATIC
-        # and add only SYNTHETIC; widening to PUBLIC passes one phase but crashes the next.
-        struct.pack_into('>H', revised, offset, 0x100a)
-        edits.append({'method': name, 'descriptor': desc, 'offset': offset, 'before': 10, 'after': 4106})
-    after = method_access_offsets(bytes(revised))
-    require(all(after[key] == (offset, 0x100a) for key, (offset, _) in methods.items()), 'private static synthetic proof failed')
-    # Bytes outside these exact access words are untouched by construction.
-    return bytes(revised), edits
+    require(set(methods) == expected and all(flags == 10 for _, flags in methods.values()), 'exact untouched PRIVATE STATIC handlers')
 
 
-def relocate(data, patch):
+def validate_provider(provider, transfer):
+    require(provider is not None and provider.name == PROVIDER, 'exact source-owned provider JAR required')
+    _, entries = base.archive(base.read_file(provider))
+    for path, digest in transfer['provider_entries'].items():
+        require(path in entries, 'missing source-owned provider entry ' + path)
+        base.digest_matches(entries[path], digest)
+    require(base.parse_json(entries[PROVIDER_CONFIG]) == PROVIDER_CONFIG_VALUE, 'exact required source-owned replacement config')
+    logical = []
+    for line in entries['META-INF/MANIFEST.MF'].decode('utf-8').splitlines():
+        if line.startswith(' '):
+            require(bool(logical), 'bad manifest continuation'); logical[-1] += line[1:]
+        else: logical.append(line)
+    configs = [line.split(': ', 1)[1] for line in logical if line.startswith('MixinConfigs: ')]
+    require(len(configs) == 1 and configs[0].split(',').count(PROVIDER_CONFIG) == 1, 'replacement config must actually be registered')
+
+
+def relocate(data, patch, transfer=None):
     base.digest_matches(data, patch['sha256'])
     old = base.parse_json(data)
     require(old == patch['before'] and isinstance(old, dict), 'exact old config required')
@@ -104,13 +120,16 @@ def relocate(data, patch):
     require(moved[0] not in old.get('client', []), 'already client listed')
     new = copy.deepcopy(old)
     new['mixins'].remove(moved[0]); new.setdefault('client', []).append(moved[0])
+    if transfer is not None:
+        require(old['mixins'].count(TRANSFER_MIXIN) == 1 and TRANSFER_MIXIN not in new.get('client', []), 'one exact interface transfer')
+        new['mixins'].remove(TRANSFER_MIXIN)
     return base.encode_json(new)
 
 
 def load_spec(path=SPEC):
     spec = base.parse_json(base.read_file(path, base.MAX_JSON))
     require(spec.get('schema') == 'bc.upstream_interface_runtime_overrides.v1' and
-            spec.get('revision') == 'bc-interface.2', 'unsupported independent spec')
+            spec.get('revision') == 'bc-interface.3', 'unsupported independent spec')
     artifacts = spec.get('artifacts')
     require(isinstance(artifacts, list) and len(artifacts) == 2, 'exactly two reviewed artifacts')
     expected = {'epic x parcool-forge-20.12.0.1-1.20.1.jar', 'valkyrienskies-120-2.4.11.jar'}
@@ -118,23 +137,27 @@ def load_spec(path=SPEC):
     for a in artifacts:
         for field in ('input', 'output'):
             base.safe_name(a[field]); require('/' not in a[field], 'artifact basename required')
-        require(a['output'] == a['input'][:-4] + '-bc-interface.2.jar', 'separate corrected filename')
+        require(a['output'] == a['input'][:-4] + '-bc-interface.3.jar', 'separate corrected filename')
         require(len(a['patches']) == 1 and a['url'].startswith('https://mediafilez.forgecdn.net/files/'), 'exact JSON/origin scope')
         p = a['patches'][0]
         require(set(p) == {'path', 'sha256', 'before', 'move_to_client'}, 'JSON patch shape')
         if a['input'].startswith('valkyrienskies'):
             require(p['path'] == 'valkyrienskies-common.mixins.json' and p['move_to_client'] ==
                     ['mod_compat.create.blockentity.MixinChainConveyorInteractionHandler'], 'VS side scope')
-            c = a['class_access']
-            require(c == {'path': CLASS, 'before_sha256': ORIGINAL_CLASS, 'methods': METHODS,
-                          'before': 10, 'after': 4106}, 'exact PRIVATE STATIC SYNTHETIC scope')
-        else:
+            t = a['interface_transfer']
+            require(set(t) == {'mixin', 'original_class', 'original_class_sha256', 'provider_artifact', 'provider_entries'} and
+                    t['mixin'] == TRANSFER_MIXIN and t['original_class'] == CLASS and t['original_class_sha256'] == ORIGINAL_CLASS and
+                    t['provider_artifact'] == PROVIDER and set(t['provider_entries']) == PROVIDER_ENTRIES and
+                    all(isinstance(h, str) and len(h) == 64 and set(h) <= set('0123456789abcdef') for h in t['provider_entries'].values()), 'exact coupled three-operation transfer')
+        require(set(a) == {'input', 'output', 'manifest', 'project_id', 'file_id', 'sha1', 'sha256', 'url', 'license', 'redistribution', 'patches'} |
+                ({'interface_transfer'} if a['input'].startswith('valkyrienskies') else set()), 'exact artifact field scope')
+        if not a['input'].startswith('valkyrienskies'):
             require(p['path'] == 'mixins.epicparcool.json' and p['move_to_client'] == ['ParCoolMixinAnimation'] and
                     'class_access' not in a, 'Epic accessor-only scope')
     return spec
 
 
-def build(inputs, output, spec_path=SPEC):
+def build(inputs, output, spec_path=SPEC, provider_jar=None):
     inputs, output = base.regular_path(inputs), base.regular_path(output)
     require(inputs.is_dir() and not output.exists() and output.parent.is_dir(), 'fresh output / existing inputs required')
     require(inputs != output and inputs not in output.parents and output not in inputs.parents, 'disjoint trees required')
@@ -145,22 +168,18 @@ def build(inputs, output, spec_path=SPEC):
         _, entries = base.archive(original)
         patch = a['patches'][0]; path = patch['path']
         require(path in entries, 'missing config')
-        changed = {path: relocate(entries[path], patch)}
-        access = []
-        if 'class_access' in a:
-            require(CLASS in entries, 'missing exact interface')
-            revised, edits = retain_private_synthetic_handlers(entries[CLASS]); changed[CLASS] = revised
-            access = [{'path': CLASS, 'before_sha256': sha(entries[CLASS]), 'after_sha256': sha(revised),
-                       'edits': edits, 'all_other_class_bytes_invariant': True}]
+        transfer = a.get('interface_transfer')
+        if transfer is not None:
+            require(CLASS in entries, 'missing untouched original interface')
+            validate_original_handlers(entries[CLASS]); validate_provider(provider_jar, transfer)
+        changed = {path: relocate(entries[path], patch, transfer)}
         revised = base.rewrite_zip(original, changed)
         before_classes = base.inventory(original); after_classes = base.inventory(revised)
-        expected_classes = dict(before_classes)
-        if access: expected_classes[CLASS] = access[0]['after_sha256']
-        require(after_classes == expected_classes, 'class inventory exceeds exact three access words')
+        require(after_classes == before_classes, 'ALL recursive class bytes must remain untouched')
         rows.append({'input': a['input'], 'output': a['output'], 'input_sha256': sha(original),
                      'output_sha256': sha(revised), 'output_sha1': sha(revised, 'sha1'),
                      'resources': [{'path': path, 'before_sha256': sha(entries[path]), 'after_sha256': sha(changed[path])}],
-                     'class_access_patches': access, 'class_bytes_invariant': not access,
+                     'class_access_patches': [], 'class_bytes_invariant': True, 'interface_transfer': transfer,
                      'class_count': len(before_classes),
                      'before_class_inventory_sha256': sha(base.encode_json(before_classes)),
                      'after_class_inventory_sha256': sha(base.encode_json(after_classes)),
@@ -199,6 +218,7 @@ def fetch_originals(directory, spec_path=SPEC):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--inputs', type=Path); parser.add_argument('--output', type=Path)
+    parser.add_argument('--provider-jar', type=Path)
     parser.add_argument('--fetch-originals', type=Path); parser.add_argument('--spec', type=Path, default=SPEC)
     args = parser.parse_args()
     if args.fetch_originals:
@@ -206,4 +226,4 @@ if __name__ == '__main__':
         fetch_originals(args.fetch_originals, args.spec)
     else:
         require(args.inputs is not None and args.output is not None, 'inputs/output required')
-        build(args.inputs, args.output, args.spec)
+        build(args.inputs, args.output, args.spec, args.provider_jar)

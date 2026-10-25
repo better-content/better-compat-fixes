@@ -14,7 +14,7 @@ CHUNK_IO_CLASS = 'com.bettercontent.bettercompatfixes.mixin.minecraft.IOWorkerPe
 # this guard into a count-only wildcard or permit moving a test config to main.
 EXPECTED_CONFIGS = {
     'main/resources/better_compat_fixes' + suffix + '.mixins.json'
-    for suffix in ('', '.bumblezone_config', '.caravan', '.chopping', '.chunk_io', '.deepvoid_metadata', '.moonlight_platform', '.oc2r', '.registrate', '.startup_abi', '.urn')
+    for suffix in ('', '.bumblezone_config', '.caravan', '.chopping', '.chunk_io', '.deepvoid_metadata', '.moonlight_platform', '.oc2r', '.registrate', '.startup_abi', '.urn', '.vibration_interface')
 } | {
     'nativeFixture/resources/better_compat_fixes.native_fixture.mixins.json',
     'nativeFixture/resources/better_compat_fixes.fuel_fixture.mixins.json',
@@ -78,6 +78,8 @@ def configuration(repo):
     need(actual_configs == EXPECTED_CONFIGS,
          'Explicit config population drift: ' + str(actual_configs ^ EXPECTED_CONFIGS))
     for name, prefix, entries, server in (
+        ('better_compat_fixes.vibration_interface.mixins.json',
+         'com.bettercontent.bettercompatfixes.mixin.vibration', ['VibrationTickerMixin'], []),
         ('better_compat_fixes.bumblezone_config.mixins.json',
          'com.bettercontent.bettercompatfixes.mixin.bumblezone', ['BzConfigHandlerMixin'], []),
         ('better_compat_fixes.deepvoid_metadata.mixins.json',

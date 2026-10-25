@@ -1,10 +1,10 @@
 {
   "schema": "bc.upstream_interface_runtime_overrides.v1",
-  "revision": "bc-interface.2",
+  "revision": "bc-interface.3",
   "artifacts": [
     {
       "input": "epic x parcool-forge-20.12.0.1-1.20.1.jar",
-      "output": "epic x parcool-forge-20.12.0.1-1.20.1-bc-interface.2.jar",
+      "output": "epic x parcool-forge-20.12.0.1-1.20.1-bc-interface.3.jar",
       "manifest": "epic-parcool.pw.toml",
       "project_id": 1259252,
       "file_id": 6870242,
@@ -51,7 +51,7 @@
     },
     {
       "input": "valkyrienskies-120-2.4.11.jar",
-      "output": "valkyrienskies-120-2.4.11-bc-interface.2.jar",
+      "output": "valkyrienskies-120-2.4.11-bc-interface.3.jar",
       "manifest": "valkyrien-skies.pw.toml",
       "project_id": 258371,
       "file_id": 7906689,
@@ -404,16 +404,18 @@
           ]
         }
       ],
-      "class_access": {
-        "path": "org/valkyrienskies/mod/mixin/feature/sculk/MixinVibrationSystemTicker.class",
-        "before_sha256": "399ca37359fbbf851eb54f5e3524c59a25751998cae0c9f534bb68a45f56659f",
-        "methods": {
-          "destWorldPos": "(Lnet/minecraft/world/level/gameevent/vibrations/VibrationInfo;Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;Lnet/minecraft/server/level/ServerLevel;)Lnet/minecraft/world/phys/Vec3;",
-          "destSourcePos": "(Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$User;Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;Lnet/minecraft/server/level/ServerLevel;)Lnet/minecraft/world/level/gameevent/PositionSource;",
-          "destReloadSourcePos": "(Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$User;Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;Lnet/minecraft/server/level/ServerLevel;)Lnet/minecraft/world/level/gameevent/PositionSource;"
-        },
-        "before": 10,
-        "after": 4106
+      "interface_transfer": {
+        "mixin": "feature.sculk.MixinVibrationSystemTicker",
+        "original_class": "org/valkyrienskies/mod/mixin/feature/sculk/MixinVibrationSystemTicker.class",
+        "original_class_sha256": "399ca37359fbbf851eb54f5e3524c59a25751998cae0c9f534bb68a45f56659f",
+        "provider_artifact": "better-compat-fixes-0.1.9.jar",
+        "provider_entries": {
+          "better_compat_fixes.vibration_interface.mixins.json": "2ee0f55055923c4aa73f945c10d7d2450fedf554cc89deceaadbf2dff40e7e5c",
+          "com/bettercontent/bettercompatfixes/compat/vibration/VibrationInterfaceMixinPlugin.class": "36ea8636bd057dd42478a41a4236b5a3400c617c2611252dfed8c28793b9fa01",
+          "com/bettercontent/bettercompatfixes/compat/vibration/VibrationInterfaceTransform.class": "53512a4c7ee18fa88dec40cf61c7507fbc6cda2413bf140c750712398449f279",
+          "com/bettercontent/bettercompatfixes/compat/vibration/VibrationWorldCoordinates.class": "9123f647cb74e9259c99d47894c4d038c9861f8cee4f044ff8278d400da5b167",
+          "com/bettercontent/bettercompatfixes/mixin/vibration/VibrationTickerMixin.class": "649011c82ba4f4fe4c7c3a3a8614cd341946b08eb02adeb6905b9c640e9cbbc2"
+        }
       }
     }
   ]

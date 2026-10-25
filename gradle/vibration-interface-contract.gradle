@@ -1,0 +1,32 @@
+// Required pinned-original bytecode oracle for the source-owned interface transfer.
+// Test resources only: no upstream class is included in the production JAR.
+import java.security.MessageDigest
+import java.util.zip.ZipFile
+
+def vibrationOracle = layout.buildDirectory.dir('generated/vibration-interface-oracle')
+def vibrationSha = { byte[] data -> MessageDigest.getInstance('SHA-256').digest(data).encodeHex().toString() }
+def prepareVibrationInterfaceOracle = tasks.register('prepareVibrationInterfaceOracle') {
+    dependsOn('qualifyUpstreamInterfaceOverrides')
+    inputs.files('src/upstreamRuntime/interface-overrides-v1.json')
+    outputs.dir(vibrationOracle)
+    outputs.upToDateWhen { false }
+    doLast {
+        def spec = file('src/upstreamRuntime/interface-overrides-v1.json')
+        def original = layout.buildDirectory.file("upstream-interface-evidence/originals-${vibrationSha(spec.bytes)}/valkyrienskies-120-2.4.11.jar").get().asFile
+        if (vibrationSha(original.bytes) != 'f99f24de62015451a047f90484cf9d25970cac350105b581c22b2d5247ebfd53')
+            throw new GradleException('Vibration ABI oracle requires the exact unchanged original VS archive')
+        byte[] raw
+        new ZipFile(original).withCloseable { zip ->
+            def entry = zip.getEntry('org/valkyrienskies/mod/mixin/feature/sculk/MixinVibrationSystemTicker.class')
+            if (entry == null || entry.size > 65536) throw new GradleException('Missing/bounded raw VS vibration interface')
+            raw = zip.getInputStream(entry).withCloseable { it.readAllBytes() }
+        }
+        if (vibrationSha(raw) != '399ca37359fbbf851eb54f5e3524c59a25751998cae0c9f534bb68a45f56659f')
+            throw new GradleException('Vibration original-handler ABI drift')
+        def output = new File(vibrationOracle.get().asFile, 'vibration/upstream-original.class')
+        output.parentFile.mkdirs(); output.bytes = raw
+        logger.lifecycle('Pinned-original VS bytecode oracle prepared; signature/control data only, NOT native acceptance')
+    }
+}
+sourceSets.test.resources.srcDir(vibrationOracle)
+tasks.named('processTestResources') { dependsOn(prepareVibrationInterfaceOracle) }
