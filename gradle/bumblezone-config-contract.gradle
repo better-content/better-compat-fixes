@@ -11,9 +11,11 @@ def bumblezoneConfigContract = tasks.register('verifyBumblezoneConfigAbi', JavaE
     doFirst {
         def fml = configurations.compileClasspath.files.findAll { it.name.startsWith('fmlcore-') && it.name.endsWith('.jar') }
         if (fml.size() != 1) throw new GradleException('Exactly one pinned Forge config API required')
+        def night = configurations.compileClasspath.files.findAll { it.name == 'core-3.6.4.jar' }
+        if (night.size() != 1) throw new GradleException('Exactly one pinned NightConfig public API required')
         setArgs([file('scripts/verify-bumblezone-config-abi.groovy').absolutePath,
             layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar").get().asFile.absolutePath,
-            bumblezoneConfigRaw.singleFile.absolutePath, fml.first().absolutePath])
+            bumblezoneConfigRaw.singleFile.absolutePath, fml.first().absolutePath, night.first().absolutePath])
     }
 }
 tasks.named('verifyFast').configure { dependsOn(bumblezoneConfigContract) }

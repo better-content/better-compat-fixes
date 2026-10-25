@@ -33,12 +33,27 @@ or unscoped config; inside this exact reader scope it delegates the parser,
 comments/config factory and serialization but constructs an atomic writer.
 The scope is removed in `finally`, including failed/nested construction.
 
-Both original watchers, callbacks, parsers, spec binding, authored values/comments
-and Forge load/save/reload events remain. No watcher registration is copied,
-removed, filtered or replaced. All six paths and the exact Bumblezone version
-are checked, unknown format registration/reader construction fails closed, and
-the historical compatibility plugin remains unchanged. No production reflection,
-private field access, MethodHandles or Unsafe is used.
+Native integration also exposed a second upstream defect: NightConfig 3.6.4
+`addWatch` uses `computeIfAbsent`, so the first manual autoreloader silently
+prevents Forge's later ConfigWatcher from being registered. An assertion demanding
+an actual Forge Reloading event correctly failed despite all five atomic inode
+replacements succeeding. This assertion was not waived.
+
+The same pinned Mixin therefore assigns the manual `file::load` operation to a
+**dedicated public FileWatcher**, before returning its config to the original
+upstream load/spec code. It does not disable autoreload: repeated real watcher
+controls require BOTH the manual config to reload and the separate Forge-style
+watcher to fire. Forge's unchanged reader can now register its original
+ConfigWatcher on the default instance. No watcher is removed, stopped, replaced
+with a no-op, filtered or syntactically path-aliased. Both operations remain live;
+the native proof requires all five actual Forge saves to replace their inodes,
+preserve authored bytes, and produce the original Forge Reloading event.
+
+All six paths and the exact Bumblezone version are checked. Unknown builder
+identity/order, format registration or reader construction fails closed. Exact
+raw NightConfig/Forge/Bumblezone contracts and negative controls bind these
+extension points; the historical compatibility plugin remains unchanged. No
+production reflection, private field access, MethodHandles or Unsafe is used.
 
 The original TOML writer serializes to a same-directory temporary file, which
 is forced and atomically moved over the target. There is no truncating fallback.

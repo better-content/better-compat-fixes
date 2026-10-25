@@ -16,6 +16,7 @@ def upstream = { ClassNode n ->
         ['net/minecraftforge/fml/ModLoadingContext', 'registerConfig'],
         ['com/electronwill/nightconfig/core/file/GenericBuilder', 'autoreload'],
         ['com/electronwill/nightconfig/core/file/GenericBuilder', 'sync'],
+        ['com/electronwill/nightconfig/core/file/GenericBuilder', 'build'],
         ['com/electronwill/nightconfig/core/file/CommentedFileConfig', 'load'],
         ['net/minecraftforge/common/ForgeConfigSpec', 'setConfig']]
     def positions = expected.collect { pair ->
@@ -48,7 +49,7 @@ new ZipFile(args[1]).withCloseable { raw ->
     def pinned = { byte[] candidate -> assert sha(candidate) == '7055df824f0a9af3221846c3189bfa1b1a7e23f5209b33c6a5b11476dc9d1fcf' }
     pinned(bytes); upstream(node(bytes))
     byte[] changed = Arrays.copyOf(bytes, bytes.length); changed[changed.length - 1] = (byte)(changed[changed.length - 1] ^ 1); rejected { pinned(changed) }
-    for (String removed : ['registerConfig','autoreload','load','setConfig']) {
+    for (String removed : ['registerConfig','autoreload','build','load','setConfig']) {
         def mutant = node(bytes); def call = calls(method(mutant, 'createAndLoadConfigs')).find { it.name == removed }
         call.name = 'unreviewed'; rejected { upstream(mutant) }
     }
@@ -65,6 +66,16 @@ new ZipFile(args[2]).withCloseable { forge ->
     extensible(node(configBytes), 'getHandler'); extensible(node(handlerBytes), 'reader')
     def mutant = node(configBytes); method(mutant, 'getHandler').access |= Opcodes.ACC_FINAL
     rejected { extensible(mutant, 'getHandler') }
+}
+new ZipFile(args[3]).withCloseable { night ->
+    ['FileWatcher':'28a63770b31483b1d9add6454417f287161ba5469626d728296fa52133edb9ce',
+     'AutoreloadFileConfig':'8139526591bcf2c2ea567718c2f057263b73cd68f3349bf739ef5386365a39b6',
+     'GenericBuilder':'bbaf15a76d7931ec1dba836f21a6be6a31a7ec4490019ff11754f5e86c2c7380'].each { name, hash ->
+        assert sha(entry(night, 'com/electronwill/nightconfig/core/file/' + name + '.class')) == hash
+    }
+    def watcher = node(entry(night, 'com/electronwill/nightconfig/core/file/FileWatcher.class'))
+    def add = watcher.methods.find { it.name == 'addWatch' && it.desc.startsWith('(Ljava/nio/file/Path;') }; assert add != null
+    assert calls(add).count { it.owner == 'java/util/Map' && it.name == 'computeIfAbsent' } == 2
 }
 new ZipFile(args[0]).withCloseable { runtime ->
     byte[] bytes = entry(runtime, 'com/bettercontent/bettercompatfixes/compat/bumblezone/AtomicConfigWriter.class')
@@ -90,6 +101,24 @@ new ZipFile(args[0]).withCloseable { runtime ->
     def redirect = (hook.visibleAnnotations + (hook.invisibleAnnotations ?: [])).find { it.desc == 'Lorg/spongepowered/asm/mixin/injection/Redirect;' }; assert redirect != null
     def values = redirect.values.collate(2).collectEntries { [(it[0]):it[1]] }
     assert values.require == 1 && values.remap == false && values.method == ['createAndLoadConfigs']
+    for (String hookName : ['betterContent$ownManualReload', 'betterContent$buildManualReload']) {
+        def ownedHook = method(mixin, hookName)
+        def annotation = (ownedHook.visibleAnnotations + (ownedHook.invisibleAnnotations ?: [])).find { it.desc == 'Lorg/spongepowered/asm/mixin/injection/Redirect;' }
+        assert annotation != null
+        def configValues = annotation.values.collate(2).collectEntries { [(it[0]):it[1]] }
+        assert configValues.require == 1 && configValues.remap == false && configValues.method == ['createAndLoadConfigs']
+        assert calls(ownedHook).count { it.owner == prefix + 'BumblezoneManualReload' } == 1
+    }
+    def manualContract = { ClassNode manual ->
+        def invoked = manual.methods.collectMany { calls(it) }
+        assert invoked.count { it.owner == 'com/electronwill/nightconfig/core/file/FileWatcher' && it.name == 'addWatch' } == 1
+        assert !invoked.any { it.name in ['removeWatch','setWatch','stop','sleep','setAccessible','getDeclaredField'] }
+        def handles = manual.methods.collectMany { it.instructions.toArray().findAll { it instanceof InvokeDynamicInsnNode }.collectMany { it.bsmArgs.toList() } }.findAll { it instanceof org.objectweb.asm.Handle }
+        assert handles.count { it.name == 'load' && it.owner.startsWith('com/electronwill/nightconfig/core/file/') } == 1
+    }
+    byte[] manualBytes = entry(runtime, prefix + 'BumblezoneManualReload.class'); manualContract(node(manualBytes))
+    def noWatch = node(manualBytes); noWatch.methods.collectMany { calls(it) }.find { it.name == 'addWatch' }.name = 'unreviewed'
+    rejected { manualContract(noWatch) }
     String jsonName = 'better_compat_fixes.bumblezone_config.mixins.json'
     def json = new groovy.json.JsonSlurper().parseText(new String(entry(runtime, jsonName), 'UTF-8'))
     assert json.required && json.injectors.defaultRequire == 1 && json.mixins == ['BzConfigHandlerMixin']
