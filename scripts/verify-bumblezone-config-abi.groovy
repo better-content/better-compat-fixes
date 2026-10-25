@@ -53,6 +53,19 @@ new ZipFile(args[1]).withCloseable { raw ->
         call.name = 'unreviewed'; rejected { upstream(mutant) }
     }
 }
+new ZipFile(args[2]).withCloseable { forge ->
+    byte[] configBytes = entry(forge, 'net/minecraftforge/fml/config/ModConfig.class')
+    byte[] handlerBytes = entry(forge, 'net/minecraftforge/fml/config/ConfigFileTypeHandler.class')
+    assert sha(configBytes) == 'fba955a7c64bc94fe282f6adfc0cd1de8606928257efbfa4651eae2be933c95c'
+    assert sha(handlerBytes) == 'b95f4ac0e77289b016c02f1d5d07fb35ad0c4792423ef80aa92ba3620058d42e'
+    def extensible = { ClassNode n, String name ->
+        def selected = method(n, name)
+        assert (selected.access & Opcodes.ACC_PUBLIC) && !(selected.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC))
+    }
+    extensible(node(configBytes), 'getHandler'); extensible(node(handlerBytes), 'reader')
+    def mutant = node(configBytes); method(mutant, 'getHandler').access |= Opcodes.ACC_FINAL
+    rejected { extensible(mutant, 'getHandler') }
+}
 new ZipFile(args[0]).withCloseable { runtime ->
     byte[] bytes = entry(runtime, 'com/bettercontent/bettercompatfixes/compat/bumblezone/AtomicConfigWriter.class')
     writerContract(node(bytes))
@@ -60,13 +73,29 @@ new ZipFile(args[0]).withCloseable { runtime ->
         def mutant = node(bytes); def write = mutant.methods.find { it.name == 'write' && it.desc.contains('Ljava/nio/file/Path;') }
         calls(write).find { it.name == removed }.name = 'unreviewed'; rejected { writerContract(mutant) }
     }
-    def main = node(entry(runtime, 'com/bettercontent/bettercompatfixes/BetterContentFixes.class'))
-    assert calls(method(main, '<init>')).count { it.owner == 'com/bettercontent/bettercompatfixes/compat/bumblezone/BumblezoneAtomicConfig' && it.name == 'register' } == 1
-    def bridge = node(entry(runtime, 'com/bettercontent/bettercompatfixes/compat/bumblezone/BumblezoneAtomicConfig.class'))
+    String prefix = 'com/bettercontent/bettercompatfixes/compat/bumblezone/'
+    def bridge = node(entry(runtime, prefix + 'BumblezoneAtomicConfig.class'))
     def all = bridge.methods.collectMany { calls(it) }
-    assert all.any { it.owner == 'net/minecraftforge/fml/javafmlmod/FMLModContainer' && it.name == 'getEventBus' }
-    assert all.any { it.name == 'addListener' }
-    assert !all.any { it.owner.contains('FileWatcher') || it.name in ['removeWatch','setWatch','stop'] }
+    assert all.any { it.owner == 'net/minecraftforge/fml/ModContainer' && it.name == 'addConfig' }
+    assert !all.any { it.owner.contains('FileWatcher') || it.owner.startsWith('java/lang/reflect/') || it.name in ['removeWatch','setWatch','setAccessible','getDeclaredField'] }
+    def config = node(entry(runtime, prefix + 'BumblezoneAtomicConfig$AtomicModConfig.class'))
+    assert config.superName == 'net/minecraftforge/fml/config/ModConfig'
+    assert method(config, 'getHandler').desc == '()Lnet/minecraftforge/fml/config/ConfigFileTypeHandler;'
+    def handler = node(entry(runtime, prefix + 'BumblezoneAtomicConfig$AtomicModConfig$AtomicHandler.class'))
+    assert calls(method(handler, 'reader')).count { it.opcode == Opcodes.INVOKESPECIAL && it.owner == 'net/minecraftforge/fml/config/ConfigFileTypeHandler' && it.name == 'reader' } == 1
+    assert !handler.methods.any { it.name == 'unload' }
+    def mixin = node(entry(runtime, 'com/bettercontent/bettercompatfixes/mixin/bumblezone/BzConfigHandlerMixin.class'))
+    def hook = method(mixin, 'betterContent$atomicConfig')
+    assert calls(hook).count { it.owner == prefix + 'BumblezoneAtomicConfig' && it.name == 'register' } == 1
+    def redirect = (hook.visibleAnnotations + (hook.invisibleAnnotations ?: [])).find { it.desc == 'Lorg/spongepowered/asm/mixin/injection/Redirect;' }; assert redirect != null
+    def values = redirect.values.collate(2).collectEntries { [(it[0]):it[1]] }
+    assert values.require == 1 && values.remap == false && values.method == ['createAndLoadConfigs']
+    String jsonName = 'better_compat_fixes.bumblezone_config.mixins.json'
+    def json = new groovy.json.JsonSlurper().parseText(new String(entry(runtime, jsonName), 'UTF-8'))
+    assert json.required && json.injectors.defaultRequire == 1 && json.mixins == ['BzConfigHandlerMixin']
+    assert json.plugin == 'com.bettercontent.bettercompatfixes.compat.bumblezone.BumblezoneConfigMixinPlugin'
+    def manifest = new java.util.jar.Manifest(new ByteArrayInputStream(entry(runtime, 'META-INF/MANIFEST.MF')))
+    assert jsonName in manifest.mainAttributes.getValue('MixinConfigs').split(',')
     assert !runtime.entries().toList().any { it.name.startsWith('com/bettercontent/bettercompatfixes/nativefixture/') }
 }
 println 'Bumblezone pinned dual-loader ABI, atomic writer/publication+watch notification, registration and negative controls PASS'

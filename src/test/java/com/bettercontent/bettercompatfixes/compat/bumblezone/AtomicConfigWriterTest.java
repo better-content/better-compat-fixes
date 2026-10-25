@@ -103,28 +103,39 @@ final class AtomicConfigWriterTest {
         assertThrows(IllegalArgumentException.class, () -> new AtomicConfigWriter(TomlFormat.instance().createWriter(), link));
         assertEquals(OLD, Files.readString(path)); assertEquals(OLD, Files.readString(other));
     }
-    @Test void installsIntoReviewedActualForgeStyleWrappersAndIsIdempotent(@TempDir Path root) throws Exception {
+    @Test void publicFactoryBuildsActualForgeStyleConfigsWithoutChangingOtherThreads(@TempDir Path root) throws Exception {
         for (boolean autosave : new boolean[]{false, true}) {
             Path path = seeded(root, "wrapper-" + autosave + ".toml");
-            var builder = CommentedFileConfig.builder(path).sync().preserveInsertionOrder();
-            if (autosave) builder.autosave();
-            try (var file = (CommentedFileConfig) builder.build()) {
-                file.load(); assertFalse(BumblezoneAtomicConfig.isInstalled(file));
-                BumblezoneAtomicConfig.install(file); BumblezoneAtomicConfig.install(file);
-                assertTrue(BumblezoneAtomicConfig.isInstalled(file));
-                file.set(List.of("Variant Bee Options", "value"), 23); file.save();
-                assertEquals(23, read(path).<Integer>get(List.of("Variant Bee Options", "value")));
-            }
+            var executor = Executors.newSingleThreadExecutor();
+            try {
+                var built = BumblezoneAtomicConfig.buildWithAtomicWriter(path, () -> {
+                    try {
+                        assertSame(TomlFormat.instance(), executor.submit(() ->
+                            com.electronwill.nightconfig.core.file.FormatDetector.detectByName("other-mod.toml")).get(5, TimeUnit.SECONDS));
+                    } catch (Exception e) { throw new IllegalStateException(e); }
+                    var builder = CommentedFileConfig.builder(path).sync().preserveInsertionOrder();
+                    if (autosave) builder.autosave();
+                    var file = (CommentedFileConfig) builder.build(); file.load(); return file;
+                });
+                try (var file = built.file()) {
+                    assertNotNull(built.writer());
+                    assertSame(TomlFormat.instance(), com.electronwill.nightconfig.core.file.FormatDetector.detectByName("other-mod.toml"));
+                    file.set(List.of("Variant Bee Options", "value"), 23); file.save();
+                    assertEquals(23, read(path).<Integer>get(List.of("Variant Bee Options", "value")));
+                }
+            } finally { executor.shutdownNow(); }
         }
     }
-    @Test void refusesUnknownAsyncWriterAndAppendConfiguration(@TempDir Path root) throws Exception {
-        for (boolean async : new boolean[]{false, true}) {
-            Path path = seeded(root, "unknown-" + async + ".toml");
-            var builder = CommentedFileConfig.builder(path);
-            if (!async) builder.sync().writingMode(WritingMode.APPEND);
-            try (var file = (CommentedFileConfig) builder.build()) { file.load(); assertThrows(IllegalStateException.class, () -> BumblezoneAtomicConfig.install(file)); }
-            assertEquals(OLD, Files.readString(path));
+    @Test void failedNestedOrMismatchedConstructionAlwaysClearsPublicFactoryScope(@TempDir Path root) throws Exception {
+        Path path = seeded(root, "scope.toml"), other = seeded(root, "other.toml");
+        assertThrows(IllegalStateException.class, () -> BumblezoneAtomicConfig.buildWithAtomicWriter(path, () ->
+            BumblezoneAtomicConfig.buildWithAtomicWriter(path, () -> CommentedFileConfig.of(path)).file()));
+        assertSame(TomlFormat.instance(), com.electronwill.nightconfig.core.file.FormatDetector.detectByName("normal.toml"));
+        try (var foreign = CommentedFileConfig.of(other)) {
+            assertThrows(IllegalStateException.class, () -> BumblezoneAtomicConfig.buildWithAtomicWriter(path, () -> foreign));
         }
+        assertSame(TomlFormat.instance(), com.electronwill.nightconfig.core.file.FormatDetector.detectByName("normal.toml"));
+        assertEquals(OLD, Files.readString(path)); assertEquals(OLD, Files.readString(other));
     }
     @Test void optionalVersionAndFileScopeAreExact() {
         assertTrue(BumblezoneAtomicConfig.applies("7.13.4+1.20.1-forge", "the_bumblezone/general.toml"));

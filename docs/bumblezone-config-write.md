@@ -19,14 +19,26 @@ the other reader during the later save. This was retained in release attempt
 console audit rejected the actual `ParsingException` from the raw autoreloader.
 Preseeding alone is not a repair for this lifecycle race.
 
-`BumblezoneAtomicConfig` attaches a Loading listener to the actual pinned
-Bumblezone Java-FML event bus during mod construction. It changes only the
-writer of Forge's six explicitly named Bumblezone config objects, before the
-unconditional save. Both original watchers, callbacks, parsers, config objects,
-spec binding, authored values/comments and Forge load/save/reload events remain.
-Other mods, paths and Bumblezone versions are untouched. The known NightConfig
-wrapper/writer class bytes and private field descriptors are checked before
-narrowly replacing the writer; unknown implementations fail closed.
+The first prototype attempted to replace a private writer field. The source
+reflection gate correctly rejected it; the gate and diagnostic-only allowlist
+were not relaxed. The delivered design uses **public extension APIs only**.
+
+A separately version-gated, fail-closed Mixin redirects only the pinned handler's
+`ModLoadingContext.registerConfig` call. It registers a `ModConfig` subclass via
+the original public container API. Its public `getHandler()` extension supplies
+a handler which invokes the **original `ConfigFileTypeHandler.reader` unchanged**,
+inside a thread-local writer-construction scope. A public NightConfig format
+supplier returns the identical original TOML singleton for every other thread
+or unscoped config; inside this exact reader scope it delegates the parser,
+comments/config factory and serialization but constructs an atomic writer.
+The scope is removed in `finally`, including failed/nested construction.
+
+Both original watchers, callbacks, parsers, spec binding, authored values/comments
+and Forge load/save/reload events remain. No watcher registration is copied,
+removed, filtered or replaced. All six paths and the exact Bumblezone version
+are checked, unknown format registration/reader construction fails closed, and
+the historical compatibility plugin remains unchanged. No production reflection,
+private field access, MethodHandles or Unsafe is used.
 
 The original TOML writer serializes to a same-directory temporary file, which
 is forced and atomically moved over the target. There is no truncating fallback.
@@ -42,7 +54,8 @@ Tests deterministically pause a writer inside a partial quoted header: the
 original REPLACE reader fails, while atomic publication exposes complete old
 then complete new TOML. Additional controls cover the real watcher, settings,
 comments/encoding, failure retention, exact scope, symlinks, mode/path refusal,
-actual Forge-style wrapper installation and unknown async writers. The Crops
+actual Forge-style public-factory construction, nested/mismatched scope refusal,
+and unchanged original format identity in other threads. The Crops
 nonshipping canonical-provider proof additionally requires all five actual
 Bumblezone COMMON configs to use the production bridge and observes a genuine
 Forge reload event after a byte-preserving save. The existing seven compat
