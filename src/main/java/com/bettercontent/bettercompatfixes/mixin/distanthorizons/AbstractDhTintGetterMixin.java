@@ -15,12 +15,10 @@ public abstract class AbstractDhTintGetterMixin {
     @Inject(method = "update(LloaderCommon/forge/com/seibel/distanthorizons/common/wrappers/block/BiomeWrapper;LloaderCommon/forge/com/seibel/distanthorizons/common/wrappers/block/BlockStateWrapper;Lcom/seibel/distanthorizons/core/dataObjects/fullData/sources/FullDataSourceV2;Lcom/seibel/distanthorizons/core/wrapperInterfaces/world/IClientLevelWrapper;)V",
             at = @At("RETURN"), require = 1, allow = 1)
     private void bettercompatfixes$refreshTintContext(CallbackInfo ci) {
-        if ((Object) this instanceof DhTintParentContext context) {
-            // getColor invokes this inherited four-argument overload, not the overload
-            // that sets parent. Bind EVERY update to its own world, never Minecraft.level
-            // or a previous ThreadLocal invocation's dimension. The explicit five-arg
-            // overload still overwrites this default after super.update returns.
-            context.bettercompatfixes$setTintParent(clientLevelWrapper.getWrappedMcObject());
-        }
+        // getColor invokes this inherited four-argument overload, not the overload
+        // that sets parent. Bind EVERY update to its own world, never Minecraft.level
+        // or a previous ThreadLocal invocation's dimension. The explicit five-arg
+        // overload still overwrites this default after super.update returns.
+        DhTintParentContext.refresh(this, () -> clientLevelWrapper.getWrappedMcObject());
     }
 }

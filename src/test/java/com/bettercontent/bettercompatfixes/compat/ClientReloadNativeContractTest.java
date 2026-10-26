@@ -71,7 +71,17 @@ final class ClientReloadNativeContractTest {
             method(read(zip, "com/seibel/distanthorizons/api/interfaces/IDhApiUnsafeWrapper"), "getWrappedMcObject", "()Ljava/lang/Object;");
             var compiled = compiled("mixin/distanthorizons/AbstractDhTintGetterMixin");
             var hook = compiled.methods.stream().filter(m -> m.name.equals("bettercompatfixes$refreshTintContext")).findFirst().orElseThrow();
-            assertEquals(1, calls(hook, "com/seibel/distanthorizons/core/wrapperInterfaces/world/IClientLevelWrapper", "getWrappedMcObject", "()Ljava/lang/Object;").size());
+            assertEquals(1, calls(hook, "com/bettercontent/bettercompatfixes/compat/DhTintParentContext", "refresh", "(Ljava/lang/Object;Ljava/util/function/Supplier;)V").size());
+            assertEquals(1, compiled.methods.stream().mapToLong(m -> calls(m,
+                    "com/seibel/distanthorizons/core/wrapperInterfaces/world/IClientLevelWrapper", "getWrappedMcObject", "()Ljava/lang/Object;").size()).sum());
+            var bridge = compiled("mixin/distanthorizons/TintGetterOverrideMixin");
+            var setter = method(bridge, "bettercompatfixes$setTintParent", "(Ljava/lang/Object;)V");
+            assertEquals(1, calls(setter, "java/util/Objects", "requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;").size());
+            assertEquals(1, Arrays.stream(setter.instructions.toArray()).filter(op -> op instanceof FieldInsnNode f
+                    && f.getOpcode() == Opcodes.PUTFIELD && f.owner.equals(bridge.name) && f.name.equals("parent")
+                    && f.desc.equals("Lnet/minecraft/world/level/LevelReader;")).count());
+            assertTrue(Arrays.stream(setter.instructions.toArray()).anyMatch(op -> op instanceof TypeInsnNode type
+                    && type.getOpcode() == Opcodes.CHECKCAST && type.desc.equals("net/minecraft/world/level/LevelReader")));
             var annotation = hook.visibleAnnotations.stream().filter(a -> a.desc.endsWith("/Inject;")).findFirst().orElseThrow();
             assertEquals(List.of("update" + UPDATE), annotation.values.get(annotation.values.indexOf("method") + 1));
             assertEquals(1, annotation.values.get(annotation.values.indexOf("require") + 1));

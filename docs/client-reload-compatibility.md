@@ -57,7 +57,11 @@ Epic Fight 20.14.17 and Tinker Compat 20.2.8 are required by the plugin gate.
 
 `ClientReloadCompatibilityTest`, `DhTintParentContextTest`, and
 `ClientReloadNativeContractTest` supply eight behavior/negative/archive controls.
-The DH identity fixture intentionally does not bootstrap a game or query a world.
+The DH controls exercise the production refresh helper with ordinary context identities,
+prove the level-free supplier is never invoked, and test invalid context propagation
+through the actual bridge. Compiled ASM checks verify the bridge's typed parent write,
+nonnull requirement and the mixin's Object-returning wrapped-world call. They use no
+reflective access, synthetic world, game bootstrap, or world query.
 Pure javac/JVM controls and hook compilation are not native Mixin-application,
 visual dragon-eye, asynchronous world-read, or full Dist acceptance evidence.
 Those remain part of the lead-owned fresh client/server qualification.
