@@ -1,6 +1,8 @@
 # Pinned client reload compatibility repairs
 
-These hooks are client-only and use the existing exact-version plugin gates. No
+These hooks are client-only. IAF and DH use the existing exact-version plugin gates;
+optional skins use their own dedicated config/plugin, leaving the historical provider
+plugin bytecode unchanged. No
 logger filters, exception suppression, resource deletion, or feature disablement
 is involved. The source tests resolve raw upstream archives, independently check
 SHA-256, and inspect class bytecode with ASM.
@@ -51,12 +53,18 @@ The hook targets the **listener**, not the mixin class. Priority 1100 is above
 upstream's default 1000: Mixin completes all MAIN method merges before injection
 preparation, and its merged-method priority predicate requires the injector's
 priority to be greater. Required count 1 fails closed on helper ABI drift. Both
-Epic Fight 20.14.17 and Tinker Compat 20.2.8 are required by the plugin gate.
+Epic Fight 20.14.17 and Tinker Compat 20.2.8 are required by the dedicated
+`OptionalTinkerSkinsMixinPlugin` gate. Missing metadata, absent mods, wrong versions,
+or any other target/mixin pair skip activation. The plugin lives outside the
+reserved mixin namespace. `better_compat_fixes.optional_tinker_skins.mixins.json`
+is client-only and registered in both the shipping manifest and source-launch Mixin
+wiring; the skin hook is not listed in the historical main config.
 
 ## Verification boundary
 
 `ClientReloadCompatibilityTest`, `DhTintParentContextTest`, and
-`ClientReloadNativeContractTest` supply eight behavior/negative/archive controls.
+`ClientReloadNativeContractTest`, plus `OptionalTinkerSkinsGateTest`, supply ten
+behavior/negative/archive/configuration controls.
 The DH controls exercise the production refresh helper with ordinary context identities,
 prove the level-free supplier is never invoked, and test invalid context propagation
 through the actual bridge. Compiled ASM checks verify the bridge's typed parent write,

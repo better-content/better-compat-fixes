@@ -162,8 +162,7 @@
     "trashslot.TrashSlotSaveStateMixin",
     "iceandfire.TabulaModelHandlerHelperMixin",
     "distanthorizons.AbstractDhTintGetterMixin",
-    "distanthorizons.TintGetterOverrideMixin",
-    "epicfight.OptionalTinkerItemSkinsMixin"
+    "distanthorizons.TintGetterOverrideMixin"
   ],
   "injectors": {
     "defaultRequire": 0

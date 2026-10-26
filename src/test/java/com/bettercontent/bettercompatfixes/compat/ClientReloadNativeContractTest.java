@@ -124,14 +124,24 @@ final class ClientReloadNativeContractTest {
 
     @Test void allNewHooksAreClientOnlyAndVersionGated() throws Exception {
         var config = JsonParser.parseString(Files.readString(Path.of("src/main/resources/better_compat_fixes.mixins.json"))).getAsJsonObject();
-        for (String name : List.of("iceandfire.TabulaModelHandlerHelperMixin", "distanthorizons.AbstractDhTintGetterMixin", "distanthorizons.TintGetterOverrideMixin", "epicfight.OptionalTinkerItemSkinsMixin")) {
+        for (String name : List.of("iceandfire.TabulaModelHandlerHelperMixin", "distanthorizons.AbstractDhTintGetterMixin", "distanthorizons.TintGetterOverrideMixin")) {
             assertTrue(config.getAsJsonArray("client").asList().stream().anyMatch(v -> v.getAsString().equals(name)));
             assertFalse(config.getAsJsonArray("mixins").asList().stream().anyMatch(v -> v.getAsString().equals(name)));
         }
         String plugin = Files.readString(Path.of("src/main/java/com/bettercontent/bettercompatfixes/compat/plugin/BetterContentMixinPlugin.java"));
         assertTrue(plugin.contains("hasVersion(mods, \"iceandfire\", \"2.1.13-1.20.1\")"));
         assertTrue(plugin.contains("hasVersion(mods, \"distanthorizons\", \"2.4.5-b\")"));
-        assertTrue(plugin.contains("hasVersion(mods, \"epicfighttinkercompat\", \"20.2.8\")"));
+        assertFalse(plugin.contains("OptionalTinkerItemSkinsMixin"), "Frozen provider plugin must remain unchanged");
+        var skins = JsonParser.parseString(Files.readString(Path.of("src/main/resources/better_compat_fixes.optional_tinker_skins.mixins.json"))).getAsJsonObject();
+        assertTrue(skins.get("required").getAsBoolean());
+        assertEquals(0, skins.getAsJsonArray("mixins").size());
+        assertEquals(List.of("OptionalTinkerItemSkinsMixin"), skins.getAsJsonArray("client").asList().stream().map(v -> v.getAsString()).toList());
+        assertEquals("com.bettercontent.bettercompatfixes.compat.epicfight.OptionalTinkerSkinsMixinPlugin", skins.get("plugin").getAsString());
+        assertEquals("com.bettercontent.bettercompatfixes.mixin.epicfight", skins.get("package").getAsString());
+        assertFalse(config.getAsJsonArray("client").asList().stream().anyMatch(v -> v.getAsString().equals("epicfight.OptionalTinkerItemSkinsMixin")));
+        String build = Files.readString(Path.of("build.gradle.kts"));
+        assertTrue(build.contains(",better_compat_fixes.optional_tinker_skins.mixins.json\")"), "Shipping manifest must declare dedicated config");
+        assertTrue(build.contains("config(\"better_compat_fixes.optional_tinker_skins.mixins.json\")"), "Source launches must register dedicated config");
     }
 
     private static Path pin(String property, String hash) throws Exception {
