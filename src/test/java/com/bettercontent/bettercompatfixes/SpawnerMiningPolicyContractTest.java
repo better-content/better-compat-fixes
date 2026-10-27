@@ -34,8 +34,8 @@ class SpawnerMiningPolicyContractTest {
     }
 
     @Test
-    void nativeFixtureUsesExactPackTagButProductionJarDoesNotShipFixtureOrTierPolicy() throws Exception {
-        final var authored = Path.of("../../better-content-modpack/kubejs/data/minecraft/tags/blocks/needs_diamond_tool.json");
+    void nativeFixtureUsesOwnedControlledTierButProductionJarDoesNotShipFixtureOrTierPolicy() throws Exception {
+        final var authored = Path.of("src/nativeFixture/resources/data/minecraft/tags/blocks/needs_diamond_tool.json");
         final var tag = JsonParser.parseString(Files.readString(authored)).getAsJsonObject();
         assertFalse(tag.get("replace").getAsBoolean());
         assertEquals(1, tag.getAsJsonArray("values").size());

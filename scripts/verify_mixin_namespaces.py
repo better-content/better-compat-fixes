@@ -14,7 +14,7 @@ CHUNK_IO_CLASS = 'com.bettercontent.bettercompatfixes.mixin.minecraft.IOWorkerPe
 # this guard into a count-only wildcard or permit moving a test config to main.
 EXPECTED_CONFIGS = {
     'main/resources/better_compat_fixes' + suffix + '.mixins.json'
-    for suffix in ('', '.bumblezone_config', '.caravan', '.chopping', '.chunk_io', '.deepvoid_metadata', '.moonlight_platform', '.oc2r', '.optional_tinker_skins', '.registrate', '.startup_abi', '.urn', '.vibration_interface')
+    for suffix in ('', '.bumblezone_config', '.caravan', '.chopping', '.chunk_io', '.deepvoid_metadata', '.moonlight_platform', '.oc2r', '.optional_tinker_skins', '.registrate', '.startup_abi', '.tcon_combat_first', '.urn', '.vibration_interface')
 } | {
     'nativeFixture/resources/better_compat_fixes.native_fixture.mixins.json',
     'nativeFixture/resources/better_compat_fixes.fuel_fixture.mixins.json',
@@ -32,6 +32,15 @@ def optional_skin_config(data):
          and data.get('server', []) == []
          and data.get('plugin') == 'com.bettercontent.bettercompatfixes.compat.epicfight.OptionalTinkerSkinsMixinPlugin',
          'Optional skin config must contain only its exact client hook and version gate')
+
+def tcon_combat_config(data):
+    need(data.get('required') is True and data.get('injectors', {}).get('defaultRequire') == 1,
+         'TCon combat config must fail closed')
+    need(data.get('package') == 'com.bettercontent.bettercompatfixes.mixin.tconcombat'
+         and data.get('client') == ['CombatFirstLocalPlayerMixin', 'CombatFirstMinecraftMixin']
+         and data.get('mixins', []) == [] and data.get('server', []) == []
+         and data.get('plugin') == 'com.bettercontent.bettercompatfixes.compat.tconcombat.TconCombatFirstMixinPlugin',
+         'TCon combat config must contain only its exact client hooks and optional version gate')
 
 class Reader:
     def __init__(self, data): self.data, self.pos = data, 0
@@ -115,6 +124,8 @@ def configuration(repo):
              'Exact dedicated config namespace/population drift: ' + name)
     skins = json.loads(next(file for file in configs if file.name == 'better_compat_fixes.optional_tinker_skins.mixins.json').read_text())
     optional_skin_config(skins)
+    tcon_combat_config(json.loads(next(file for file in configs
+        if file.name == 'better_compat_fixes.tcon_combat_first.mixins.json').read_text()))
     chunk_io_files = [file for file in configs if file.name == CHUNK_IO_CONFIG]
     need(len(chunk_io_files) == 1, 'Exactly one dedicated chunk I/O config required')
     chunk_io = json.loads(chunk_io_files[0].read_text())
@@ -190,6 +201,14 @@ if __name__ == '__main__':
         try: optional_skin_config(dict(skins, **change))
         except AssertionError: pass
         else: raise AssertionError('Optional skin namespace mutation accepted: ' + str(change))
+    combat = json.loads((a.repo/'src/main/resources/better_compat_fixes.tcon_combat_first.mixins.json').read_text())
+    for change in ({'required': False}, {'injectors': {'defaultRequire': 0}}, {'package': 'unreviewed.mixin'},
+                   {'client': []}, {'client': ['CombatFirstMinecraftMixin']},
+                   {'client': combat['client'] + ['ExtraMixin']}, {'mixins': ['CombatFirstMinecraftMixin']},
+                   {'server': ['CombatFirstMinecraftMixin']}, {'plugin': 'unreviewed.Plugin'}):
+        try: tcon_combat_config(dict(combat, **change))
+        except AssertionError: pass
+        else: raise AssertionError('TCon combat namespace mutation accepted: ' + str(change))
     # Independent admission negatives: even annotated-but-unconfigured or ordinary configured names fail.
     for name, annotated in [(next(iter(prefixes))+'OrdinaryHelper', False), (next(iter(prefixes))+'UnconfiguredMixin', True), (next(iter(configured)), False), (next(iter(configured))+'$Nested', True)]:
         try: admit(name, annotated, prefixes, configured)

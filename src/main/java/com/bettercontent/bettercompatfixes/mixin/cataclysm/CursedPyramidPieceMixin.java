@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Cataclysm's marker callback writes blocks outside the chunk currently placing the template. */
 @Mixin(targets = "com.github.L_Ender.cataclysm.structures.Cursed_Pyramid_Structure$Piece", remap = false)
 public abstract class CursedPyramidPieceMixin {
-    @Inject(method = "m_213704_", at = @At("HEAD"), cancellable = true, remap = false, require = 1)
+    @Inject(method = {"handleDataMarker", "m_213704_"}, at = @At("HEAD"), cancellable = true, remap = false, require = 1)
     private void better_compat_fixes$skipMarkerOutsideCurrentChunk(
             final String marker,
             final BlockPos position,

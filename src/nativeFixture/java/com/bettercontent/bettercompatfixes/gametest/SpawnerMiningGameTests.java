@@ -36,7 +36,7 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerTools;
 
-/** Nonshipping native fixture: actual pack tag, registered listeners and real player removal. */
+/** Nonshipping controlled-tier fixture: registered listeners and real player removal. */
 @Mod.EventBusSubscriber(modid = BetterContentFixes.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @PrefixGameTestTemplate(false)
 public final class SpawnerMiningGameTests {
@@ -158,8 +158,8 @@ public final class SpawnerMiningGameTests {
     private static void assertTags(final GameTestHelper helper) {
         final var state = Blocks.SPAWNER.defaultBlockState();
         helper.assertTrue(state.is(BlockTags.NEEDS_DIAMOND_TOOL) && state.is(BlockTags.MINEABLE_WITH_PICKAXE),
-                "Actual pack spawner tier fixture is not loaded");
-        helper.assertTrue(Blocks.OBSIDIAN.defaultBlockState().is(BlockTags.NEEDS_DIAMOND_TOOL), "Pack tag replaced upstream diamond entries");
+                "Owned controlled spawner tier fixture is not loaded");
+        helper.assertTrue(Blocks.OBSIDIAN.defaultBlockState().is(BlockTags.NEEDS_DIAMOND_TOOL), "Controlled fixture tag replaced upstream diamond entries");
     }
 
     private static ServerPlayer player(final GameTestHelper helper) {

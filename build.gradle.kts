@@ -25,6 +25,10 @@ val withNativeForgeApiFixture = providers.gradleProperty("withNativeForgeApiFixt
 val backpackWithoutCurios = providers.gradleProperty("backpackWithoutCurios").map(String::toBoolean).getOrElse(false)
 val spoilageWithoutHeat = providers.gradleProperty("spoilageWithoutHeat").map(String::toBoolean).getOrElse(false)
 val colonyWithoutBees = providers.gradleProperty("colonyWithoutBees").map(String::toBoolean).getOrElse(false)
+// Explicit source-only upstream regressions; optional mods are never bundled.
+val withMigratedRegressionFixture = providers.gradleProperty("withMigratedRegressionFixture").map(String::toBooleanStrict).getOrElse(false)
+// Nonshipping capability profile; normal production/runtime dependencies remain unchanged.
+val withTconCombatFirstFixture = providers.gradleProperty("withTconCombatFirstFixture").map(String::toBooleanStrict).getOrElse(false)
 // Explicit diagnostic opt-in, forwarded ONLY to gameTestServer; ordinary/visual/data runs are untouched.
 val nativeRootySoilWitness = providers.gradleProperty("nativeRootySoilWitness").map(String::toBooleanStrict).getOrElse(false)
 base {
@@ -143,8 +147,6 @@ tasks.withType<Jar>().configureEach {
     }
 }
 val authoredStarcatcherFillet = file("../../better-content-modpack/kubejs/data/starcatcher/recipes/aquaculture_fillet.json")
-// Exercise the exact pack-owned harvest classification without shipping it in this mod.
-val authoredSpawnerTier = file("../../better-content-modpack/kubejs/data/minecraft/tags/blocks/needs_diamond_tool.json")
 // Exact authored pack repairs for malformed optional upstream data, never shipping fixes here.
 val authoredRespiteOverrides = listOf(
     "recipes/filling/water_cup.json", "recipes/pouring/water_cup.json",
@@ -153,7 +155,7 @@ val authoredRespiteOverrides = listOf(
 ).associateWith { file("../../better-content-modpack/kubejs/data/farmersrespite/$it") }
 tasks.named<ProcessResources>(nativeFixture.processResourcesTaskName) {
     from(authoredStarcatcherFillet) { into("data/starcatcher/recipes") }
-    from(authoredSpawnerTier) { into("data/minecraft/tags/blocks") }
+    if (withTconCombatFirstFixture) from("src/tconCombatFixture/resources")
     authoredRespiteOverrides.forEach { (relative, authored) ->
         from(authored) { into("data/farmersrespite/${relative.substringBeforeLast('/')}") }
     }
@@ -188,6 +190,8 @@ minecraft {
             workingDirectory(project.file("run-gametest"))
             property("forge.enableGameTest", "true")
             property("forge.gameTestServer", "true")
+            property("better_compat_fixes.migratedRegressionFixture", withMigratedRegressionFixture.toString())
+            property("better_compat_fixes.tconCombatFirstFixture", withTconCombatFirstFixture.toString())
             property("better_compat_fixes.nativeRootySoilWitness", nativeRootySoilWitness.toString())
             property("forge.enabledGameTestNamespaces", property("mod_id") as String)
             property("better_compat_fixes.expectCuriosAbsent", backpackWithoutCurios.toString())
@@ -266,6 +270,14 @@ val urnNativePins = configurations.create("urnNativePins") { isTransitive = fals
 val urnMappedOracle = configurations.create("urnMappedOracle") { isTransitive = false }
 
 dependencies {
+    if (withMigratedRegressionFixture) {
+        add(nativeFixture.runtimeOnlyConfigurationName, fg.deobf("curse.maven:cataclysm-551586:8246047"))
+        add(nativeFixture.runtimeOnlyConfigurationName, fg.deobf("curse.maven:lionfishapi-1001614:8095554"))
+        add(nativeFixture.runtimeOnlyConfigurationName, fg.deobf("curse.maven:the-flesh-that-hates-852739:5235839"))
+        add(nativeFixture.runtimeOnlyConfigurationName, fg.deobf("curse.maven:untamed-wilds-au-naturel-1399279:7441092"))
+        // Untamed's metadata comments out this real runtime requirement.
+        add(nativeFixture.runtimeOnlyConfigurationName, fg.deobf("curse.maven:citadel-331936:7476570"))
+    }
     add(registrateNativePins.name, "com.tterrag.registrate:Registrate:MC1.20-$registrateFixtureVersion")
     add(registrateOtherNativePins.name, "com.tterrag.registrate:Registrate:MC1.20-${if (withRegistrateFixture) "1.3.3" else "1.3.11"}")
     add(registrateMappedPins.name, fg.deobf("com.tterrag.registrate:Registrate:MC1.20-$registrateFixtureVersion"))
@@ -366,6 +378,7 @@ dependencies {
     compileOnly(fg.deobf("curse.maven:architectury-api-419699:5137938"))
     compileOnly(fg.deobf("curse.maven:epic-fight-mod-405076:8049910"))
     runtimeOnly(fg.deobf("curse.maven:epic-fight-mod-405076:8049910"))
+    if (withTconCombatFirstFixture) runtimeOnly(fg.deobf("curse.maven:epic-fight-tinker-compat-1491531:8684759"))
     // Exact pack pin: compile/native fixture only, never bundled into our runtime artifact.
     compileOnly(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
     runtimeOnly(fg.deobf("maven.modrinth:weapons-of-miracles:nf0AyjKh"))
@@ -436,7 +449,7 @@ tasks.named<Jar>("jar") {
     from(urnMixins.output)
     from(chunkIoMixins.output)
     manifest.attributes("FMLAT" to "accesstransformer.cfg")
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json,better_compat_fixes.deepvoid_metadata.mixins.json,better_compat_fixes.bumblezone_config.mixins.json,better_compat_fixes.vibration_interface.mixins.json,better_compat_fixes.optional_tinker_skins.mixins.json")
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json,better_compat_fixes.deepvoid_metadata.mixins.json,better_compat_fixes.bumblezone_config.mixins.json,better_compat_fixes.vibration_interface.mixins.json,better_compat_fixes.tcon_combat_first.mixins.json,better_compat_fixes.optional_tinker_skins.mixins.json")
     filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
@@ -586,6 +599,7 @@ mixin {
     config("better_compat_fixes.bumblezone_config.mixins.json")
     config("better_compat_fixes.vibration_interface.mixins.json")
     config("better_compat_fixes.optional_tinker_skins.mixins.json")
+    config("better_compat_fixes.tcon_combat_first.mixins.json")
     config("better_compat_fixes.startup_abi.mixins.json")
     config("better_compat_fixes.moonlight_platform.mixins.json")
     config("better_compat_fixes.chunk_io.mixins.json")
@@ -1057,7 +1071,8 @@ val verifyPneumaticNativePins by tasks.registering {
 tasks.test {
     dependsOn(verifyPneumaticNativePins, verifyRuntimeDispenserAlias)
     inputs.files(clientReloadNativePins, dhDepthNativePins, markerRenderNativePins, parCoolNativePins, epicParCoolNativePins, quarkSortNativePins, backpackEquipmentNativePins,
-        starcatcherNativePins, aetherRenderNativePins, colonyEmiNativePins, authoredStarcatcherFillet, authoredSpawnerTier, authoredRespiteOverrides.values)
+        starcatcherNativePins, aetherRenderNativePins, colonyEmiNativePins, authoredStarcatcherFillet,
+        file("src/nativeFixture/resources/data/minecraft/tags/blocks/needs_diamond_tool.json"), authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
         for (native in colonyEmiNativePins.resolve()) {

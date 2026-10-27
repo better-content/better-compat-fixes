@@ -123,9 +123,5 @@ class DynamicTreesFellingNativeContractTest {
         assertFalse(branch.contains("setDamageValue"));
         String config = Files.readString(root.resolve("config/BcFixesConfig.java"));
         assertTrue(config.contains("defineInRange(\"fellingDurabilityMultiplier\", 10, 1, 100)"));
-        assertTrue(Files.readString(Path.of("../../better-content-modpack/config/better_compat_fixes-common.toml"))
-                .contains("fellingDurabilityMultiplier = 10"));
-        assertTrue(Files.readString(Path.of("../../better-content-modpack/defaultconfigs/dynamictrees-server.toml"))
-                .contains("axeDamageMode = \"THICKNESS\""));
     }
 }

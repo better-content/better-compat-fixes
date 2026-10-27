@@ -21,7 +21,12 @@ public final class UntamedClientEntityData {
     }
 
     public static EntityDataHolder load(final EntityType<?> type) {
-        if (FMLEnvironment.dist != Dist.CLIENT) return null;
+        return load(type, FMLEnvironment.dist);
+    }
+
+    // Shared native boundary permits checking absent client data on a headless fixture.
+    static EntityDataHolder load(final EntityType<?> type, final Dist dist) {
+        if (dist != Dist.CLIENT) return null;
         final ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
         if (id == null || !"untamedwilds".equals(id.getNamespace())) return null;
         final String resource = "/data/untamedwilds/entities/" + id.getPath() + ".json";
