@@ -11,8 +11,10 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(value = StructureManager.class, remap = false)
 public abstract class DeepVoidStructureManagerMixin implements DeepVoidStructureLevel {
-    @Shadow(aliases = {"f_220460_"}, remap = false) @Final private LevelAccessor level;
+    // Production's StructureManager field is private f_220460_. Mixin aliases
+    // are not supported for this transformed field; shadow its exact runtime name.
+    @Shadow(remap = false) @Final private LevelAccessor f_220460_;
     @Override public boolean better_compat_fixes$isOverworld() {
-        return level instanceof ServerLevelAccessor server && server.getLevel().dimension().equals(Level.OVERWORLD);
+        return f_220460_ instanceof ServerLevelAccessor server && server.getLevel().dimension().equals(Level.OVERWORLD);
     }
 }

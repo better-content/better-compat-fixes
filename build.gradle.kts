@@ -1036,7 +1036,9 @@ val verifyRuntimeDeepVoidFallBoundary by tasks.registering {
                 "Client compass target selectors must include pinned development and production names"
             }
             val manager = bytecode("com/bettercontent/bettercompatfixes/mixin/minecraft/DeepVoidStructureManagerMixin.class")
-            check(manager.contains("f_220460_")) { "Dimension bridge must retain its production field alias" }
+            check(manager.contains("f_220460_") && !manager.contains("aliases")) {
+                "Dimension bridge must shadow the exact private production field without a Mixin alias"
+            }
             val search = bytecode("com/bettercontent/bettercompatfixes/deepvoid/DeepVoidCompassSearch.class")
             check(search.contains("m_8431_") && search.contains("f_62315_")) {
                 "Production compass must retain asynchronous STRUCTURE_STARTS-only lookup"
