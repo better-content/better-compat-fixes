@@ -120,7 +120,7 @@ public final class BcFixesConfig {
         DYNAMIC_TREES_FELLING_DURABILITY_MULTIPLIER = builder
                 .comment("Multiplies nominal durability charges for player-triggered Dynamic Trees felling before native mitigation.",
                         "Ordinary logs, stripping, automation and zero-cost operations remain unchanged. 1 restores upstream wear.")
-                .defineInRange("fellingDurabilityMultiplier", 10, 1, 100);
+                .defineInRange("fellingDurabilityMultiplier", 2, 1, 100);
         builder.pop();
 
         builder.push("pollution");

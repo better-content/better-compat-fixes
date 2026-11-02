@@ -1,0 +1,4563 @@
+{
+  "schema": 1,
+  "modifiers": {
+    "better_tinkers_loot_affixes:affix_stats": [],
+    "construct_arsenal:range": [
+      {
+        "key": "modifier.construct_arsenal.range.description",
+        "text": "Tool is extra long, allowing attacking far away monsters",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:agony_spear": [
+      {
+        "key": "modifier.epicfighttinkercompat.agony_spear.description",
+        "text": "Changes javelin moveset to the Agony moveset",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:antitheus": [
+      {
+        "key": "modifier.epicfighttinkercompat.antitheus.description",
+        "text": "Changes the tool's moveset to the Antitheus moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:arrow_tempest": [
+      {
+        "key": "modifier.epicfighttinkercompat.arrow_tempest.description",
+        "text": "Overwhelm large amount of enemies with the high cost of ammo",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:axe": [
+      {
+        "key": "modifier.epicfighttinkercompat.axe.description",
+        "text": "Change the tool's moveset to Axe",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:bloodlust": [
+      {
+        "key": "modifier.epicfighttinkercompat.bloodlust.description",
+        "text": "Changes the tool's moveset to the Bloodlust moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:broadblade": [
+      {
+        "key": "modifier.epicfighttinkercompat.broadblade.description",
+        "text": "Changes the tool's moveset to the Broadblade moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:crescentmoon": [
+      {
+        "key": "modifier.epicfighttinkercompat.crescentmoon.description",
+        "text": "Changes the tool's moveset to the Crescent Moon moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:crimson_fang": [
+      {
+        "key": "modifier.epicfighttinkercompat.crimson_fang.description",
+        "text": "Changes the tool's moveset to the Crimson Fang moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:dagger": [
+      {
+        "key": "modifier.epicfighttinkercompat.dagger.description",
+        "text": "Change the tool's moveset to Dagger",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:eagle_eye": [
+      {
+        "key": "modifier.epicfighttinkercompat.eagle_eye.description",
+        "text": "Increases auto-aim range per level",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:enhanced_greatsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.enhanced_greatsword.description",
+        "text": "Changes the tool's moveset to the Enhanced Greatsword moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:enhanced_longsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.enhanced_longsword.description",
+        "text": "Changes the tool's moveset to the Enhanced Longsword moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:enhanced_shortsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.enhanced_shortsword.description",
+        "text": "Changes the tool's moveset to the Enhanced Shortsword moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:enhanced_spear": [
+      {
+        "key": "modifier.epicfighttinkercompat.enhanced_spear.description",
+        "text": "Changes the tool's moveset to the Enhanced Spear moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:enhanced_tachi": [
+      {
+        "key": "modifier.epicfighttinkercompat.enhanced_tachi.description",
+        "text": "Changes the tool's moveset to the Enhanced Tachi moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:epic_part_stats_calculator": [],
+    "epicfighttinkercompat:epic_stats": [],
+    "epicfighttinkercompat:greatsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.greatsword.description",
+        "text": "Change the tool's moveset to Greatsword",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:herrscher": [
+      {
+        "key": "modifier.epicfighttinkercompat.herrscher.description",
+        "text": "Changes the tool's moveset to the Herrscher moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:hf_blade": [
+      {
+        "key": "modifier.epicfighttinkercompat.hf_blade.description",
+        "text": "Changes the tool's moveset to the High-Frequency Blade moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:kusabimaru": [
+      {
+        "key": "modifier.epicfighttinkercompat.kusabimaru.description",
+        "text": "Changes the tool's moveset to the Kusabimaru moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:longsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.longsword.description",
+        "text": "Change the tool's moveset to Longsword",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:meenlance": [
+      {
+        "key": "modifier.epicfighttinkercompat.meenlance.description",
+        "text": "Changes the tool's moveset to the Duskfire moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:moonless": [
+      {
+        "key": "modifier.epicfighttinkercompat.moonless.description",
+        "text": "Changes the tool's moveset to the Moonless moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:murasama": [
+      {
+        "key": "modifier.epicfighttinkercompat.murasama.description",
+        "text": "Changes the tool's moveset to the Murasama moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:napoleon": [
+      {
+        "key": "modifier.epicfighttinkercompat.napoleon.description",
+        "text": "Changes the tool's moveset to the Napoleon moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:night_fall_scythe": [
+      {
+        "key": "modifier.epicfighttinkercompat.night_fall_scythe.description",
+        "text": "Changes the tool's moveset to the Nightfall Scythe moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:orbit": [
+      {
+        "key": "modifier.epicfighttinkercompat.orbit.description",
+        "text": "Changes the tool's moveset to the Orbit moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:pioneer": [
+      {
+        "key": "modifier.epicfighttinkercompat.pioneer.description",
+        "text": "Changes the tool's moveset to the Pioneer moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:ruine_blade": [
+      {
+        "key": "modifier.epicfighttinkercompat.ruine_blade.description",
+        "text": "Changes the tool's moveset to the Ruine moveset",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:ruinsgreatsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.ruinsgreatsword.description",
+        "text": "Changes the tool's moveset to the Ruins Greatsword moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:runic_shortsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.runic_shortsword.description",
+        "text": "Changes the tool's moveset to the Runic Shortsword moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:shortsword": [
+      {
+        "key": "modifier.epicfighttinkercompat.shortsword.description",
+        "text": "Change the tool's moveset to Sword",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:so_sticky": [],
+    "epicfighttinkercompat:solar": [
+      {
+        "key": "modifier.epicfighttinkercompat.solar.description",
+        "text": "Changes the tool's moveset to the Solar moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:speary": [
+      {
+        "key": "modifier.epicfighttinkercompat.speary.description",
+        "text": "Makes your weapon stranger",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:tachi": [
+      {
+        "key": "modifier.epicfighttinkercompat.tachi.description",
+        "text": "Change the tool's moveset to Tachi",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:thornwheel": [
+      {
+        "key": "modifier.epicfighttinkercompat.thornwheel.description",
+        "text": "Changes the tool's moveset to the Thornwheel moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:torment_blade": [
+      {
+        "key": "modifier.epicfighttinkercompat.torment_blade.description",
+        "text": "Changes the tool's moveset to the Torment moveset",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:uchigatana": [
+      {
+        "key": "modifier.epicfighttinkercompat.uchigatana.description",
+        "text": "Change the tool's moveset to Uchigatana",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "epicfighttinkercompat:weightless": [],
+    "epicfighttinkercompat:yamato": [
+      {
+        "key": "modifier.epicfighttinkercompat.yamato.description",
+        "text": "Changes the tool's moveset to the Yamato moveset.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:accelerate": [
+      {
+        "key": "modifier.etstlib.accelerate.description",
+        "text": "Projectile velocity x1.25 after 0.25s. Extra 0.25 each level.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:aerial_reinforced": [
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.aerial_reinforced.0",
+        "text": "Stored air replaces durability loss and boosts combat stats",
+        "requires": [
+          "combat"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.aerial_reinforced.1",
+        "text": "Stored air boosts mining speed",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "etstlib:anisotropy": [
+      {
+        "key": "modifier.etstlib.anisotropy.description",
+        "text": "Increase damage on full charge attack.Decrease damage otherwise.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:anti_stun_glasses": [
+      {
+        "key": "modifier.etstlib.anti_stun_glasses.description",
+        "text": "Cancel hurt shaking and field of view effect.Immune to nausea effect.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:armor_piercing": [
+      {
+        "key": "modifier.etstlib.armor_piercing.description",
+        "text": "Each level provides 25% armor-piercing.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:atomic_decompose": [
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.atomic_decompose.0",
+        "text": "Uses native mining speed and ignores harvest-tier restrictions",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:cheap": [
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.cheap.0",
+        "text": "Projectile destroys itself on landing",
+        "requires": [
+          "ammo"
+        ],
+        "kind": "restriction",
+        "named": true
+      }
+    ],
+    "etstlib:clearing": [
+      {
+        "key": "modifier.etstlib.clearing.description",
+        "text": "Immune to wither and poison effect.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:critical": [
+      {
+        "key": "modifier.etstlib.critical.description",
+        "text": "100% Critical on full charge attack.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:crystal_armor": [
+      {
+        "key": "modifier.etstlib.crystal_armor.description",
+        "text": "Increase protection when armor is less damaged.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:crystaline_arrow": [
+      {
+        "key": "modifier.etstlib.crystaline_arrow.description",
+        "text": "+20% arrow damage when full charged, otherwise -40% damage.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:energetic_attack": [
+      {
+        "key": "modifier.etstlib.energetic_attack.description",
+        "text": "Deals extra magic damage on full charge attack.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:energy_loaded": [
+      {
+        "key": "modifier.etstlib.energy_loaded.description",
+        "text": "Your tool consumes energy instead of durability when is powered.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:energy_shield": [
+      {
+        "key": "modifier.etstlib.energy_shield.description",
+        "text": "Blocks damage using FE,drains 10kFE per damage.If energy storage from one armor is not sufficient,then consume 2x energy from all the armor containing this modifier to cancel damage.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:executioner": [
+      {
+        "key": "modifier.etstlib.executioner.description",
+        "text": "Make your attack ignores target's hit cooldown.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:extra_dense": [
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.extra_dense.0",
+        "text": "Reduced repair effectiveness",
+        "requires": [],
+        "kind": "restriction",
+        "named": true
+      }
+    ],
+    "etstlib:fatal": [
+      {
+        "key": "modifier.etstlib.fatal.description",
+        "text": "Prevent targets form healing.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:global_traveler": [
+      {
+        "key": "modifier.etstlib.global_traveler.description",
+        "text": "Shift-Right Click to bind a container where loots created by tool will be stored in.Shift-Right Click again to unbind it.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:glowing": [
+      {
+        "key": "modifier.etstlib.glowing.description",
+        "text": "Gain night vision effect on wearing.Inflict your enemy with glowing effect.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:hardened": [
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.hardened.0",
+        "text": "Reduced durability loss",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:hyper_density": [
+      {
+        "key": "modifier.etstlib.hyper_density.description",
+        "text": "Damage taken will be reduced twice by armor value.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:inert_metal": [
+      {
+        "key": "modifier.etstlib.inert_metal.description",
+        "text": "Sometimes remove a random harmful effect when wearing.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:magic_strike": [
+      {
+        "key": "modifier.etstlib.magic_strike.description",
+        "text": "Transfer your damage into magic damage on full charge attack.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:momentum_accelerate": [
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.momentum_accelerate.0",
+        "text": "Consecutive attacks increase attack speed",
+        "requires": [
+          "melee"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.momentum_accelerate.1",
+        "text": "Consecutive blocks increase mining speed",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "etstlib:photosynthesis_guide": [
+      {
+        "key": "modifier.etstlib.photosynthesis_guide.description",
+        "text": "Your arrows will slightly homing.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:reality_breaker": [
+      {
+        "key": "modifier.etstlib.reality_breaker.description",
+        "text": "Make your attack bypasses most of vanilla defense.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:resonating": [
+      {
+        "key": "modifier.etstlib.resonating.description",
+        "text": "You will hear sound from the environment and gain buffs.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:rude": [
+      {
+        "key": "modifier.etstlib.rude.description",
+        "text": "Deals critical attack to targets with >25 health.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:secondary_armor": [
+      {
+        "key": "modifier.etstlib.secondary_armor.description",
+        "text": "Allow your armor to block armor-piercing damage.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:short_circuit": [
+      {
+        "key": "modifier.etstlib.short_circuit.description",
+        "text": "Removes target's invulnerable time on hit.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:static_discharge": [
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.static_discharge.0",
+        "text": "Movement and attacks build charge; charged hits deal extra damage",
+        "requires": [
+          "combat"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.etstlib.static_discharge.1",
+        "text": "Mining also builds charge",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "etstlib:terrafirma": [
+      {
+        "key": "modifier.etstlib.terrafirma.description",
+        "text": "Heals holder each second.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:void_insight": [
+      {
+        "key": "modifier.etstlib.void_insight.description",
+        "text": "Prevent most of mobs from spawning in your world.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "etstlib:warp_attack": [
+      {
+        "key": "modifier.etstlib.warp_attack.description",
+        "text": "You will attack nearby targets when you missed.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:airborne": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.airborne.0",
+        "text": "No airborne mining penalty",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.airborne.1",
+        "text": "While airborne: faster projectiles",
+        "requires": [
+          "launcher"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:ambidextrous": [
+      {
+        "key": "modifier.tconstruct.ambidextrous.description",
+        "text": "Allows punching with both hands",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:amorphous": [],
+    "tconstruct:antiaquatic": [
+      {
+        "key": "modifier.tconstruct.antiaquatic.description",
+        "text": "Tool does bonus damage to sea creatures!",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:antitoxin": [
+      {
+        "key": "modifier.tconstruct.antitoxin.description",
+        "text": "Tool does more damage and draws faster when poisoned",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:aqua_affinity": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.aqua_affinity.0",
+        "text": "No underwater mining penalty",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:attractive": [
+      {
+        "key": "modifier.tconstruct.attractive.description",
+        "text": "Draws in mobs near where the projectile hits.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:autosmelt": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.autosmelt.0",
+        "text": "Automatically smelts mined drops",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.autosmelt.1",
+        "text": "Automatically cooks mob drops",
+        "requires": [
+          "combat"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:ballista": [
+      {
+        "key": "modifier.tconstruct.ballista.description",
+        "text": "Allows the bow to fire melee from your other hand.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:bane_of_sssss": [
+      {
+        "key": "modifier.tconstruct.bane_of_sssss.description",
+        "text": "Tool does bonus damage against spiders, creepers and other creepey crawly hissing things!",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:barebow": [
+      {
+        "key": "modifier.tconstruct.barebow.description",
+        "text": "Bow will not use arrows from the inventory, though will still use arrows from quiver or crystalshot.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:barkskin": [
+      {
+        "key": "modifier.tconstruct.barkskin.description",
+        "text": "Tool uses barkskin instead of durability until it runs out",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:blast_protection": [
+      {
+        "key": "modifier.tconstruct.blast_protection.description",
+        "text": "Protects against explosion damage and reduces knockback from explosions",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:blasting": [
+      {
+        "key": "modifier.tconstruct.blasting.description",
+        "text": "Your tool breaks blocks weak to explosions, such as ores, faster!",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:blaze_disguise": [
+      {
+        "key": "modifier.tconstruct.blaze_disguise.description",
+        "text": "Makes you look more like a blaze to other blazes, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:blindshot": [],
+    "tconstruct:blockade": [],
+    "tconstruct:blocking": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.blocking.0",
+        "text": "Use to block incoming damage",
+        "requires": [
+          "blocking"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:blunted": [
+      {
+        "key": "modifier.tconstruct.blunted.description",
+        "text": "Prevents the tool from performing melee attacks on hitting a mob, making it easier to use interaction abilities.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:bonking": [
+      {
+        "key": "modifier.tconstruct.bonking.description",
+        "text": "Charge up, aim at a foe, and bonk them away!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:boon_of_sssss": [
+      {
+        "key": "modifier.tconstruct.boon_of_sssss.description",
+        "text": "Increases duration of positive effects",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:bounce": [
+      {
+        "key": "modifier.tconstruct.bounce.description",
+        "text": "Causes arrows to bounce off blocks they hit, perfect for trick shots!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:bouncy": [
+      {
+        "key": "modifier.tconstruct.bouncy.description",
+        "text": "Causes the ground to reflect you, as if you are constantly on slime blocks",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:boundless": [
+      {
+        "key": "modifier.tconstruct.boundless.description",
+        "text": "Increases the maximum percentage of protection from any source",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:breathtaking": [
+      {
+        "key": "modifier.tconstruct.breathtaking.description",
+        "text": "Melee attacks take air from enemies",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:brushing": [
+      {
+        "key": "modifier.tconstruct.brushing.description",
+        "text": "Tool can brush suspicious blocks for pottery",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:bucketing": [
+      {
+        "key": "modifier.tconstruct.bucketing.description",
+        "text": "Tool can pickup liquid, or place it when crouching",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:bulk_quiver": [
+      {
+        "key": "modifier.tconstruct.bulk_quiver.description",
+        "text": "Allows the bow to pull arrows from its own inventory when you run out of arrows, access by sneaking and attacking",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:bursting": [
+      {
+        "key": "modifier.tconstruct.bursting.description",
+        "text": "Fluid contained in the armor has a chance to spill as a counterattack causing effects based on the fluid",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:cave_spider_disguise": [
+      {
+        "key": "modifier.tconstruct.cave_spider_disguise.description",
+        "text": "Makes you look more like a cave spider to other cave spiders, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:channeling": [
+      {
+        "key": "modifier.tconstruct.channeling.description",
+        "text": "Causes lightning to strike the target of tool projectiles during storms.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:charge_attack": [
+      {
+        "key": "modifier.tconstruct.charge_attack.description",
+        "text": "Deals bonus damage while sprinting",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:cheap": [],
+    "tconstruct:chrysophilite": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.chrysophilite.0",
+        "text": "Increased gold from ores",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.chrysophilite.1",
+        "text": "Increased gold from monsters",
+        "requires": [
+          "combat"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:collecting": [
+      {
+        "key": "modifier.tconstruct.collecting.description",
+        "text": "Allows the fishing hook to collect hooked items, XP, arrows, and thrown weapons.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:conducting": [
+      {
+        "key": "modifier.tconstruct.conducting.description",
+        "text": "Tool deals multiplied damage when you are on fire",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:conductive": [
+      {
+        "key": "modifier.tconstruct.conductive.description",
+        "text": "Causes the target to take double fire damage for a short time",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:consecrated": [
+      {
+        "key": "modifier.tconstruct.consecrated.description",
+        "text": "Take less damage from the undead",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:cooling": [
+      {
+        "key": "modifier.tconstruct.cooling.description",
+        "text": "Tool does bonus damage to fire based creatures!",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:crafting_table": [
+      {
+        "key": "modifier.tconstruct.crafting_table.description",
+        "text": "Grants a full size crafting grid in the tool's inventory",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:creative_slot": [],
+    "tconstruct:creeper_disguise": [
+      {
+        "key": "modifier.tconstruct.creeper_disguise.description",
+        "text": "Makes you look more like a creeper to other creepers, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:crumbling": [
+      {
+        "key": "modifier.tconstruct.crumbling.description",
+        "text": "Tool mines blocks that don't require a tool faster. Great for mining the wrong block!",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:crystalbound": [
+      {
+        "key": "modifier.tconstruct.crystalbound.description",
+        "text": "Gains bonus damage potential, but arrow angle is restricted",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:crystalshot": [
+      {
+        "key": "modifier.tconstruct.crystalshot.description",
+        "text": "In place of arrows, fires shards of crystal grown from the bow itself. Growing crystals consumes extra durability",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:crystalstrike": [
+      {
+        "key": "modifier.tconstruct.crystalstrike.description",
+        "text": "Increases attack speed but also restricts knockback angles",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:cultivated": [
+      {
+        "key": "modifier.tconstruct.cultivated.description",
+        "text": "Tool practically grows more material when repairing",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:decay": [
+      {
+        "key": "modifier.tconstruct.decay.description",
+        "text": "Causes targets to wither away, but may also cause the holder to wither",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:deciduous": [
+      {
+        "key": "modifier.tconstruct.deciduous.description",
+        "text": "Shares some of its durability with other tools when taking damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:dense": [
+      {
+        "key": "modifier.tconstruct.dense.description",
+        "text": "Tool lasts longer, but is harder to repair",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:depth_protection": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.depth_protection.0",
+        "text": "Deeper: increased protection; high altitude: reduced protection",
+        "requires": [
+          "armor"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:depth_strider": [
+      {
+        "key": "modifier.tconstruct.depth_strider.description",
+        "text": "Increases movement speed underwater",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:diamond": [],
+    "tconstruct:double_jump": [
+      {
+        "key": "modifier.tconstruct.double_jump.description",
+        "text": "Lets you jump again in mid air. Higher levels add even more jumps!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:draconic": [],
+    "tconstruct:dragonborn": [
+      {
+        "key": "modifier.tconstruct.dragonborn.description",
+        "text": "Increases protection and attack when airborne",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:dragonshot": [
+      {
+        "key": "modifier.tconstruct.dragonshot.description",
+        "text": "Does extra damage when shot from the air",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:drawback": [
+      {
+        "key": "modifier.tconstruct.drawback.description",
+        "text": "Causes the arrow to apply knockback in the opposite direction, pulling in the target",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:drill_attack": [
+      {
+        "key": "modifier.tconstruct.drill_attack.description",
+        "text": "Melees any hit enemies during your tool's movement.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:drowned_disguise": [
+      {
+        "key": "modifier.tconstruct.drowned_disguise.description",
+        "text": "Makes you look more like a drowned to other drowned, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:dual_wielding": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.dual_wielding.0",
+        "text": "Offhand attacks when both tools support dual wielding",
+        "requires": [
+          "melee"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:ductile": [],
+    "tconstruct:dwarven": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.dwarven.0",
+        "text": "Deeper: faster mining; high altitude: slower mining",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.dwarven.1",
+        "text": "Deeper: faster projectiles; high altitude: slower projectiles",
+        "requires": [
+          "launcher"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:dyed": [],
+    "tconstruct:economical": [],
+    "tconstruct:embellishment": [],
+    "tconstruct:embossed": [],
+    "tconstruct:emerald": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.emerald.0",
+        "text": "Repair effectiveness increased by 50%",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.emerald.1",
+        "text": "Conditional damage bonuses increased by 25%",
+        "requires": [
+          "combat"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.emerald.2",
+        "text": "Conditional mining bonuses increased by 25%",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:empty": [],
+    "tconstruct:enderclearance": [
+      {
+        "key": "modifier.tconstruct.enderclearance.description",
+        "text": "Has a chance to teleport attackers away",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:enderdodging": [
+      {
+        "key": "modifier.tconstruct.enderdodging.description",
+        "text": "Allows dodging projectiles by teleporting, and randomly escape attacks by teleporting",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:enderference": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.enderference.0",
+        "text": "Hits briefly prevent teleporting",
+        "requires": [
+          "attack"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:enderman_disguise": [
+      {
+        "key": "modifier.tconstruct.enderman_disguise.description",
+        "text": "Makes you look more like a enderman to other endermen, preventing anger from looks and reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:enderporting": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.enderporting.0",
+        "text": "Teleports you to broken blocks",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.enderporting.1",
+        "text": "Teleports you to killed enemies",
+        "requires": [
+          "melee"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:energy_handler": [],
+    "tconstruct:enhanced": [],
+    "tconstruct:entangled": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.entangled.0",
+        "text": "Takes durability damage when unequipped",
+        "requires": [],
+        "kind": "restriction",
+        "named": true
+      }
+    ],
+    "tconstruct:erratic": [],
+    "tconstruct:exchanging": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.exchanging.0",
+        "text": "Replaces broken blocks with the offhand block",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:expanded": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.expanded.0",
+        "text": "Larger area for supported actions",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:experienced": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.experienced.0",
+        "text": "+%s%% experience from kills while held",
+        "requires": [
+          "combat",
+          "held"
+        ],
+        "kind": "behavior",
+        "per_level": [
+          50
+        ]
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.experienced.1",
+        "text": "+%s%% experience from mined blocks",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "per_level": [
+          50
+        ]
+      }
+    ],
+    "tconstruct:explosive": [
+      {
+        "key": "modifier.tconstruct.explosive.description",
+        "text": "Causes the arrow to explode upon hitting the target",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:farsighted": [],
+    "tconstruct:feather_falling": [
+      {
+        "key": "modifier.tconstruct.feather_falling.description",
+        "text": "Softens falls causing reduced damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:featherweight": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.featherweight.0",
+        "text": "Protection -%s",
+        "requires": [
+          "defense"
+        ],
+        "kind": "restriction",
+        "per_level": [
+          1.25
+        ]
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.featherweight.1",
+        "text": "Use-item speed +%s%% while worn",
+        "requires": [
+          "armor"
+        ],
+        "kind": "behavior",
+        "per_level": [
+          10
+        ]
+      }
+    ],
+    "tconstruct:fiery": [
+      {
+        "key": "modifier.tconstruct.fiery.description",
+        "text": "Ignites targets of melee attacks, fired arrows, and counterattacks",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:fins": [
+      {
+        "key": "modifier.tconstruct.fins.description",
+        "text": "Allows the tool as a projectile to move freely underwater.",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:fins_ammo": [],
+    "tconstruct:fire_protection": [
+      {
+        "key": "modifier.tconstruct.fire_protection.description",
+        "text": "Protects against damage from fire and reduces fire time",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:firebreath": [
+      {
+        "key": "modifier.tconstruct.firebreath.description",
+        "text": "Allows you to spit firecharges by interacting with your helmet",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:fireprimer": [
+      {
+        "key": "modifier.tconstruct.fireprimer.description",
+        "text": "Increases the area of fire of the tool",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:firestarter": [
+      {
+        "key": "modifier.tconstruct.firestarter.description",
+        "text": "Tool can create fire on usage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:fishing": [
+      {
+        "key": "modifier.tconstruct.fishing.description",
+        "text": "Tool can cast a fishing bobber projectile, which potentially damages foes.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:flame_barrier": [
+      {
+        "key": "modifier.tconstruct.flame_barrier.description",
+        "text": "Increases protection while on fire",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:flamestance": [
+      {
+        "key": "modifier.tconstruct.flamestance.description",
+        "text": "Increases power and protection in hot biomes, but reduces it in cold biomes",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:flamewake": [
+      {
+        "key": "modifier.tconstruct.flamewake.description",
+        "text": "Leave a trail of fire in your wake",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:flinging": [
+      {
+        "key": "modifier.tconstruct.flinging.description",
+        "text": "Charge up, aim low, and fling away from the targeted block! Use bouncy if you value your life.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:forecast": [],
+    "tconstruct:fortified": [],
+    "tconstruct:fortune": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.fortune.0",
+        "text": "Fortune %s",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "per_level": [
+          1
+        ]
+      }
+    ],
+    "tconstruct:freezing": [
+      {
+        "key": "modifier.tconstruct.freezing.description",
+        "text": "Causes melee attacks, fired arrows, and counterattacks to freeze the target",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:frost_walker": [
+      {
+        "key": "modifier.tconstruct.frost_walker.description",
+        "text": "Causes water blocks to temporarily freeze",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:frostshield": [
+      {
+        "key": "modifier.tconstruct.frostshield.description",
+        "text": "Converts cold damage into protection from durability loss",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:frosttouch": [
+      {
+        "key": "modifier.tconstruct.frosttouch.description",
+        "text": "Makes arrows cause slowness, drinking milk also slows on melee attack",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:fuse": [
+      {
+        "key": "modifier.tconstruct.fuse.description",
+        "text": "Projectile disappears after a short time",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:gilded": [],
+    "tconstruct:glowing": [
+      {
+        "key": "modifier.tconstruct.glowing.description",
+        "text": "Tool can place glows, consuming durability",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:gold_guard": [
+      {
+        "key": "modifier.tconstruct.gold_guard.description",
+        "text": "Increases health based on how much gold you are wearing",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:golden": [
+      {
+        "key": "modifier.tconstruct.golden.description",
+        "text": "Gives your armor extra golden bling - piglins love it!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:grapple": [
+      {
+        "key": "modifier.tconstruct.grapple.description",
+        "text": "Allows you to pull yourself towards blocks grabbed by the fishing hook",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:harmonious": [],
+    "tconstruct:harvest": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.harvest.0",
+        "text": "Use on crops to harvest and replant",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:haste": [],
+    "tconstruct:headlight": [
+      {
+        "key": "modifier.tconstruct.headlight.description",
+        "text": "Visually lights up the world.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:heavy": [],
+    "tconstruct:holy": [
+      {
+        "key": "modifier.tconstruct.holy.description",
+        "text": "Arrows deal bonus damage against undead",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:hover": [
+      {
+        "key": "modifier.tconstruct.hover.description",
+        "text": "Projectile briefly ignores gravity after firing.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:husk_disguise": [
+      {
+        "key": "modifier.tconstruct.husk_disguise.description",
+        "text": "Makes you look more like a husk to other husks, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:hydraulic": [
+      {
+        "key": "modifier.tconstruct.hydraulic.description",
+        "text": "Tool mines faster underwater or in the rain!",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:impaling": [
+      {
+        "key": "modifier.tconstruct.impaling.description",
+        "text": "Arrows keep moving after hitting a target, potentially hitting more targets",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:insatiable": [
+      {
+        "key": "modifier.tconstruct.insatiable.description",
+        "text": "During combat you deal more and more damage every time you hit an enemy",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:invariant": [
+      {
+        "key": "modifier.tconstruct.invariant.description",
+        "text": "Tool does more damage and is more accurate in neutral temperatures",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:item_frame": [
+      {
+        "key": "modifier.tconstruct.item_frame.description",
+        "text": "Adds inventory slots to the helmet for items to observe. Perfect for clocks and compasses",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:jagged": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.jagged.0",
+        "text": "Damage rises as durability is lost",
+        "requires": [
+          "melee"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.jagged.1",
+        "text": "Mining slows as durability is lost",
+        "requires": [
+          "mining"
+        ],
+        "kind": "restriction",
+        "named": true
+      }
+    ],
+    "tconstruct:keen": [],
+    "tconstruct:killager": [
+      {
+        "key": "modifier.tconstruct.killager.description",
+        "text": "Increases damage against villagers, illagers, and other longnosed creatures!",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:kinetic": [
+      {
+        "key": "modifier.tconstruct.kinetic.description",
+        "text": "During combat you deal more and more damage every time you take a hit",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:knockback": [
+      {
+        "key": "modifier.tconstruct.knockback.description",
+        "text": "Hitting things in melee makes them go flying further!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:knockback_resistance": [],
+    "tconstruct:lacerating": [
+      {
+        "key": "modifier.tconstruct.lacerating.description",
+        "text": "Causes the target to bleed, dealing additional damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:leaping": [
+      {
+        "key": "modifier.tconstruct.leaping.description",
+        "text": "Skyslimes can leap high, so this should also let you leap high",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:lightspeed": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.lightspeed.0",
+        "text": "Well-lit blocks mine faster",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.lightspeed.1",
+        "text": "Movement speeds up in bright light",
+        "requires": [
+          "armor"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:lightweight": [],
+    "tconstruct:long_fall": [
+      {
+        "key": "modifier.tconstruct.long_fall.description",
+        "text": "Neutralizes all fall damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:looting": [
+      {
+        "key": "modifier.tconstruct.looting.description",
+        "text": "Gives you more nice things when killing mobs!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:luck": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.luck.0",
+        "text": "Fortune %s",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "per_level": [
+          1
+        ]
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.luck.1",
+        "text": "Looting %s",
+        "requires": [
+          "combat"
+        ],
+        "kind": "behavior",
+        "per_level": [
+          1
+        ]
+      }
+    ],
+    "tconstruct:lure": [],
+    "tconstruct:lure_rod": [],
+    "tconstruct:lustrous": [
+      {
+        "key": "modifier.tconstruct.lustrous.description",
+        "text": "Ores drop bonus nuggets",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:magic_protection": [
+      {
+        "key": "modifier.tconstruct.magic_protection.description",
+        "text": "Protects against damage from magical sources",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:magnetic": [
+      {
+        "key": "modifier.tconstruct.magnetic.description",
+        "text": "Hitting things attracts nearby items?!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:maintained": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.maintained.0",
+        "text": "Higher durability: faster mining",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.maintained.1",
+        "text": "Higher durability: faster projectiles",
+        "requires": [
+          "launcher"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.maintained.2",
+        "text": "Higher durability: increased movement speed",
+        "requires": [
+          "armor"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:melee_protection": [
+      {
+        "key": "modifier.tconstruct.melee_protection.description",
+        "text": "Increases protection against direct physical damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:melting": [
+      {
+        "key": "modifier.tconstruct.melting.description",
+        "text": "Melts attacked entities and items dropped!",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:minimap": [
+      {
+        "key": "modifier.tconstruct.minimap.description",
+        "text": "Adds inventory slot to the helmet to fill in a map",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:mithridatism": [
+      {
+        "key": "modifier.tconstruct.mithridatism.description",
+        "text": "Immune to becoming poisoned, if only it worked on existing poison...",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:momentum": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.momentum.0",
+        "text": "Consecutive blocks increase mining speed",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.momentum.1",
+        "text": "Consecutive shots increase draw speed",
+        "requires": [
+          "launcher"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:multishot": [
+      {
+        "key": "modifier.tconstruct.multishot.description",
+        "text": "Allows shooting multiple arrows at once",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:nearsighted": [],
+    "tconstruct:necrotic": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.necrotic.0",
+        "text": "Fully charged critical hits heal %s%% of damage dealt",
+        "requires": [
+          "melee"
+        ],
+        "kind": "conditional",
+        "per_level": [
+          5
+        ]
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.necrotic.1",
+        "text": "Projectile hits heal %s%% of their damage",
+        "requires": [
+          "projectile"
+        ],
+        "kind": "conditional",
+        "per_level": [
+          5
+        ]
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.necrotic.2",
+        "text": "When hurt: 15%% chance of regeneration, scaling with damage and modifier level",
+        "requires": [
+          "defense"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:netherite": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.netherite.0",
+        "text": "Dropped tool resists external damage, including fire",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:offhand_attack": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.offhand_attack.0",
+        "text": "Can attack with the offhand",
+        "requires": [
+          "melee"
+        ],
+        "kind": "behavior"
+      }
+    ],
+    "tconstruct:offhanded": [
+      {
+        "key": "modifier.tconstruct.offhanded.description",
+        "text": "Disables the tools interaction abilities when the offhand is filled. Second level disables interaction abilities entirely.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:olympic": [
+      {
+        "key": "modifier.tconstruct.olympic.description",
+        "text": "Earn medals by hitting far away targets",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:overburn": [
+      {
+        "key": "modifier.tconstruct.overburn.description",
+        "text": "Tool converts liquid fuel into overslime",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:overcast": [],
+    "tconstruct:overforced": [],
+    "tconstruct:overgrowth": [
+      {
+        "key": "modifier.tconstruct.overgrowth.description",
+        "text": "Tool slowly grows overslime",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:overlord": [
+      {
+        "key": "modifier.tconstruct.overlord.description",
+        "text": "Tool takes some of the durability as new overslime subjects",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:overshield": [
+      {
+        "key": "modifier.tconstruct.overshield.description",
+        "text": "Consumes overslime to reduce all sources of damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:overslime": [
+      {
+        "key": "modifier.tconstruct.overslime.description",
+        "text": "Tool consumes overslime instead of durability, until it runs out! Not friendly towards tools lacking slime",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:overworked": [
+      {
+        "key": "modifier.tconstruct.overworked.description",
+        "text": "Increases amount of overslime restored from all sources",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:padded": [
+      {
+        "key": "modifier.tconstruct.padded.description",
+        "text": "Reduces the knockback of the tool, to stop your enemies from escaping",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:parrying": [
+      {
+        "key": "modifier.tconstruct.parrying.description",
+        "text": "Briefly block after attacking, allowing for deflection of many attacks",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:pathing": [
+      {
+        "key": "modifier.tconstruct.pathing.description",
+        "text": "Tool can make paths",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:pierce": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.pierce.0",
+        "text": "Attacks weaken armor for 5 seconds",
+        "requires": [
+          "attack"
+        ],
+        "kind": "behavior",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.pierce.1",
+        "text": "Direct attackers have weakened armor for 5 seconds",
+        "requires": [
+          "defense"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:piercing": [
+      {
+        "key": "modifier.tconstruct.piercing.description",
+        "text": "Tool deals bonus damage which attacks through armor!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:piglin_brute_disguise": [
+      {
+        "key": "modifier.tconstruct.piglin_brute_disguise.description",
+        "text": "Makes you look more like a piglin brute to other piglin brutes, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:piglin_disguise": [
+      {
+        "key": "modifier.tconstruct.piglin_disguise.description",
+        "text": "Makes you look more like a piglin to other piglins, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:plague": [
+      {
+        "key": "modifier.tconstruct.plague.description",
+        "text": "Causes melee targets to catch whatever negative effects you have",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:pockets": [
+      {
+        "key": "modifier.tconstruct.pockets.description",
+        "text": "The pants have pockets, allowing you to store additional items which can be accessed by shift plus interacting",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:power": [],
+    "tconstruct:preserved": [
+      {
+        "key": "modifier.tconstruct.preserved.description",
+        "text": "Makes the tool more durable and easier to repair",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:projectile_protection": [
+      {
+        "key": "modifier.tconstruct.projectile_protection.description",
+        "text": "Protects against damage from projectiles",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:protection": [
+      {
+        "key": "modifier.tconstruct.protection.description",
+        "text": "Increases protection to all damage types",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:punch": [
+      {
+        "key": "modifier.tconstruct.punch.description",
+        "text": "Makes arrows apply additional knockback",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:quick_charge": [],
+    "tconstruct:raging": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.raging.0",
+        "text": "Low health increases melee damage",
+        "requires": [
+          "melee"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.raging.1",
+        "text": "Low health increases projectile power",
+        "requires": [
+          "projectile"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:reach": [
+      {
+        "key": "modifier.tconstruct.reach.description",
+        "text": "Can reach further blocks and mobs while holding this tool!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:rebalanced": [
+      {
+        "key": "modifier.tconstruct.rebalanced.description",
+        "text": "Grants your tool an additional slot type of your choice. Penalizes choice of the most powerful type.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:rebound": [
+      {
+        "key": "modifier.tconstruct.rebound.description",
+        "text": "Increases power based on how many times the projectile bounces.",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:recapitated": [],
+    "tconstruct:reclaim": [
+      {
+        "key": "modifier.tconstruct.reclaim.description",
+        "text": "After hitting the target, projectile will bounce off and can be collected to reuse.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:recurrent_protection": [
+      {
+        "key": "modifier.tconstruct.recurrent_protection.description",
+        "text": "Taking damage temporarily boosts your protection",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:redirected": [
+      {
+        "key": "modifier.tconstruct.redirected.description",
+        "text": "Grants the projectile an extra copy of its head trait.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:reflecting": [
+      {
+        "key": "modifier.tconstruct.reflecting.description",
+        "text": "Allows reflecting projectiles within a short window of deploying your shield",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:reinforced": [
+      {
+        "key": "modifier.tconstruct.reinforced.description",
+        "text": "Tool is less likely to take damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:respiration": [
+      {
+        "key": "modifier.tconstruct.respiration.description",
+        "text": "Increases lung capacity",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:resurrected": [],
+    "tconstruct:returning": [
+      {
+        "key": "modifier.tconstruct.returning.description",
+        "text": "Causes the thrown or fired tool to return to you after hitting a target.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:revenge": [
+      {
+        "key": "modifier.tconstruct.revenge.description",
+        "text": "Makes you stronger after you are attacked",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:revitalizing": [
+      {
+        "key": "modifier.tconstruct.revitalizing.description",
+        "text": "Strengthens the heart, granting more hearts",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:ricochet": [
+      {
+        "key": "modifier.tconstruct.ricochet.description",
+        "text": "Bounce away further when attacked, for effective escapes",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:scope": [
+      {
+        "key": "modifier.tconstruct.scope.description",
+        "text": "Zoom in on the target when charging the tool.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:scorch_protection": [
+      {
+        "key": "modifier.tconstruct.scorch_protection.description",
+        "text": "Protects against damage from fire immune mobs and reduces fire time",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:scorching": [
+      {
+        "key": "modifier.tconstruct.scorching.description",
+        "text": "Tool does bonus damage to targets that are on fire",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:searing": [
+      {
+        "key": "modifier.tconstruct.searing.description",
+        "text": "Tool mines meltable blocks such as metal ores faster",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:self_destructive": [
+      {
+        "key": "modifier.tconstruct.self_destructive.description",
+        "text": "Can explode by interacting with the helmet while sneaking",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:severing": [
+      {
+        "key": "modifier.tconstruct.severing.description",
+        "text": "Potentially blasts heads or other parts of targets of melee right off!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:sharpness": [],
+    "tconstruct:shears": [
+      {
+        "key": "modifier.tconstruct.shears.description",
+        "text": "Tool can be used to shear mobs and disarm tripwire",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:shield_strap": [
+      {
+        "key": "modifier.tconstruct.shield_strap.description",
+        "text": "Interacting with the leggings allows swapping the offhand item",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:shiny": [
+      {
+        "key": "modifier.tconstruct.shiny.description",
+        "text": "Tool glows with an enchanted glint",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:shock": [
+      {
+        "key": "modifier.tconstruct.shock.description",
+        "text": "Does more damage to targets in water, while armor may damage submerged attackers",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:shulking": [
+      {
+        "key": "modifier.tconstruct.shulking.description",
+        "text": "Increases resistance while sneaking, but also decreases damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:silky": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.silky.0",
+        "text": "Silk touch",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:silky_aoe_shears": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.silky_aoe_shears.0",
+        "text": "Can shear nearby mobs",
+        "requires": [
+          "silky"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:silky_shears": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.silky_shears.0",
+        "text": "Can shear mobs",
+        "requires": [
+          "silky"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:sinistral": [
+      {
+        "key": "modifier.tconstruct.sinistral.description",
+        "text": "When in main hand, crossbow fires when attacking instead of interacting and will not load while sneaking.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:skeleton_disguise": [
+      {
+        "key": "modifier.tconstruct.skeleton_disguise.description",
+        "text": "Makes you look more like a skeleton to other skeletons, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:skyfall": [
+      {
+        "key": "modifier.tconstruct.skyfall.description",
+        "text": "Reduces the effect of gravity",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:sleeves": [
+      {
+        "key": "modifier.tconstruct.sleeves.description",
+        "text": "Gives the chestplate 9 slots for throwable items, which can be thrown when interacting with an empty hand.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:slurping": [
+      {
+        "key": "modifier.tconstruct.slurping.description",
+        "text": "Allows drinking the fluid in a helmet when interacting",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:smashing": [
+      {
+        "key": "modifier.tconstruct.smashing.description",
+        "text": "Projectile breaks on hitting an entity, applying the effect of the filled fluid to them.",
+        "requires": [
+          "mining"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:smashing_ammo": [],
+    "tconstruct:smelting": [
+      {
+        "key": "modifier.tconstruct.smelting.description",
+        "text": "Using the tool cooks the items inside! Fill the tool by sneaking while interacting.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:smite": [
+      {
+        "key": "modifier.tconstruct.smite.description",
+        "text": "Undead fear the might of the melon!",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:snow_boots": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.snow_boots.0",
+        "text": "Walk on powder snow",
+        "requires": [
+          "armor"
+        ],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:snowdrift": [
+      {
+        "key": "modifier.tconstruct.snowdrift.description",
+        "text": "Leave a trail of snow like a snow golem",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:soft": [],
+    "tconstruct:solar_powered": [
+      {
+        "key": "modifier.tconstruct.solar_powered.description",
+        "text": "Tool resists damage in sunlight",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:solid": [
+      {
+        "key": "modifier.tconstruct.solid.description",
+        "text": "Tool does more damage and armor protects more, but its difficult to move",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:soul_belt": [
+      {
+        "key": "modifier.tconstruct.soul_belt.description",
+        "text": "Items in the hotbar remain in the inventory on death!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:soulbound": [
+      {
+        "key": "modifier.tconstruct.soulbound.description",
+        "text": "Tool remains in inventory on death!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:soulspeed": [
+      {
+        "key": "modifier.tconstruct.soulspeed.description",
+        "text": "Increases movement speed on soul sand",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:spectral": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.spectral.0",
+        "text": "Hits make targets glow for %s s",
+        "requires": [
+          "attack"
+        ],
+        "kind": "behavior",
+        "per_level": [
+          10
+        ]
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.spectral.1",
+        "text": "Projectiles make struck blocks glow",
+        "requires": [
+          "projectile"
+        ],
+        "kind": "behavior",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.spectral.2",
+        "text": "Direct attackers glow; duration scales with level and blocking",
+        "requires": [
+          "defense"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:speedy": [
+      {
+        "key": "modifier.tconstruct.speedy.description",
+        "text": "Achieve speeds closer to that of rabbits",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:spider_disguise": [
+      {
+        "key": "modifier.tconstruct.spider_disguise.description",
+        "text": "Makes you look more like a spider to other spiders, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:spike": [
+      {
+        "key": "modifier.tconstruct.spike.description",
+        "text": "Arrows keeps moving after hitting a target, while thrown ammo disable shields",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:spilling": [
+      {
+        "key": "modifier.tconstruct.spilling.description",
+        "text": "Fluid contained in the weapon spills onto melee and fishing hook targets, causing effects based on the fluid",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:spilling_rod": [],
+    "tconstruct:spiny": [
+      {
+        "key": "modifier.tconstruct.spiny.description",
+        "text": "Boosts the projectile's damage, but damages you when used.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:spitting": [
+      {
+        "key": "modifier.tconstruct.spitting.description",
+        "text": "Can charge the tool to launch fluid projectiles from the tank, applying the effect to the target. Affected by bow stats.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:splashing": [
+      {
+        "key": "modifier.tconstruct.splashing.description",
+        "text": "Fluid contained in the tool spills onto interaction block and entity targets causing effects based on the fluid",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:springing": [
+      {
+        "key": "modifier.tconstruct.springing.description",
+        "text": "Charge up, aim high, and launch back into the air!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:springy": [
+      {
+        "key": "modifier.tconstruct.springy.description",
+        "text": "Attackers may bounce off your armor",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:stalwart": [
+      {
+        "key": "modifier.tconstruct.stalwart.description",
+        "text": "Reduces damage from armed attackers",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:stat_override": [],
+    "tconstruct:step_up": [
+      {
+        "key": "modifier.tconstruct.step_up.description",
+        "text": "Allows climbing taller blocks as if they were stairs",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:sticky": [
+      {
+        "key": "modifier.tconstruct.sticky.description",
+        "text": "Attackers may become stuck in place, or at least slowed",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:stonebound": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.stonebound.0",
+        "text": "Damage falls as durability is lost",
+        "requires": [
+          "melee"
+        ],
+        "kind": "restriction",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.stonebound.1",
+        "text": "Mining speeds up as durability is lost",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:stoneshield": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.stoneshield.0",
+        "text": "Mined stone can restore a durability shield",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.stoneshield.1",
+        "text": "Stored stoneshield protects durability",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:stray_disguise": [
+      {
+        "key": "modifier.tconstruct.stray_disguise.description",
+        "text": "Makes you look more like a stray to other strays, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:strength": [
+      {
+        "key": "modifier.tconstruct.strength.description",
+        "text": "Makes your weapons stronger",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:stringy": [
+      {
+        "key": "modifier.tconstruct.stringy.description",
+        "text": "Tool can be repaired using string",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:stripping": [
+      {
+        "key": "modifier.tconstruct.stripping.description",
+        "text": "Tool can strip bark from wood",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:strong_bones": [
+      {
+        "key": "modifier.tconstruct.strong_bones.description",
+        "text": "Drinking milk temporarily boosts resistance",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:sweeping_edge": [
+      {
+        "key": "modifier.tconstruct.sweeping_edge.description",
+        "text": "Targets of sweep attack take a larger percentage of this tool's damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:swift_sneak": [
+      {
+        "key": "modifier.tconstruct.swift_sneak.description",
+        "text": "Increases movement speed while crouching",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:swiftstrike": [],
+    "tconstruct:tank": [],
+    "tconstruct:tank_handler": [],
+    "tconstruct:tanned": [
+      {
+        "key": "modifier.tconstruct.tanned.description",
+        "text": "Tool no longer takes double or more damage from certain actions",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:tasty": [
+      {
+        "key": "modifier.tconstruct.tasty.description",
+        "text": "Smells so good, you cannot resist taking a few bites of your tool",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:temperate": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.temperate.0",
+        "text": "Cold: faster mining",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.temperate.1",
+        "text": "Cold: faster drawing",
+        "requires": [
+          "launcher"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.temperate.2",
+        "text": "Heat: reduced durability loss",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.temperate.3",
+        "text": "Cold: increased protection",
+        "requires": [
+          "armor"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:tempered_protection": [
+      {
+        "key": "modifier.tconstruct.tempered_protection.description",
+        "text": "Reduces damage from attackers who are on fire",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:the_one_probe": [
+      {
+        "key": "modifier.tconstruct.the_one_probe.description",
+        "text": "Shows information about the targeted block when held or on a helmet.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:thorns": [
+      {
+        "key": "modifier.tconstruct.thorns.description",
+        "text": "Harness the power of the guardian, causing attackers to sometimes take damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:throwing": [
+      {
+        "key": "modifier.tconstruct.throwing.description",
+        "text": "Allows throwing the tool to do melee damage at a distance.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:tilling": [
+      {
+        "key": "modifier.tconstruct.tilling.description",
+        "text": "Tool can till dirt",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:tipped": [
+      {
+        "key": "modifier.tconstruct.tipped.description",
+        "text": "Upon hit, applies the effects of the potion casted on this projectile",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:tool_belt": [
+      {
+        "key": "modifier.tconstruct.tool_belt.description",
+        "text": "Interacting with the leggings while holding control allows swapping the hotbar",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:trick_quiver": [
+      {
+        "key": "modifier.tconstruct.trick_quiver.description",
+        "text": "Gives the bow three toggleable arrow slots. Select the slot by attacking, or access them by sneaking and attacking",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:trim": [],
+    "tconstruct:trueshot": [],
+    "tconstruct:turtle_shell": [
+      {
+        "key": "modifier.tconstruct.turtle_shell.description",
+        "text": "Increases protection underwater, along with swim speed",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:unbreakable": [],
+    "tconstruct:unburdened": [
+      {
+        "key": "modifier.tconstruct.unburdened.description",
+        "text": "Movement speed is hindered less when using the item.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:valiant": [
+      {
+        "key": "modifier.tconstruct.valiant.description",
+        "text": "Increases damage against armored targets",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:venom": [
+      {
+        "key": "modifier.tconstruct.venom.description",
+        "text": "Causes the target to take double magic damage for a short time",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:vintage": [],
+    "tconstruct:vital_protection": [
+      {
+        "key": "modifier.tconstruct.vital_protection.description",
+        "text": "Armor protects more when the wearer's health is low",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:war_charge": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.war_charge.0",
+        "text": "Mining while loaded builds war charge",
+        "requires": [
+          "mining"
+        ],
+        "kind": "conditional",
+        "named": true
+      },
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.war_charge.1",
+        "text": "Stored war charge increases the next shot\u2019s velocity",
+        "requires": [
+          "projectile"
+        ],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tconstruct:warping": [
+      {
+        "key": "modifier.tconstruct.warping.description",
+        "text": "Charge up, aim at a wall, and warp to the other side!",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:weak": [],
+    "tconstruct:wetting": [
+      {
+        "key": "modifier.tconstruct.wetting.description",
+        "text": "Causes you to wet yourself when damaged, applying different effects based on the contained fluid",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:wildfire": [
+      {
+        "key": "modifier.tconstruct.wildfire.description",
+        "text": "Increases burn times of targets if you are burning",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:wings": [
+      {
+        "key": "modifier.tconstruct.wings.description",
+        "text": "Allows you to soar through the air by jumping while in mid air",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:wither_skeleton_disguise": [
+      {
+        "key": "modifier.tconstruct.wither_skeleton_disguise.description",
+        "text": "Makes you look more like a wither skeleton to other wither skeletons, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:withered": [
+      {
+        "key": "modifier.tconstruct.withered.description",
+        "text": "Withers targets of attacks, withering faster after drinking milk",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:woodwind": [],
+    "tconstruct:workbench": [
+      {
+        "key": "modifier.tconstruct.workbench.description",
+        "text": "Grants an inventory sized crafting grid in the tool inventory",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:worldbound": [
+      {
+        "key": "modifier.tconstruct.worldbound.description",
+        "text": "A crude version of netherite, granting immunity to external damage like fire, but no additional strength",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:writable": [],
+    "tconstruct:zombie_disguise": [
+      {
+        "key": "modifier.tconstruct.zombie_disguise.description",
+        "text": "Makes you look more like a zombie to other zombies, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:zombified_piglin_disguise": [
+      {
+        "key": "modifier.tconstruct.zombified_piglin_disguise.description",
+        "text": "Makes you look more like a zombified piglin to other zombified piglins, reducing detection range",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tconstruct:zoom": [
+      {
+        "key": "modifier.tconstruct.zoom.description",
+        "text": "Allows you to see far away objects when interacting while sneaking",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:bambooshot": [
+      {
+        "key": "modifier.tinkers_things.bambooshot.description",
+        "text": "Blowpipe grows its own arrows to fire",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:blinding": [
+      {
+        "key": "modifier.tinkers_things.blinding.description",
+        "text": "Arrows cause the target to be temporarily blinded",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:enhanced": [],
+    "tinkers_things:fortified": [
+      {
+        "key": "tooltip.better_compat_fixes.tinkers_things.fortified.0",
+        "text": "Repairable with copper",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:hemodynamic": [
+      {
+        "key": "modifier.tinkers_things.hemodynamic.description",
+        "text": "Tool gains two additional upgrade slots, but at what cost?",
+        "requires": [],
+        "kind": "conditional",
+        "named": true
+      }
+    ],
+    "tinkers_things:hemosistance": [
+      {
+        "key": "modifier.tinkers_things.hemosistance.description",
+        "text": "Tool gains two additional defense slots, but at what cost?",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:hyperoptic": [],
+    "tinkers_things:pouch": [
+      {
+        "key": "modifier.tinkers_things.pouch.description",
+        "text": "Tools gains an additional 3 slots of storage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:range": [
+      {
+        "key": "modifier.tinkers_things.range.description",
+        "text": "Tool is extra long, allowing attacking far away monsters",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:silkibound": [
+      {
+        "key": "modifier.tinkers_things.silkibound.description",
+        "text": "Projectile gains more power, but at what cost?",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:silkitoxin": [
+      {
+        "key": "modifier.tinkers_things.silkitoxin.description",
+        "text": "Tool gains an additional ability slots, but at what cost?",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:stowing": [
+      {
+        "key": "modifier.tinkers_things.stowing.description",
+        "text": "Tool gains an additional 9 slots of storage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:tracing": [
+      {
+        "key": "modifier.tinkers_things.tracing.description",
+        "text": "Target will glow for a few seconds, making them easier to track",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:venom": [
+      {
+        "key": "modifier.tinkers_things.venom.description",
+        "text": "Target will be poisoned, causing damage over time",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkers_things:weakness": [
+      {
+        "key": "modifier.tinkers_things.weakness.description",
+        "text": "Target will be temporarily weakened, reducing attack damage",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ],
+    "tinkersweaponry:lengthy": [
+      {
+        "key": "modifier.tinkersweaponry.lengthy.description",
+        "text": "Increase entity and block range by 1.5.",
+        "requires": [],
+        "kind": "behavior",
+        "named": true
+      }
+    ]
+  },
+  "actions": {
+    "tconstruct:hand_axe": [],
+    "additionalweaponry:sniffer_claws": [],
+    "tconstruct:sledge_hammer": [],
+    "tconstruct:vein_hammer": [],
+    "tconstruct:mattock": [],
+    "tconstruct:broad_axe": [],
+    "tconstruct:excavator": [],
+    "tinkers_things:shovel": [],
+    "tconstruct:pickaxe": [],
+    "tconstruct:pickadze": [],
+    "tconstruct:war_pick": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.war_pick.effect",
+        "text": "Alternate: spend war charge to fire a projectile",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "tconstruct:scythe": [],
+    "tinkers_battle_spades:battle_spade": [],
+    "tinkers_things:blockram": [
+      {
+        "key": "tooltip.better_compat_fixes.tinkers_things.blockram.effect",
+        "text": "Alternate: returning throw",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "additionalweaponry:wrench": [],
+    "tinkers_things:chisel": [],
+    "tconstruct:kama": [],
+    "additionalweaponry:cutlass": [],
+    "tconstruct:dagger": [],
+    "construct_arsenal:buckler": [
+      {
+        "key": "tooltip.better_compat_fixes.construct_arsenal.buckler.effect",
+        "text": "Alternate: returning throw",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "tinkers_things:blowpipe": [],
+    "additionalweaponry:butcher_knife": [],
+    "tconstruct:cleaver": [],
+    "tinkersweaponry:greatsword": [],
+    "construct_arsenal:helix_blade": [],
+    "tconstruct:minotaur_axe": [],
+    "additionalweaponry:pitchfork": [],
+    "tinkers_things:halberd": [],
+    "tconstruct:battlesign": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.battlesign.effect",
+        "text": "Alternate: charge and release a knockback strike",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "tinkers_things:amethyst_staff": [],
+    "tconstruct:javelin": [
+      {
+        "key": "tooltip.better_compat_fixes.tconstruct.javelin.effect",
+        "text": "Alternate: throw",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "tinkers_katanas:fuma_shuriken": [
+      {
+        "key": "tooltip.better_compat_fixes.tinkers_katanas.fuma_shuriken.effect",
+        "text": "Alternate: returning throw",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "additionalweaponry:scepter": [],
+    "tinkers_things:shortbow": [],
+    "tconstruct:swasher": [],
+    "tconstruct:sword": [],
+    "tinker_rapier:estoc_tic": [],
+    "tconstruct:longbow": [],
+    "tconstruct:crossbow": [],
+    "construct_arsenal:quarterstaff": [],
+    "tinkers_katanas:katana": [],
+    "tinker_rapier:rapier_tic": [],
+    "tinkersweaponry:pike": [],
+    "tinkersweaponry:lance": [],
+    "skill:epicfight:sweeping_edge": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.sweeping_edge.effect",
+        "text": "Sweep nearby enemies",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:heartpiercer": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.heartpiercer.effect",
+        "text": "Three rapid spear thrusts",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:relentless_combo": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.relentless_combo.effect",
+        "text": "A rapid flurry of blows",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:dancing_edge": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.dancing_edge.effect",
+        "text": "Three-strike flourish",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:steel_whirlwind": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.steel_whirlwind.effect",
+        "text": "Charge a forward cleave to increase its range and speed",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:the_guillotine": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.the_guillotine.effect",
+        "text": "Heavy strike; executes sufficiently weakened targets",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:grasping_spire": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.grasping_spire.effect",
+        "text": "Pull a struck enemy in, then strike again with knockback",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:rushing_tempo": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.rushing_tempo.effect",
+        "text": "Add an extra strike after basic attacks",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:liechtenauer": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.liechtenauer.effect",
+        "text": "Deflect frontal attacks while attacking; kills extend the stance; cannot sprint",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:eviscerate": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.eviscerate.effect",
+        "text": "Stab; a successful hit leads to a critical follow-up",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:blade_rush": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.blade_rush.effect",
+        "text": "Apply Instability; three stacks execute the target",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ],
+    "skill:epicfight:everlasting_allegiance": [
+      {
+        "key": "tooltip.better_compat_fixes.epicfight.everlasting_allegiance.effect",
+        "text": "Recall a thrown trident, damaging enemies along its return path",
+        "requires": [],
+        "kind": "behavior"
+      }
+    ]
+  },
+  "moduleTypes": {
+    "construct_arsenal:range": [
+      "tconstruct:attribute",
+      "tconstruct:attribute"
+    ],
+    "epicfighttinkercompat:agony_spear": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:antitheus": [
+      "epicfighttinkercompat:chargeable",
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:arrow_tempest": [],
+    "epicfighttinkercompat:axe": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:bloodlust": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:broadblade": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:crescentmoon": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:crimson_fang": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:dagger": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:eagle_eye": [],
+    "epicfighttinkercompat:enhanced_greatsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:enhanced_longsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:enhanced_shortsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:enhanced_spear": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:enhanced_tachi": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:epic_stats": [],
+    "epicfighttinkercompat:greatsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:herrscher": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:hf_blade": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:kusabimaru": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:longsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:meenlance": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:moonless": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:murasama": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:napoleon": [
+      "epicfighttinkercompat:chargeable",
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:night_fall_scythe": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:orbit": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:pioneer": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:ruine_blade": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:ruinsgreatsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:runic_shortsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:shortsword": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:so_sticky": [
+      "tconstruct:stat_boost"
+    ],
+    "epicfighttinkercompat:solar": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:speary": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:tachi": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:thornwheel": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:torment_blade": [
+      "epicfighttinkercompat:chargeable",
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:uchigatana": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "epicfighttinkercompat:weightless": [
+      "tconstruct:stat_boost"
+    ],
+    "epicfighttinkercompat:yamato": [
+      "epicfighttinkercompat:tag_limit"
+    ],
+    "etstlib:atomic_decompose": [
+      "etstlib:force_drop"
+    ],
+    "etstlib:executioner": [
+      "etstlib:add_arrow_damage_type",
+      "etstlib:add_melee_damage_type"
+    ],
+    "etstlib:rude": [
+      "etstlib:set_critical"
+    ],
+    "tconstruct:airborne": [
+      "tconstruct:conditional_mining_speed",
+      "tconstruct:conditional_stat"
+    ],
+    "tconstruct:amorphous": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:antiaquatic": [
+      "tconstruct:conditional_melee_damage"
+    ],
+    "tconstruct:antitoxin": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_stat"
+    ],
+    "tconstruct:aqua_affinity": [
+      "tconstruct:constant_enchantment"
+    ],
+    "tconstruct:attractive": [
+      "tconstruct:projectile_attract_mobs"
+    ],
+    "tconstruct:ballista": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:bane_of_sssss": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:mob_effect"
+    ],
+    "tconstruct:barebow": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:barkskin": [
+      "tconstruct:capacity_bar",
+      "tconstruct:durability_shield"
+    ],
+    "tconstruct:blast_protection": [
+      "tconstruct:enchantment_ignoring_protection",
+      "tconstruct:protection"
+    ],
+    "tconstruct:blasting": [
+      "tconstruct:conditional_mining_speed"
+    ],
+    "tconstruct:blaze_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:blindshot": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:blockade": [
+      "tconstruct:requirements",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:blunted": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:bounce": [
+      "tconstruct:projectile_bounce"
+    ],
+    "tconstruct:bouncy": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:boundless": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:brushing": [
+      "tconstruct:brush"
+    ],
+    "tconstruct:bulk_quiver": [
+      "tconstruct:bulk_quiver",
+      "tconstruct:inventory_menu",
+      "tconstruct:quiver_inventory"
+    ],
+    "tconstruct:cave_spider_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:channeling": [
+      "tconstruct:channeling"
+    ],
+    "tconstruct:charge_attack": [
+      "tconstruct:conditional_melee_damage"
+    ],
+    "tconstruct:cheap": [
+      "tconstruct:craft_count"
+    ],
+    "tconstruct:collecting": [
+      "tconstruct:requirements",
+      "tconstruct:tool_actions"
+    ],
+    "tconstruct:conductive": [
+      "tconstruct:mob_effect"
+    ],
+    "tconstruct:consecrated": [
+      "tconstruct:protection"
+    ],
+    "tconstruct:cooling": [
+      "tconstruct:conditional_melee_damage"
+    ],
+    "tconstruct:crafting_table": [
+      "tconstruct:inventory_menu",
+      "tconstruct:inventory_slot_menu",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:creeper_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:crumbling": [
+      "tconstruct:conditional_mining_speed"
+    ],
+    "tconstruct:crystalbound": [
+      "tconstruct:restrict_projectile_angle",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:crystalshot": [
+      "tconstruct:infinity",
+      "tconstruct:variant_color"
+    ],
+    "tconstruct:crystalstrike": [
+      "tconstruct:armor_level",
+      "tconstruct:attribute"
+    ],
+    "tconstruct:cultivated": [
+      "tconstruct:repair"
+    ],
+    "tconstruct:deciduous": [
+      "tconstruct:share_durability"
+    ],
+    "tconstruct:dense": [
+      "tconstruct:reduce_tool_damage",
+      "tconstruct:repair",
+      "tconstruct:repair"
+    ],
+    "tconstruct:depth_protection": [
+      "tconstruct:depth_protection"
+    ],
+    "tconstruct:depth_strider": [
+      "tconstruct:constant_enchantment"
+    ],
+    "tconstruct:diamond": [
+      "tconstruct:rarity",
+      "tconstruct:set_stat",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:double_jump": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:draconic": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:dragonborn": [
+      "tconstruct:max_armor_attribute",
+      "tconstruct:protection"
+    ],
+    "tconstruct:dragonshot": [
+      "tconstruct:conditional_stat"
+    ],
+    "tconstruct:drawback": [
+      "tconstruct:reverse_punch"
+    ],
+    "tconstruct:drill_attack": [
+      "tconstruct:requirements",
+      "tconstruct:tool_actions"
+    ],
+    "tconstruct:drowned_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:ductile": [
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:economical": [
+      "tconstruct:craft_count"
+    ],
+    "tconstruct:embossed": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:emerald": [
+      "tconstruct:rarity",
+      "tconstruct:repair",
+      "tconstruct:set_stat",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:enderclearance": [
+      "tconstruct:enderclearance"
+    ],
+    "tconstruct:enderman_disguise": [
+      "tconstruct:mob_disguise",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:enhanced": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:entangled": [
+      "tconstruct:damage_on_unequip",
+      "tconstruct:damage_on_unequip",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:erratic": [
+      "tconstruct:material_variant_color",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:experienced": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:explosive": [
+      "tconstruct:projectile_explosion"
+    ],
+    "tconstruct:feather_falling": [
+      "tconstruct:protection"
+    ],
+    "tconstruct:featherweight": [
+      "tconstruct:attribute",
+      "tconstruct:protection",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:fiery": [
+      "tconstruct:fiery_attack",
+      "tconstruct:fiery_counter"
+    ],
+    "tconstruct:fins": [
+      "tconstruct:conditional_power",
+      "tconstruct:stat_boost",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:fins_ammo": [
+      "tconstruct:trait"
+    ],
+    "tconstruct:fire_protection": [
+      "tconstruct:enchantment_ignoring_protection",
+      "tconstruct:protection"
+    ],
+    "tconstruct:fishing": [
+      "tconstruct:fishing"
+    ],
+    "tconstruct:flame_barrier": [
+      "tconstruct:flame_barrier"
+    ],
+    "tconstruct:flamestance": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_stat",
+      "tconstruct:protection"
+    ],
+    "tconstruct:forecast": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:fortified": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:fortune": [
+      "tconstruct:armor_harvest_enchantment",
+      "tconstruct:constant_enchantment"
+    ],
+    "tconstruct:freezing": [
+      "tconstruct:freezing_attack",
+      "tconstruct:freezing_counter"
+    ],
+    "tconstruct:frost_walker": [
+      "tconstruct:block_damage",
+      "tconstruct:replace_fluid"
+    ],
+    "tconstruct:frostshield": [
+      "tconstruct:capacity_bar",
+      "tconstruct:damage_to_capacity",
+      "tconstruct:durability_shield"
+    ],
+    "tconstruct:fuse": [
+      "tconstruct:projectile_fuse"
+    ],
+    "tconstruct:gilded": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:glowing": [
+      "tconstruct:glow_walker",
+      "tconstruct:place_glow",
+      "tconstruct:projectile_place_glow",
+      "tconstruct:show_offhand"
+    ],
+    "tconstruct:golden": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:grapple": [
+      "tconstruct:requirements",
+      "tconstruct:tool_actions"
+    ],
+    "tconstruct:harmonious": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:haste": [
+      "tconstruct:attribute",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:headlight": [
+      "tconstruct:headlight",
+      "tconstruct:variant_name"
+    ],
+    "tconstruct:heavy": [
+      "tconstruct:attribute",
+      "tconstruct:attribute",
+      "tconstruct:attribute",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:holy": [
+      "tconstruct:conditional_power"
+    ],
+    "tconstruct:hover": [
+      "tconstruct:projectile_gravity"
+    ],
+    "tconstruct:husk_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:hydraulic": [
+      "tconstruct:conditional_mining_speed"
+    ],
+    "tconstruct:impaling": [
+      "tconstruct:arrow_pierce"
+    ],
+    "tconstruct:invariant": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_stat",
+      "tconstruct:protection"
+    ],
+    "tconstruct:item_frame": [
+      "tconstruct:inventory"
+    ],
+    "tconstruct:jagged": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_mining_speed"
+    ],
+    "tconstruct:keen": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:killager": [
+      "tconstruct:conditional_melee_damage"
+    ],
+    "tconstruct:kinetic": [
+      "tconstruct:kinetic"
+    ],
+    "tconstruct:knockback": [
+      "tconstruct:attribute",
+      "tconstruct:knockback",
+      "tconstruct:sling_force",
+      "tconstruct:sling_force"
+    ],
+    "tconstruct:knockback_resistance": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:leaping": [
+      "tconstruct:attribute",
+      "tconstruct:attribute"
+    ],
+    "tconstruct:lightspeed": [
+      "tconstruct:conditional_mining_speed",
+      "tconstruct:lightspeed_attribute"
+    ],
+    "tconstruct:lightweight": [
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:long_fall": [
+      "tconstruct:block_damage",
+      "tconstruct:requirements"
+    ],
+    "tconstruct:looting": [
+      "tconstruct:armor_looting",
+      "tconstruct:weapon_looting"
+    ],
+    "tconstruct:luck": [
+      "tconstruct:armor_harvest_enchantment",
+      "tconstruct:armor_looting",
+      "tconstruct:constant_enchantment",
+      "tconstruct:stat_boost",
+      "tconstruct:weapon_looting"
+    ],
+    "tconstruct:lure": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:lure_rod": [
+      "tconstruct:trait"
+    ],
+    "tconstruct:lustrous": [],
+    "tconstruct:magic_protection": [
+      "tconstruct:max_armor_attribute",
+      "tconstruct:protection"
+    ],
+    "tconstruct:maintained": [
+      "tconstruct:attribute",
+      "tconstruct:conditional_mining_speed",
+      "tconstruct:conditional_stat"
+    ],
+    "tconstruct:melee_protection": [
+      "tconstruct:max_armor_attribute",
+      "tconstruct:protection"
+    ],
+    "tconstruct:melting": [
+      "tconstruct:melting",
+      "tconstruct:stat_boost",
+      "tconstruct:trait"
+    ],
+    "tconstruct:minimap": [
+      "tconstruct:inventory",
+      "tconstruct:minimap"
+    ],
+    "tconstruct:mithridatism": [
+      "tconstruct:effect_immunity"
+    ],
+    "tconstruct:netherite": [
+      "tconstruct:rarity",
+      "tconstruct:set_stat",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:offhanded": [
+      "tconstruct:volatile_flag",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:overburn": [
+      "tconstruct:overburn",
+      "tconstruct:stat_boost",
+      "tconstruct:trait"
+    ],
+    "tconstruct:overcast": [
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:overforced": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:overgrowth": [
+      "tconstruct:overgrowth"
+    ],
+    "tconstruct:overlord": [
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_copy"
+    ],
+    "tconstruct:overshield": [
+      "tconstruct:overshield"
+    ],
+    "tconstruct:overslime_friend": [],
+    "tconstruct:padded": [
+      "tconstruct:knockback"
+    ],
+    "tconstruct:pathing": [
+      "tconstruct:campfire_extinguish",
+      "tconstruct:show_offhand",
+      "tconstruct:tool_action_transform",
+      "tconstruct:tool_action_walk_transform"
+    ],
+    "tconstruct:pierce": [
+      "tconstruct:mob_effect",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:piglin_brute_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:piglin_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:pockets": [
+      "tconstruct:inventory",
+      "tconstruct:inventory_menu"
+    ],
+    "tconstruct:power": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:preserved": [
+      "tconstruct:repair",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:projectile_protection": [
+      "tconstruct:max_armor_attribute",
+      "tconstruct:protection"
+    ],
+    "tconstruct:protection": [
+      "tconstruct:protection"
+    ],
+    "tconstruct:punch": [
+      "tconstruct:punch"
+    ],
+    "tconstruct:quick_charge": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:raging": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_stat"
+    ],
+    "tconstruct:reach": [
+      "tconstruct:attribute",
+      "tconstruct:attribute"
+    ],
+    "tconstruct:rebalanced": [
+      "tconstruct:swappable_bonus_slot",
+      "tconstruct:swappable_bonus_slot",
+      "tconstruct:swappable_slot",
+      "tconstruct:swappable_slot",
+      "tconstruct:swappable_tool_traits"
+    ],
+    "tconstruct:rebound": [
+      "tconstruct:conditional_power"
+    ],
+    "tconstruct:recapitated": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:reclaim": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:recurrent_protection": [
+      "tconstruct:recurrent_protection"
+    ],
+    "tconstruct:redirected": [
+      "tconstruct:swappable_tool_traits"
+    ],
+    "tconstruct:reinforced": [
+      "tconstruct:reduce_tool_damage",
+      "tconstruct:reduce_tool_damage"
+    ],
+    "tconstruct:respiration": [
+      "tconstruct:constant_enchantment"
+    ],
+    "tconstruct:resurrected": [
+      "tconstruct:modifier_slot",
+      "tconstruct:requirements"
+    ],
+    "tconstruct:returning": [
+      "tconstruct:volatile_int"
+    ],
+    "tconstruct:revitalizing": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:ricochet": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:scope": [
+      "tconstruct:zoom"
+    ],
+    "tconstruct:scorch_protection": [
+      "tconstruct:enchantment_ignoring_protection",
+      "tconstruct:protection"
+    ],
+    "tconstruct:scorching": [
+      "tconstruct:conditional_melee_damage"
+    ],
+    "tconstruct:searing": [
+      "tconstruct:conditional_mining_speed"
+    ],
+    "tconstruct:sharpness": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:shield_strap": [
+      "tconstruct:inventory",
+      "tconstruct:inventory_menu",
+      "tconstruct:shield_strap",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:shiny": [
+      "tconstruct:rarity",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:shock": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_power",
+      "tconstruct:thorns",
+      "tconstruct:thorns"
+    ],
+    "tconstruct:shulking": [
+      "tconstruct:max_armor_attribute",
+      "tconstruct:protection"
+    ],
+    "tconstruct:silky": [
+      "tconstruct:armor_harvest_enchantment",
+      "tconstruct:constant_enchantment"
+    ],
+    "tconstruct:skeleton_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:skyfall": [
+      "tconstruct:attribute",
+      "tconstruct:attribute"
+    ],
+    "tconstruct:sleeves": [
+      "tconstruct:inventory",
+      "tconstruct:sleeves"
+    ],
+    "tconstruct:smashing": [
+      "tconstruct:smashing"
+    ],
+    "tconstruct:smashing_ammo": [
+      "tconstruct:trait"
+    ],
+    "tconstruct:smelting": [
+      "tconstruct:inventory_menu",
+      "tconstruct:smelting"
+    ],
+    "tconstruct:smite": [
+      "tconstruct:conditional_melee_damage"
+    ],
+    "tconstruct:snow_boots": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:snowdrift": [
+      "tconstruct:cover_ground"
+    ],
+    "tconstruct:soft": [
+      "tconstruct:material_variant_color",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:solid": [
+      "tconstruct:attribute",
+      "tconstruct:attribute",
+      "tconstruct:protection",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:soul_belt": [
+      "tconstruct:armor_level",
+      "tconstruct:requirements"
+    ],
+    "tconstruct:soulbound": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:spectral": [
+      "tconstruct:mob_effect",
+      "tconstruct:projectile_place_glow"
+    ],
+    "tconstruct:speedy": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:spider_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:spike": [
+      "tconstruct:arrow_pierce",
+      "tconstruct:tool_actions"
+    ],
+    "tconstruct:spilling": [
+      "tconstruct:spilling",
+      "tconstruct:stat_boost",
+      "tconstruct:trait"
+    ],
+    "tconstruct:spilling_rod": [
+      "tconstruct:trait"
+    ],
+    "tconstruct:spiny": [
+      "tconstruct:damage_on_shoot",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:springy": [
+      "tconstruct:knockback",
+      "tconstruct:knockback_counter"
+    ],
+    "tconstruct:stalwart": [
+      "tconstruct:protection"
+    ],
+    "tconstruct:step_up": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:sticky": [
+      "tconstruct:mob_effect"
+    ],
+    "tconstruct:stonebound": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_mining_speed"
+    ],
+    "tconstruct:stoneshield": [
+      "tconstruct:capacity_bar",
+      "tconstruct:durability_shield",
+      "tconstruct:loot_to_capacity"
+    ],
+    "tconstruct:stray_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:strength": [
+      "tconstruct:attribute"
+    ],
+    "tconstruct:stringy": [
+      "tconstruct:material_repair"
+    ],
+    "tconstruct:stripping": [
+      "tconstruct:show_offhand",
+      "tconstruct:tool_action_transform",
+      "tconstruct:tool_action_transform",
+      "tconstruct:tool_action_transform"
+    ],
+    "tconstruct:swift_sneak": [
+      "tconstruct:constant_enchantment"
+    ],
+    "tconstruct:swiftstrike": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:tank": [
+      "tconstruct:stat_boost",
+      "tconstruct:trait"
+    ],
+    "tconstruct:temperate": [
+      "tconstruct:conditional_mining_speed",
+      "tconstruct:conditional_stat",
+      "tconstruct:protection",
+      "tconstruct:reduce_tool_damage"
+    ],
+    "tconstruct:tempered_protection": [
+      "tconstruct:protection"
+    ],
+    "tconstruct:the_one_probe": [
+      "tconstruct:the_one_probe"
+    ],
+    "tconstruct:thorns": [
+      "tconstruct:thorns"
+    ],
+    "tconstruct:throwing": [
+      "tconstruct:throwing"
+    ],
+    "tconstruct:tilling": [
+      "tconstruct:show_offhand",
+      "tconstruct:tool_action_transform",
+      "tconstruct:tool_action_walk_transform"
+    ],
+    "tconstruct:tipped": [
+      "tconstruct:tipped"
+    ],
+    "tconstruct:tool_belt": [
+      "tconstruct:inventory",
+      "tconstruct:inventory_menu",
+      "tconstruct:tool_belt"
+    ],
+    "tconstruct:trick_quiver": [
+      "tconstruct:inventory_menu",
+      "tconstruct:quiver_inventory",
+      "tconstruct:trick_quiver"
+    ],
+    "tconstruct:trueshot": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:turtle_shell": [
+      "tconstruct:attribute",
+      "tconstruct:protection",
+      "tconstruct:protection"
+    ],
+    "tconstruct:unbreakable": [
+      "tconstruct:durability_color",
+      "tconstruct:reduce_tool_damage",
+      "tconstruct:requirements"
+    ],
+    "tconstruct:unburdened": [
+      "tconstruct:attribute",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:valiant": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_power"
+    ],
+    "tconstruct:venom": [
+      "tconstruct:mob_effect"
+    ],
+    "tconstruct:vintage": [
+      "tconstruct:attribute",
+      "tconstruct:attribute",
+      "tconstruct:attribute",
+      "tconstruct:modifier_slot",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:vital_protection": [
+      "tconstruct:protection"
+    ],
+    "tconstruct:war_charge": [
+      "tconstruct:capacity_bar",
+      "tconstruct:conditional_stat",
+      "tconstruct:launch_capacity",
+      "tconstruct:mining_capacity"
+    ],
+    "tconstruct:weak": [
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:wings": [
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:wither_skeleton_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:woodwind": [
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tconstruct:workbench": [
+      "tconstruct:inventory_menu",
+      "tconstruct:inventory_slot_menu",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:worldbound": [
+      "tconstruct:rarity",
+      "tconstruct:volatile_flag"
+    ],
+    "tconstruct:writable": [
+      "tconstruct:modifier_slot"
+    ],
+    "tconstruct:zombie_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:zombified_piglin_disguise": [
+      "tconstruct:mob_disguise"
+    ],
+    "tconstruct:zoom": [
+      "tconstruct:zoom"
+    ],
+    "tinkers_things:bambooshot": [
+      "tconstruct:infinity"
+    ],
+    "tinkers_things:blinding": [
+      "tconstruct:mob_effect"
+    ],
+    "tinkers_things:enhanced": [
+      "tconstruct:modifier_slot",
+      "tconstruct:requirements"
+    ],
+    "tinkers_things:fortified": [
+      "tconstruct:material_repair",
+      "tconstruct:set_stat",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tinkers_things:hemodynamic": [
+      "tconstruct:conditional_melee_damage",
+      "tconstruct:conditional_mining_speed",
+      "tconstruct:modifier_slot"
+    ],
+    "tinkers_things:hemophobic": [],
+    "tinkers_things:hemosistance": [
+      "tconstruct:modifier_slot",
+      "tconstruct:protection"
+    ],
+    "tinkers_things:hyperoptic": [
+      "tconstruct:attribute"
+    ],
+    "tinkers_things:pouch": [
+      "tconstruct:inventory",
+      "tconstruct:inventory_menu"
+    ],
+    "tinkers_things:range": [
+      "tconstruct:attribute"
+    ],
+    "tinkers_things:silkibound": [
+      "tconstruct:restrict_projectile_angle",
+      "tconstruct:stat_boost",
+      "tconstruct:stat_boost"
+    ],
+    "tinkers_things:silkitoxin": [
+      "tconstruct:attribute",
+      "tconstruct:modifier_slot"
+    ],
+    "tinkers_things:stowing": [
+      "tconstruct:inventory",
+      "tconstruct:inventory_menu"
+    ],
+    "tinkers_things:tracing": [
+      "tconstruct:mob_effect"
+    ],
+    "tinkers_things:venom": [
+      "tconstruct:mob_effect"
+    ],
+    "tinkers_things:weakness": [
+      "tconstruct:mob_effect"
+    ],
+    "tinkersweaponry:lengthy": [
+      "tconstruct:attribute",
+      "tconstruct:stat_boost"
+    ]
+  }
+}

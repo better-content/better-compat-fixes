@@ -122,6 +122,6 @@ class DynamicTreesFellingNativeContractTest {
         assertFalse(branch.contains("method = \"stripBranch\""));
         assertFalse(branch.contains("setDamageValue"));
         String config = Files.readString(root.resolve("config/BcFixesConfig.java"));
-        assertTrue(config.contains("defineInRange(\"fellingDurabilityMultiplier\", 10, 1, 100)"));
+        assertTrue(config.contains("defineInRange(\"fellingDurabilityMultiplier\", 2, 1, 100)"));
     }
 }

@@ -11,8 +11,9 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 public final class TconCombatFirstMixinPlugin implements IMixinConfigPlugin {
     @Override public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         var mods = FMLLoader.getLoadingModList();
-        if (mods == null || mods.getModFileById("tconstruct") == null
-                || mods.getModFileById("epicfight") == null) return false;
+        // The shared router also handles Additional Weaponry without Tinkers installed.
+        // Tinkers classification stays optional inside TconCombatFirstPolicy.
+        if (mods == null || mods.getModFileById("epicfight") == null) return false;
         return mods.getModFileById("epicfight").getMods().stream().anyMatch(mod ->
                 "epicfight".equals(mod.getModId()) && "20.14.17".equals(mod.getVersion().toString()));
     }

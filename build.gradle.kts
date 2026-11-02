@@ -29,6 +29,7 @@ val colonyWithoutBees = providers.gradleProperty("colonyWithoutBees").map(String
 val withMigratedRegressionFixture = providers.gradleProperty("withMigratedRegressionFixture").map(String::toBooleanStrict).getOrElse(false)
 // Nonshipping capability profile; normal production/runtime dependencies remain unchanged.
 val withTconCombatFirstFixture = providers.gradleProperty("withTconCombatFirstFixture").map(String::toBooleanStrict).getOrElse(false)
+val withTooltipFixture = providers.gradleProperty("withTooltipFixture").map(String::toBooleanStrict).getOrElse(false)
 // Explicit diagnostic opt-in, forwarded ONLY to gameTestServer; ordinary/visual/data runs are untouched.
 val nativeRootySoilWitness = providers.gradleProperty("nativeRootySoilWitness").map(String::toBooleanStrict).getOrElse(false)
 base {
@@ -114,9 +115,28 @@ tasks.named<JavaCompile>(chunkIoMixins.compileJavaTaskName) {
     doLast { check(refmap.get().asFile.isFile) { "Chunk I/O AP did not produce its refmap" } }
 }
 
+// Ordinary item-hover boundary has its own vanilla AP/refmap; optional targets remain remap=false.
+val tooltipPaths = listOf("com/bettercontent/bettercompatfixes/mixin/tooltip/ItemStackTooltipMixin.java")
+val tooltipMixins by sourceSets.creating {
+    java.setSrcDirs(listOf("src/main/java"))
+    java.setIncludes(tooltipPaths)
+    compileClasspath += sourceSets.main.get().output.classesDirs + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+sourceSets.main { java.exclude(tooltipPaths) }
+tasks.named<JavaCompile>(tooltipMixins.compileJavaTaskName) {
+    options.isIncremental = false
+    outputs.file(layout.buildDirectory.file("tmp/compileTooltipMixinsJava/compileTooltipMixinsJava-refmap.json"))
+}
+
 // Mirror the pack's authored disabled optional fillet recipe only in source GameTests.
 // This source set is never included in the production JAR.
 val nativeFixture by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
+// Opt-in client smoke; never part of shipping or sources archives.
+val tooltipFixture by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
 }
@@ -132,11 +152,11 @@ val registrateFixture by sourceSets.creating {
 // Defense in depth for production, jarJar and any current/future sources archives.
 // The fixture is attached only as gameTestServer source directories, never an archive.
 tasks.withType<Jar>().configureEach {
-    exclude("**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "**/fuelfixture/**", "**/nativeforgeapifixture/**", "**/nativeForgeApiFixture/**", "**/gametest/MoonlightNativeForgeGameTests*", "**/gametest/VillageAnimalPoolGameTests*", "better_compat_fixes.native_forge_api_fixture.mixins.json", "**/gametest/PollutionFuelGameTests*", "better_compat_fixes.fuel_fixture.mixins.json", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
+    exclude("**/tooltipfixture/**", "**/nativefixture/**", "**/nativeFixture/**", "**/nativewitness/**", "**/registratefixture/**", "**/fuelfixture/**", "**/nativeforgeapifixture/**", "**/nativeForgeApiFixture/**", "**/gametest/MoonlightNativeForgeGameTests*", "**/gametest/VillageAnimalPoolGameTests*", "better_compat_fixes.native_forge_api_fixture.mixins.json", "**/gametest/PollutionFuelGameTests*", "better_compat_fixes.fuel_fixture.mixins.json", "better_compat_fixes.native_fixture.mixins.json", "better_compat_fixes.registrate_fixture.mixins.json")
     doLast {
         ZipFile(archiveFile.get().asFile).use { archive ->
             check(archive.entries().asSequence().none {
-                it.name.contains("/nativefixture/") || it.name.contains("/nativeFixture/") || it.name.contains("/nativewitness/") || it.name.contains("/registratefixture/") || it.name == "better_compat_fixes.registrate_fixture.mixins.json"
+                it.name.contains("/tooltipfixture/") || it.name.contains("/nativefixture/") || it.name.contains("/nativeFixture/") || it.name.contains("/nativewitness/") || it.name.contains("/registratefixture/") || it.name == "better_compat_fixes.registrate_fixture.mixins.json"
                     || it.name == "better_compat_fixes.native_fixture.mixins.json"
                     || it.name.contains("/fuelfixture/") || it.name.contains("/gametest/PollutionFuelGameTests")
                     || it.name.contains("/nativeforgeapifixture/") || it.name.contains("/nativeForgeApiFixture/")
@@ -181,10 +201,16 @@ minecraft {
                     source(caravanMixins)
                     source(urnMixins)
                     source(chunkIoMixins)
+                    source(tooltipMixins)
                 }
             }
         }
-        create("client")
+        create("client") {
+            if (withTooltipFixture) {
+                workingDirectory(layout.buildDirectory.dir("tooltip-client-${System.currentTimeMillis()}").get().asFile)
+                mods { named(property("mod_id") as String) { source(tooltipFixture) } }
+            }
+        }
         create("server") { arg("--nogui") }
         create("gameTestServer") {
             workingDirectory(project.file("run-gametest"))
@@ -226,6 +252,13 @@ fun betterContentJar(repository: String, artifact: String): java.io.File {
 
 val heatProvider = if (spoilageWithoutHeat) null else betterContentJar("better-industrial-heat", "better-industrial-heat-0.1.0.jar")
 repositories {
+    if (withTooltipFixture) ivy {
+        name = "tooltipNoticesUserdev"
+        url = uri(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar").parentFile)
+        patternLayout { artifact("[artifact]-[revision].[ext]") }
+        metadataSources { artifact() }
+        content { includeGroup("bettercontent.local.tooltip") }
+    }
     if (heatProvider != null) ivy {
         name = "industrialHeatLocal"
         url = uri(heatProvider.parentFile)
@@ -288,6 +321,8 @@ dependencies {
     add(urnMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(chunkIoMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
     add(chunkIoMixins.annotationProcessorConfigurationName, "io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
+    add(tooltipMixins.annotationProcessorConfigurationName, "org.spongepowered:mixin:0.8.5:processor")
+    add(tooltipMixins.annotationProcessorConfigurationName, "io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
     add(urnNativePins.name, "curse.maven:supplementaries-412082:7884611")
     add(urnMappedOracle.name, fg.deobf("curse.maven:supplementaries-412082:7884611"))
     compileOnly(fg.deobf("curse.maven:supplementaries-412082:7884611"))
@@ -302,7 +337,15 @@ dependencies {
     add(colonyEmiNativePins.name, "curse.maven:emi-580555:8081375")
     add(colonyEmiNativePins.name, "curse.maven:complicated-bees-1100137:8277762")
     compileOnly(fg.deobf("curse.maven:emi-580555:8081375"))
+    compileOnly(fg.deobf("curse.maven:amendments-896746:7470401"))
     testImplementation(fg.deobf("curse.maven:emi-580555:8081375"))
+    if (withTooltipFixture && providers.gradleProperty("withTooltipPanels").map(String::toBooleanStrict).getOrElse(false)) {
+        runtimeOnly(fg.deobf("curse.maven:emi-580555:8081375"))
+        runtimeOnly(fg.deobf("curse.maven:quark-243121:6427817"))
+        runtimeOnly(fg.deobf("curse.maven:zeta-968868:7335229"))
+        runtimeOnly(fg.deobf("curse.maven:satako-282037:6335099"))
+        runtimeOnly(fg.deobf("curse.maven:ftb-library-forge-404465:7296748"))
+    }
     compileOnly(fg.deobf("curse.maven:complicated-bees-1100137:8277762"))
     testImplementation(fg.deobf("curse.maven:complicated-bees-1100137:8277762"))
     if (!colonyWithoutBees) runtimeOnly(fg.deobf("curse.maven:complicated-bees-1100137:8277762"))
@@ -334,7 +377,9 @@ dependencies {
     }
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
     compileOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
-    runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
+    // The explicit client witness must use mapped bytecode, not a production-SRG HUD listener.
+    if (withTooltipFixture) runtimeOnly(fg.deobf("bettercontent.local.tooltip:better-gameplay-notices:1.0.0"))
+    else runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
     compileOnly(files(betterContentJar("better-survival-hud", "better-survival-hud-1.0.0.jar")))
     compileOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
@@ -448,16 +493,17 @@ tasks.named<Jar>("jar") {
     from(caravanMixins.output)
     from(urnMixins.output)
     from(chunkIoMixins.output)
+    from(tooltipMixins.output)
     manifest.attributes("FMLAT" to "accesstransformer.cfg")
-    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json,better_compat_fixes.deepvoid_metadata.mixins.json,better_compat_fixes.bumblezone_config.mixins.json,better_compat_fixes.vibration_interface.mixins.json,better_compat_fixes.tcon_combat_first.mixins.json,better_compat_fixes.optional_tinker_skins.mixins.json")
-    filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json")) {
+    manifest.attributes("MixinConfigs" to "better_compat_fixes.mixins.json,better_compat_fixes.chopping.mixins.json,better_compat_fixes.caravan.mixins.json,better_compat_fixes.oc2r.mixins.json,better_compat_fixes.urn.mixins.json,better_compat_fixes.registrate.mixins.json,better_compat_fixes.chunk_io.mixins.json,better_compat_fixes.startup_abi.mixins.json,better_compat_fixes.moonlight_platform.mixins.json,better_compat_fixes.deepvoid_metadata.mixins.json,better_compat_fixes.bumblezone_config.mixins.json,better_compat_fixes.vibration_interface.mixins.json,better_compat_fixes.tcon_combat_first.mixins.json,better_compat_fixes.tooltips.mixins.json,better_compat_fixes.optional_tinker_skins.mixins.json")
+    filesMatching(listOf("better_compat_fixes.chopping.refmap.json", "better_compat_fixes.caravan.refmap.json", "better_compat_fixes.urn.refmap.json", "better_compat_fixes.chunk_io.refmap.json", "better_compat_fixes.tooltips.refmap.json")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
     finalizedBy("reobfJar")
 }
 
 tasks.withType<Jar>().matching { it.name == "sourcesJar" }.configureEach {
-    from(choppingMixins.allSource, caravanMixins.allSource, urnMixins.allSource, chunkIoMixins.allSource)
+    from(choppingMixins.allSource, caravanMixins.allSource, urnMixins.allSource, chunkIoMixins.allSource, tooltipMixins.allSource)
 }
 
 val stageRuntimeJar by tasks.registering(Copy::class) {
@@ -595,6 +641,8 @@ mixin {
     add(caravanMixins, "better_compat_fixes.caravan.refmap.json")
     add(urnMixins, "better_compat_fixes.urn.refmap.json")
     add(chunkIoMixins, "better_compat_fixes.chunk_io.refmap.json")
+    add(tooltipMixins, "better_compat_fixes.tooltips.refmap.json")
+    config("better_compat_fixes.tooltips.mixins.json")
     config("better_compat_fixes.deepvoid_metadata.mixins.json")
     config("better_compat_fixes.bumblezone_config.mixins.json")
     config("better_compat_fixes.vibration_interface.mixins.json")
@@ -643,9 +691,20 @@ val syncChunkIoRefmap by tasks.registering(Copy::class) {
     into(layout.buildDirectory.dir("resources/main"))
     doLast { check(layout.buildDirectory.file("resources/main/better_compat_fixes.chunk_io.refmap.json").get().asFile.isFile) }
 }
+val syncTooltipRefmap by tasks.registering(Copy::class) {
+    dependsOn(tasks.named(tooltipMixins.compileJavaTaskName), tasks.named("processResources"))
+    from(layout.buildDirectory.file("tmp/compileTooltipMixinsJava/compileTooltipMixinsJava-refmap.json"))
+    rename { "better_compat_fixes.tooltips.refmap.json" }
+    into(layout.buildDirectory.dir("resources/main"))
+    doLast { check(layout.buildDirectory.file("resources/main/better_compat_fixes.tooltips.refmap.json").get().asFile.isFile) }
+}
+tasks.withType<Jar>().configureEach { dependsOn(syncTooltipRefmap) }
+tasks.withType<Test>().configureEach { dependsOn(syncTooltipRefmap) }
+tasks.matching { it.name == "addMixinsToJar" || it.name == "addMixinsToSourcesJar" || it.name.startsWith("prepareRun") }
+    .configureEach { dependsOn(syncTooltipRefmap) }
 tasks.withType<JavaCompile>().configureEach {
-    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName && name != caravanMixins.compileJavaTaskName && name != urnMixins.compileJavaTaskName && name != chunkIoMixins.compileJavaTaskName) {
-        dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap)
+    if (name != "compileJava" && name != choppingMixins.compileJavaTaskName && name != caravanMixins.compileJavaTaskName && name != urnMixins.compileJavaTaskName && name != chunkIoMixins.compileJavaTaskName && name != tooltipMixins.compileJavaTaskName) {
+        dependsOn(syncChoppingRefmap, syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap, syncTooltipRefmap)
     }
 }
 tasks.named("jar") { dependsOn(syncCaravanRefmap, syncUrnRefmap, syncChunkIoRefmap) }

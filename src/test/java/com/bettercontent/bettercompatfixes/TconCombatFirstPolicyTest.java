@@ -117,9 +117,20 @@ public final class TconCombatFirstPolicyTest {
         var output = new ClassNode(); output.version = Opcodes.V17; output.access = Opcodes.ACC_PUBLIC;
         output.name = "com/bettercontent/bettercompatfixes/IsolatedPolicy"; output.superName = "java/lang/Object";
         output.methods.add(method);
+        if (name.endsWith("TconCombatFirstIntegration")) {
+            var capability = new ClassNode();
+            try (var input = TconCombatFirstPolicyTest.class.getClassLoader().getResourceAsStream(ROOT + "tconstruct/ToolCapabilities.class")) {
+                assertNotNull(input, "Actual shared mining capability helper is required");
+                new ClassReader(input).accept(capability, 0);
+            }
+            output.methods.add(capability.methods.stream().filter(m -> m.name.equals("hasMiningDefinition")).findFirst().orElseThrow());
+        }
         var writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         output.accept(new ClassRemapper(writer, new Remapper() {
-            @Override public String map(String type) { return types.containsKey(type) ? Type.getInternalName(types.get(type)) : type; }
+            @Override public String map(String type) {
+                if (type.equals(ROOT + "tconstruct/ToolCapabilities")) return output.name;
+                return types.containsKey(type) ? Type.getInternalName(types.get(type)) : type;
+            }
         }));
         var bytes = writer.toByteArray();
         return new ClassLoader(TconCombatFirstPolicyTest.class.getClassLoader()) {

@@ -1,6 +1,7 @@
 package com.bettercontent.bettercompatfixes.mixin.tconcombat;
 
-import com.bettercontent.bettercompatfixes.compat.TconCombatFirstPolicy;
+import com.bettercontent.bettercompatfixes.client.CombatMiningRouting;
+import com.bettercontent.bettercompatfixes.client.CombatMiningPolicy.Route;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +18,7 @@ public abstract class CombatFirstMinecraftMixin {
     private void betterContentFixes$neverStartBlockAttack(CallbackInfoReturnable<Boolean> cir) {
         var minecraft = (Minecraft) (Object) this;
         if (minecraft.hitResult != null && minecraft.hitResult.getType() == HitResult.Type.BLOCK
-                && TconCombatFirstPolicy.deniesBlockAttack(minecraft.player)) {
+                && CombatMiningRouting.current() == Route.COMBAT) {
             if (minecraft.gameMode != null) minecraft.gameMode.stopDestroyBlock();
             cir.setReturnValue(false);
         }
@@ -27,7 +28,7 @@ public abstract class CombatFirstMinecraftMixin {
             cancellable = true, remap = false, require = 1)
     private void betterContentFixes$neverContinueBlockAttack(boolean held, CallbackInfo ci) {
         var minecraft = (Minecraft) (Object) this;
-        if (TconCombatFirstPolicy.deniesBlockAttack(minecraft.player)) {
+        if (CombatMiningRouting.current() == Route.COMBAT) {
             // Do not touch key mappings: EF must still see normal attack/innate input.
             if (minecraft.gameMode != null) minecraft.gameMode.stopDestroyBlock();
             ci.cancel();

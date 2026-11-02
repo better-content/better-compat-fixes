@@ -3,6 +3,7 @@ package com.bettercontent.bettercompatfixes;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
+import com.bettercontent.bettercompatfixes.client.CombatMiningPolicy.Route;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.ClassRemapper;
@@ -16,11 +17,12 @@ public final class TconCombatFirstGuardTest {
     @Test
     public void startingBlockAttackIsCancelledOnlyForEligibleMainHand() throws Exception {
         Class<? extends Game> guard = guards();
-        for (boolean eligible : new boolean[]{false, true}) for (Hit hit : new Hit[]{null, new Hit(Kind.BLOCK), new Hit(Kind.ENTITY)}) {
-            Game game = guard.getConstructor().newInstance(); game.player.eligible = eligible; game.hitResult = hit;
+        for (Route route : Route.values()) for (Hit hit : new Hit[]{null, new Hit(Kind.BLOCK), new Hit(Kind.ENTITY)}) {
+            Policy.route = route;
+            Game game = guard.getConstructor().newInstance(); game.hitResult = hit;
             var callback = new CallbackInfoReturnable<Boolean>("startAttack", true, true);
             guard.getMethod("start", CallbackInfoReturnable.class).invoke(game, callback);
-            boolean denied = eligible && hit != null && hit.getType() == Kind.BLOCK;
+            boolean denied = route == Route.COMBAT && hit != null && hit.getType() == Kind.BLOCK;
             assertEquals(denied, callback.isCancelled());
             assertEquals(denied ? 1 : 0, game.gameMode.stops);
             assertEquals(!denied, callback.getReturnValue());
@@ -30,8 +32,10 @@ public final class TconCombatFirstGuardTest {
     @Test
     public void heldAttackAlwaysResetsOldProgressWithoutNeedingAHitOrAPlayableAttack() throws Exception {
         Class<? extends Game> guard = guards();
-        for (boolean eligible : new boolean[]{false, true}) for (boolean held : new boolean[]{false, true}) {
-            Game game = guard.getConstructor().newInstance(); game.player.eligible = eligible;
+        for (Route route : Route.values()) for (boolean held : new boolean[]{false, true}) {
+            Policy.route = route;
+            boolean eligible = route == Route.COMBAT;
+            Game game = guard.getConstructor().newInstance();
             var callback = new CallbackInfo("continueAttack", true);
             guard.getMethod("continued", boolean.class, CallbackInfo.class).invoke(game, held, callback);
             assertEquals(eligible, callback.isCancelled());
@@ -43,6 +47,18 @@ public final class TconCombatFirstGuardTest {
             guard.getMethod("continued", boolean.class, CallbackInfo.class).invoke(game, held, callback);
             assertEquals(eligible, callback.isCancelled());
         }
+    }
+
+    private static Class<? extends Game> combinedGuard;
+
+    /** Combined native-routing tests call the actual compiled continuation guard. */
+    public static boolean deniesContinuation(Route route) throws Exception {
+        if (combinedGuard == null) combinedGuard = guards();
+        Policy.route = route;
+        var game = combinedGuard.getConstructor().newInstance();
+        var callback = new CallbackInfo("continueAttack", true);
+        combinedGuard.getMethod("continued", boolean.class, CallbackInfo.class).invoke(game, true, callback);
+        return callback.isCancelled();
     }
 
     private static Class<? extends Game> guards() throws Exception {
@@ -68,7 +84,7 @@ public final class TconCombatFirstGuardTest {
                 "net/minecraft/client/player/LocalPlayer", Player.class, "net/minecraft/world/entity/player/Player", Player.class,
                 "net/minecraft/client/multiplayer/MultiPlayerGameMode", GameMode.class,
                 "net/minecraft/world/phys/HitResult", Hit.class, "net/minecraft/world/phys/HitResult$Type", Kind.class,
-                "com/bettercontent/bettercompatfixes/compat/TconCombatFirstPolicy", Policy.class);
+                "com/bettercontent/bettercompatfixes/client/CombatMiningRouting", Policy.class);
         var writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         output.accept(new ClassRemapper(writer, new Remapper() {
             @Override public String map(String type) { return types.containsKey(type) ? Type.getInternalName(types.get(type)) : type; }
@@ -80,7 +96,7 @@ public final class TconCombatFirstGuardTest {
     }
     public static class Game { public Player player = new Player(); public Hit hitResult; public GameMode gameMode = new GameMode(); }
     public static class Player { public boolean eligible; }
-    public static class Policy { public static boolean deniesBlockAttack(Player player) { return player != null && player.eligible; } }
+    public static class Policy { public static Route route = Route.NATIVE; public static Route current() { return route; } }
     public static class GameMode { public int stops; public boolean mining = true; public void stopDestroyBlock() { stops++; mining = false; } }
     public enum Kind { BLOCK, ENTITY }
     public static class Hit { private final Kind kind; public Hit(Kind kind) { this.kind = kind; } public Kind getType() { return kind; } }
