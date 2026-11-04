@@ -7,14 +7,14 @@ import struct
 from pathlib import Path
 
 MIXIN = 'Lorg/spongepowered/asm/mixin/Mixin;'
-ROLES = ('main', 'choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins', 'nativeFixture', 'registrateFixture', 'nativeForgeApiFixture', 'test')
+ROLES = ('main', 'choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins', 'tooltipMixins', 'nativeFixture', 'registrateFixture', 'nativeForgeApiFixture', 'test')
 CHUNK_IO_CONFIG = 'better_compat_fixes.chunk_io.mixins.json'
 CHUNK_IO_CLASS = 'com.bettercontent.bettercompatfixes.mixin.minecraft.IOWorkerPendingReadMixin'
 # Explicit roles as well as names: adding reviewed configs must not turn
 # this guard into a count-only wildcard or permit moving a test config to main.
 EXPECTED_CONFIGS = {
     'main/resources/better_compat_fixes' + suffix + '.mixins.json'
-    for suffix in ('', '.bumblezone_config', '.caravan', '.chopping', '.chunk_io', '.deepvoid_metadata', '.moonlight_platform', '.oc2r', '.optional_tinker_skins', '.registrate', '.startup_abi', '.tcon_combat_first', '.urn', '.vibration_interface')
+    for suffix in ('', '.bumblezone_config', '.caravan', '.chopping', '.chunk_io', '.deepvoid_metadata', '.moonlight_platform', '.oc2r', '.optional_tinker_skins', '.registrate', '.startup_abi', '.tcon_combat_first', '.tooltips', '.urn', '.vibration_interface')
 } | {
     'nativeFixture/resources/better_compat_fixes.native_fixture.mixins.json',
     'nativeFixture/resources/better_compat_fixes.fuel_fixture.mixins.json',
@@ -37,7 +37,7 @@ def tcon_combat_config(data):
     need(data.get('required') is True and data.get('injectors', {}).get('defaultRequire') == 1,
          'TCon combat config must fail closed')
     need(data.get('package') == 'com.bettercontent.bettercompatfixes.mixin.tconcombat'
-         and data.get('client') == ['CombatFirstLocalPlayerMixin', 'CombatFirstMinecraftMixin']
+         and data.get('client') == ['CombatFirstLocalPlayerMixin', 'CombatFirstMinecraftMixin', 'CombatMiningInteractionMixin']
          and data.get('mixins', []) == [] and data.get('server', []) == []
          and data.get('plugin') == 'com.bettercontent.bettercompatfixes.compat.tconcombat.TconCombatFirstMixinPlugin',
          'TCon combat config must contain only its exact client hooks and optional version gate')
@@ -153,7 +153,7 @@ def source_check(repo, prefixes, configured):
     found = set()
     for role in ROLES:
         # These AP-isolated roles explicitly select files from the same authored main root.
-        source_role = 'main' if role in ('choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins') else role
+        source_role = 'main' if role in ('choppingMixins', 'caravanMixins', 'urnMixins', 'chunkIoMixins', 'tooltipMixins') else role
         root = repo/'src'/source_role/'java'; need(root.is_dir(), 'Missing explicit source role ' + role)
         for file in root.rglob('*.java'):
             text = file.read_text()

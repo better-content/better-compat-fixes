@@ -18,6 +18,7 @@ plugins {
 group = "com.bettercontent"
 version = property("mod_version") as String
 val mixinExtrasVersion = "0.5.4"
+val mixinSquaredVersion = "0.3.7"
 val withRegistrateFixture = providers.gradleProperty("withRegistrateFixture").map(String::toBooleanStrict).getOrElse(false)
 val registrateFixtureVersion = if (withRegistrateFixture) "1.3.11" else "1.3.3"
 val withNativeForgeApiFixture = providers.gradleProperty("withNativeForgeApiFixture").map(String::toBooleanStrict).getOrElse(false)
@@ -275,6 +276,7 @@ repositories {
     maven("https://repo.spongepowered.org/repository/maven-public/")
     maven("https://thedarkcolour.github.io/KotlinForForge/")
     maven("https://maven.llamalad7.mixinextras.org/releases/")
+    maven("https://maven.bawnorton.com/releases") { content { includeGroup("com.github.bawnorton.mixinsquared") } }
     maven("https://maven.valkyrienskies.org") { content { includeGroup("org.valkyrienskies.core") } }
     maven("https://www.cursemaven.com") { content { includeGroup("curse.maven") } }
     mavenCentral()
@@ -470,8 +472,13 @@ dependencies {
     runtimeOnly(fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.20.1:1.4.10"))
     testImplementation(fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.20.1:1.4.10"))
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:[$mixinExtrasVersion,0.6.0)")!!)
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:[$mixinExtrasVersion,0.5.5)")!!)
     testImplementation("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
+    // An upstream Mixin config is not controlled by our IMixinConfigPlugin. MixinSquared's
+    // Forge extension cancels the three exact foreign Mixins before target application.
+    compileOnly(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:$mixinSquaredVersion")!!)
+    implementation(jarJar("com.github.bawnorton.mixinsquared:mixinsquared-forge:[$mixinSquaredVersion,0.3.8)")!!)
+    testImplementation("com.github.bawnorton.mixinsquared:mixinsquared-common:$mixinSquaredVersion")
     // The pinned optional village listener is exercised only in source-native fixtures.
     if (!providers.gradleProperty("withoutGeneticAnimalsFixture").map(String::toBooleanStrict).getOrElse(false)) {
         add(nativeFixture.runtimeOnlyConfigurationName, fg.deobf("curse.maven:genetic-animals-313213:6134040"))
@@ -502,6 +509,17 @@ tasks.named<Jar>("jar") {
     finalizedBy("reobfJar")
 }
 
+// JarJar does not inherit the five separately compiled annotation-processed Mixin
+// source sets from jar. Include them before reobfuscation, otherwise the staged
+// runtime archive loses chopping, urn, caravan, chunk-I/O and tooltip hooks.
+tasks.named<Jar>("jarJar") {
+    from(choppingMixins.output)
+    from(caravanMixins.output)
+    from(urnMixins.output)
+    from(chunkIoMixins.output)
+    from(tooltipMixins.output)
+}
+
 tasks.withType<Jar>().matching { it.name == "sourcesJar" }.configureEach {
     from(choppingMixins.allSource, caravanMixins.allSource, urnMixins.allSource, chunkIoMixins.allSource, tooltipMixins.allSource)
 }
@@ -509,10 +527,11 @@ tasks.withType<Jar>().matching { it.name == "sourcesJar" }.configureEach {
 val stageRuntimeJar by tasks.registering(Copy::class) {
     group = "build"
     description = "Stages the reobfuscated runtime jar into build/libs using the canonical release filename."
-    dependsOn(tasks.named("reobfJar"))
-    mustRunAfter(tasks.named("jarJar"))
-    mustRunAfter(tasks.named("reobfJarJar"))
-    from(layout.buildDirectory.file("reobfJar/output.jar"))
+    // Shipping the plain reobfJar silently drops the MixinSquared service. Stage the
+    // reobfuscated JarJar output, which includes the unmodified Forge dependency.
+    dependsOn(tasks.named("reobfJarJar"))
+    mustRunAfter(tasks.named("reobfJar"))
+    from(layout.buildDirectory.file("reobfJarJar/output.jar"))
     into(layout.buildDirectory.dir("libs"))
     rename { "${base.archivesName.get()}-$version.jar" }
 }

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 /** Public metadata/resource APIs only. Absence is optional; unknown present inputs fail closed. */
 public final class VibrationInterfaceMixinPlugin implements IMixinConfigPlugin {
-    static final String CONFIG_SHA = "aebb8ccd7f96d38545dedff06608fae0e8840c7037ad30c2a0623c9fa7440f17";
+    static final String CONFIG_SHA = "5d625e4bbcd32da1791dee967786226a217eec8b9f18e2c850547c70067d8fa3";
     static final String RAW_CLASS_SHA = "399ca37359fbbf851eb54f5e3524c59a25751998cae0c9f534bb68a45f56659f";
     static final String NAMED_CLASS_SHA = "76ace04205f06a85fda9077f8240067084dd6febead6c2041c2f967584715613";
     private static final String MIXIN = "com.bettercontent.bettercompatfixes.mixin.vibration.VibrationTickerMixin";
@@ -24,7 +24,7 @@ public final class VibrationInterfaceMixinPlugin implements IMixinConfigPlugin {
     static void binding(String version, String config, String originalClass, boolean production) {
         if (!version.equals("2.4.11") || !config.equals(CONFIG_SHA) ||
             !originalClass.equals(production ? RAW_CLASS_SHA : NAMED_CLASS_SHA))
-            throw new IllegalStateException("VS vibration replacement requires exact 2.4.11 revision-3 resource transfer and untouched raw/named class");
+            throw new IllegalStateException("VS vibration replacement requires the original pinned 2.4.11 config and untouched raw/named class");
     }
     private static String digest(Path path) {
         try (var input = Files.newInputStream(path)) {
@@ -60,7 +60,7 @@ public final class VibrationInterfaceMixinPlugin implements IMixinConfigPlugin {
     @Override public void preApply(String target, ClassNode node, String mixin, IMixinInfo info) { identity(target,mixin); }
     @Override public void postApply(String target, ClassNode node, String mixin, IMixinInfo info) {
         identity(target,mixin);
-        if(!permitted) throw new IllegalStateException("VS vibration transfer not bound to a verified provider");
+        if(!permitted) throw new IllegalStateException("VS vibration bridge not bound to the original verified provider");
         VibrationInterfaceTransform.apply(node);
     }
 }

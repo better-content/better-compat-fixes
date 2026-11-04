@@ -13,7 +13,7 @@ class VibrationInterfaceMixinPluginTest {
         for(boolean prod:new boolean[]{false,true}) {
             String expected=prod?VibrationInterfaceMixinPlugin.RAW_CLASS_SHA:VibrationInterfaceMixinPlugin.NAMED_CLASS_SHA;
             assertThrows(IllegalStateException.class,()->VibrationInterfaceMixinPlugin.binding("2.4.12",VibrationInterfaceMixinPlugin.CONFIG_SHA,expected,prod));
-            assertThrows(IllegalStateException.class,()->VibrationInterfaceMixinPlugin.binding("2.4.11","5d625e4bbcd32da1791dee967786226a217eec8b9f18e2c850547c70067d8fa3",expected,prod));
+            assertThrows(IllegalStateException.class,()->VibrationInterfaceMixinPlugin.binding("2.4.11","aebb8ccd7f96d38545dedff06608fae0e8840c7037ad30c2a0623c9fa7440f17",expected,prod));
             assertThrows(IllegalStateException.class,()->VibrationInterfaceMixinPlugin.binding("2.4.11",VibrationInterfaceMixinPlugin.CONFIG_SHA,"e717bf76a3d7931516fc46ecb4a3e32de13fdf126d35f6ffa83d6ab3807c4e37",prod));
             assertThrows(IllegalStateException.class,()->VibrationInterfaceMixinPlugin.binding("2.4.11",VibrationInterfaceMixinPlugin.CONFIG_SHA,prod?VibrationInterfaceMixinPlugin.NAMED_CLASS_SHA:VibrationInterfaceMixinPlugin.RAW_CLASS_SHA,prod));
         }

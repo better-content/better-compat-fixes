@@ -30,6 +30,15 @@ description='''Isolated, config-toggleable compatibility fixes for the Better Co
     ordering="NONE"
     side="BOTH"
 
+# Required at Mixin target-pre-apply time for source-owned cancellation of
+# the three exact Epic ParCool / Valkyrien Skies upstream registrations.
+[[dependencies.${mod_id}]]
+    modId="mixinsquared"
+    mandatory=true
+    versionRange="[0.3.7,0.3.8)"
+    ordering="AFTER"
+    side="BOTH"
+
 [[dependencies.${mod_id}]]
     modId="prettypipes"
     mandatory=false

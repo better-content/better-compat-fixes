@@ -1,5 +1,5 @@
-// Independent source-owned interface-injection transfer / client-list corrections. The existing five-artifact
-// resource-only contract and its controls remain unchanged and independently required.
+// Historical local-only derivative controls, retained for immutable earlier evidence.
+// Explicit invocation only: the stock-upstream candidate must never require a rebuilt third-party JAR.
 import groovy.json.JsonSlurper
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -58,4 +58,3 @@ def qualifyUpstreamInterfaceOverrides = tasks.register('qualifyUpstreamInterface
         logger.lifecycle("Qualified independent local-only interface support; runtime acceptance NOT_EVALUATED; evidence ${attempt}")
     }
 }
-tasks.named('verifyFast') { dependsOn(qualifyUpstreamInterfaceOverrides) }

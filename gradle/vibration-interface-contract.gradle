@@ -1,4 +1,4 @@
-// Required pinned-original bytecode oracle for the source-owned interface transfer.
+// Required pinned-original bytecode oracle for the source-owned vibration bridge.
 // Test resources only: no upstream class is included in the production JAR.
 import java.security.MessageDigest
 import java.util.zip.ZipFile
@@ -6,14 +6,15 @@ import java.util.zip.ZipFile
 def vibrationOracle = layout.buildDirectory.dir('generated/vibration-interface-oracle')
 def vibrationSha = { byte[] data -> MessageDigest.getInstance('SHA-256').digest(data).encodeHex().toString() }
 def prepareVibrationInterfaceOracle = tasks.register('prepareVibrationInterfaceOracle') {
-    dependsOn('qualifyUpstreamInterfaceOverrides')
-    inputs.files('src/upstreamRuntime/interface-overrides-v1.json')
+    // The historical derivative qualifier cannot run against the new source-owned provider.
+    // Read and verify the original pinned upstream cache directly, with no jar rewrite.
+    def cache = file(System.getenv('BC_PACKAGE_ARTIFACT_CACHE') ?: "${System.getProperty('user.home')}/.cache/bc/packwiz-downloads")
+    def original = new File(cache, 'mods/valkyrienskies-120-2.4.11.jar')
+    inputs.file(original)
     outputs.dir(vibrationOracle)
     outputs.upToDateWhen { false }
     doLast {
-        def spec = file('src/upstreamRuntime/interface-overrides-v1.json')
-        def original = layout.buildDirectory.file("upstream-interface-evidence/originals-${vibrationSha(spec.bytes)}/valkyrienskies-120-2.4.11.jar").get().asFile
-        if (vibrationSha(original.bytes) != 'f99f24de62015451a047f90484cf9d25970cac350105b581c22b2d5247ebfd53')
+        if (!original.isFile() || vibrationSha(original.bytes) != 'f99f24de62015451a047f90484cf9d25970cac350105b581c22b2d5247ebfd53')
             throw new GradleException('Vibration ABI oracle requires the exact unchanged original VS archive')
         byte[] raw
         new ZipFile(original).withCloseable { zip ->
