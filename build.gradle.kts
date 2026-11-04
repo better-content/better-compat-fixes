@@ -254,7 +254,7 @@ val heatProvider = if (spoilageWithoutHeat) null else betterContentJar("better-i
 repositories {
     if (withTooltipFixture) ivy {
         name = "tooltipNoticesUserdev"
-        url = uri(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar").parentFile)
+        url = uri(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.1.jar").parentFile)
         patternLayout { artifact("[artifact]-[revision].[ext]") }
         metadataSources { artifact() }
         content { includeGroup("bettercontent.local.tooltip") }
@@ -376,10 +376,10 @@ dependencies {
         runtimeOnly(fg.deobf("curse.maven:chemlib-340666:5128632"))
     }
     minecraft("net.minecraftforge:forge:${property("minecraft_version")}-${property("forge_version")}")
-    compileOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
+    compileOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.1.jar")))
     // The explicit client witness must use mapped bytecode, not a production-SRG HUD listener.
-    if (withTooltipFixture) runtimeOnly(fg.deobf("bettercontent.local.tooltip:better-gameplay-notices:1.0.0"))
-    else runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.0.jar")))
+    if (withTooltipFixture) runtimeOnly(fg.deobf("bettercontent.local.tooltip:better-gameplay-notices:1.0.1"))
+    else runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.1.jar")))
     compileOnly(files(betterContentJar("better-survival-hud", "better-survival-hud-1.0.0.jar")))
     compileOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
