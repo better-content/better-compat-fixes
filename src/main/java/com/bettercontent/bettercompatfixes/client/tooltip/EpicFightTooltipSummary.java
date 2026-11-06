@@ -1,7 +1,6 @@
 package com.bettercontent.bettercompatfixes.client.tooltip;
 
 import com.bettercontent.bettercompatfixes.mixin.tooltip.CapabilityItemTooltipAccessor;
-import com.bettercontent.bettercompatfixes.mixin.tooltip.TinkerWeaponTooltipAccessor;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -60,7 +59,7 @@ final class EpicFightTooltipSummary {
             }
         }
         var actionCapability = capability;
-        if (capability instanceof TinkerWeaponTooltipAccessor tinker) {
+        if (capability instanceof TinkerWeaponTooltipAccess tinker) {
             var delegated = tinker.bettercontent$tooltipDelegatedWeapon();
             if (delegated != null) actionCapability = delegated;
         }

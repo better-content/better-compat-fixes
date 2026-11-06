@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 
 /** Semantic rows only. Vanilla/Forge does pixel wrapping; eight is never a cutoff. */
 public final class ToolTooltipRenderer {
@@ -18,12 +19,15 @@ public final class ToolTooltipRenderer {
         rows.add(snapshot.name());
         rows.addAll(snapshot.state());
         rows.addAll(snapshot.performance());
-        rows.addAll(snapshot.actions());
+        snapshot.actions().forEach(action -> rows.add(accent(action, ChatFormatting.AQUA)));
         var seen = new HashSet<String>();
         snapshot.effects().stream().filter(e -> e.visible(snapshot.capabilities()))
                 .sorted(Comparator.comparing(ToolTooltipEffect::category).thenComparing(ToolTooltipEffect::semanticId))
-                .filter(e -> seen.add(e.semanticId())).forEach(e -> rows.add(e.text().copy().withStyle(
-                        e.category() == ToolTooltipEffect.Category.RESTRICTION ? ChatFormatting.RED : ChatFormatting.GRAY)));
+                .filter(e -> seen.add(e.semanticId())).forEach(e -> rows.add(accent(e.text(), switch (e.category()) {
+                    case RESTRICTION -> ChatFormatting.RED;
+                    case CONDITIONAL -> ChatFormatting.GOLD;
+                    default -> ChatFormatting.GREEN;
+                })));
         rows.addAll(snapshot.lore());
         return rows;
     }
@@ -36,8 +40,18 @@ public final class ToolTooltipRenderer {
         }
         return row.withStyle(ChatFormatting.GRAY);
     }
+    /** Apply a category accent only where the source has not supplied its own style. */
+    public static Component accent(Component source, ChatFormatting color) {
+        var copy = source.copy();
+        var existing = copy.getStyle().getColor();
+        if (existing == null || existing.equals(TextColor.fromLegacyFormat(ChatFormatting.GRAY))) copy.withStyle(color);
+        return copy;
+    }
     public static Component fact(String key, String fallback, Object value) {
-        return Component.translatableWithFallback("tooltip.better_compat_fixes." + key, fallback + " %s", value);
+        Object display = value instanceof String text
+                ? Component.literal(text).withStyle(ChatFormatting.AQUA) : value;
+        return Component.translatableWithFallback("tooltip.better_compat_fixes." + key, fallback + " %s", display)
+                .withStyle(ChatFormatting.GRAY);
     }
     public static String number(double value) {
         if (!Double.isFinite(value)) return "?";

@@ -1,6 +1,6 @@
 package com.bettercontent.bettercompatfixes.mixin.tooltip;
 
-import com.bettercontent.bettercompatfixes.client.tooltip.InnateTooltipAccess;
+import com.bettercontent.bettercompatfixes.client.tooltip.TinkerWeaponTooltipAccess;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.world.item.ItemStack;
@@ -14,7 +14,7 @@ import yesman.epicfight.world.capabilities.item.Style;
 
 @Pseudo
 @Mixin(targets = "com.minhhjjj.epicfighttinkercompat.tool.capabilities.TCWeaponCapability", remap = false)
-public interface TinkerWeaponTooltipAccessor extends InnateTooltipAccess {
+public interface TinkerWeaponTooltipAccessor extends TinkerWeaponTooltipAccess {
     @Accessor("innateSkill")
     Map<Style, Function<ItemStack, Skill>> bettercontent$tooltipInnates();
     @Invoker("getWeapon")

@@ -10,8 +10,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -48,14 +50,14 @@ public final class ToolTooltipSummaryProvider {
         if (detached.hasCustomHoverName()) name.withStyle(name.getStyle().applyTo(Style.EMPTY.withItalic(true)));
         var lore = lore(detached);
         if (item.getToolDefinition() == null || !item.getToolDefinition().isDataLoaded()) {
-            return unavailable(name, lore, "definition_pending", "Tool definition not available yet");
+            return unavailable(detached.getTag(), name, lore, "definition_pending", "Tool definition not available yet");
         }
         if (!ToolStack.isInitialized(detached)) {
-            return unavailable(name, lore, "uninitialized", "Tool not initialized; assembled statistics unavailable");
+            return unavailable(detached.getTag(), name, lore, "uninitialized", "Tool not initialized; assembled statistics unavailable");
         }
         ToolStack tool = ToolStack.copyFrom(detached);
         if (tool.getStats().getContainedStats().isEmpty()) {
-            return unavailable(name, lore, "invalid_stats", "Assembled statistics unavailable");
+            return unavailable(detached.getTag(), name, lore, "invalid_stats", "Assembled statistics unavailable");
         }
         var capabilities = new HashSet<String>();
         if (tool.getModifierLevel(new ModifierId("tconstruct", "silky")) > 0) capabilities.add("silky");
@@ -83,8 +85,16 @@ public final class ToolTooltipSummaryProvider {
                 .withStyle(ChatFormatting.RED));
         else if (tool.isUnbreakable() || tool.getModifierLevel(new ModifierId("tconstruct", "unbreakable")) > 0)
             state.add(Component.translatable("item.unbreakable").withStyle(ChatFormatting.GRAY));
-        else if (detached.is(TinkerTags.Items.DURABILITY)) state.add(fact("durability", "Durability", amount(tool.getCurrentDurability())
-                + "/" + amount(tool.getStats().getInt(ToolStats.DURABILITY))));
+        else if (detached.is(TinkerTags.Items.DURABILITY)) {
+            int current = tool.getCurrentDurability();
+            int maximum = tool.getStats().getInt(ToolStats.DURABILITY);
+            double fraction = maximum <= 0 ? 0 : Math.max(0, Math.min(1, (double)current / maximum));
+            int rgb = java.awt.Color.HSBtoRGB((float)(fraction / 3), 0.65f, 0.8f) & 0xffffff;
+            state.add(fact("durability", "Durability", Component.literal(amount(current))
+                    .withStyle(style -> style.withColor(TextColor.fromRgb(rgb)))
+                    .append(Component.literal(" / ").withStyle(ChatFormatting.DARK_GRAY))
+                    .append(Component.literal(amount(maximum)).withStyle(ChatFormatting.GREEN))));
+        }
         collectState(detached, tool, capabilities, state);
         EquipmentSlot slot = detached.getItem() instanceof ArmorItem armor ? armor.getEquipmentSlot() : EquipmentSlot.MAINHAND;
         var attributes = baseline.getAttributeModifiers(slot);
@@ -142,24 +152,48 @@ public final class ToolTooltipSummaryProvider {
         if (!additional.isEmpty()) stats.add(row(additional.toArray(Component[]::new)));
         if (ToolTooltipOwner.supported("epicfight", "20.14.17")) {
             try {
-                EpicFightTooltipSummary.contribute(baseline, stats, actions, effects);
+                // Stage optional output: a failing capability must not leave half-written rows.
+                var epicStats = new ArrayList<Component>();
+                var epicActions = new ArrayList<Component>();
+                var epicEffects = new ArrayList<ToolTooltipEffect>();
+                EpicFightTooltipSummary.contribute(baseline, epicStats, epicActions, epicEffects);
+                stats.addAll(epicStats); actions.addAll(epicActions); effects.addAll(epicEffects);
             } catch (RuntimeException | LinkageError failure) {
                 ToolTooltipCatalogue.warnOnce("Epic Fight profile " + detached.getItem().getDescriptionId(), failure);
-                state.add(Component.translatableWithFallback("tooltip.better_compat_fixes.combat_profile_unavailable", "Combat profile unavailable"));
+                state.add(Component.translatableWithFallback("tooltip.better_compat_fixes.combat_profile_unavailable", "Combat profile unavailable")
+                        .withStyle(ChatFormatting.DARK_GRAY));
             }
         }
-        for (ModifierEntry modifier : tool.getModifierList()) collectModifier(modifier, capabilities, effects);
+        for (ModifierEntry modifier : tool.getModifierList()) {
+            try {
+                collectModifier(modifier, capabilities, effects);
+            } catch (RuntimeException | LinkageError failure) {
+                ToolTooltipCatalogue.warnOnce("modifier " + modifier.getId(), failure);
+                effects.add(new ToolTooltipEffect(modifier.getId() + "@unknown", Set.of(),
+                        ToolTooltipEffect.Category.BEHAVIOR, Component.literal(modifier.getId().getPath().replace('_', ' ')), false));
+            }
+        }
         String id = BuiltInRegistries.ITEM.getKey(detached.getItem()).toString();
         for (var action : ToolTooltipCatalogue.current().actions().getOrDefault(id, List.of())) {
             if (capabilities.containsAll(action.requires())) actions.add(fragmentText(action, 1));
         }
-        ExternalToolTooltipSummary.contribute(detached, capabilities, effects, state);
+        try {
+            ExternalToolTooltipSummary.contribute(detached, capabilities, effects, state);
+        } catch (RuntimeException | LinkageError failure) {
+            ToolTooltipCatalogue.warnOnce("external adapters " + id, failure);
+        }
         return new ToolTooltipSnapshot(name, capabilities, state, stats, actions, effects, lore);
     }
 
-    private static ToolTooltipSnapshot unavailable(Component name, List<Component> lore, String key, String text) {
-        return new ToolTooltipSnapshot(name, Set.of(), List.of(Component.translatableWithFallback("tooltip.better_compat_fixes." + key, text)),
-                List.of(), List.of(), List.of(), lore);
+    static ToolTooltipSnapshot unavailable(CompoundTag tag, Component name, List<Component> lore, String key, String text) {
+        var state = new ArrayList<Component>();
+        state.add(Component.translatableWithFallback("tooltip.better_compat_fixes." + key, text).withStyle(ChatFormatting.GOLD));
+        if (tag != null) {
+            if (tag.getBoolean(ToolStack.TAG_BROKEN)) state.add(Component.literal("Broken").withStyle(ChatFormatting.RED));
+            if (tag.contains("tic_materials", Tag.TAG_LIST)) state.add(fact("stored_parts", "Stored material parts",
+                    amount(tag.getList("tic_materials", Tag.TAG_STRING).size())));
+        }
+        return new ToolTooltipSnapshot(name, Set.of(), state, List.of(), List.of(), List.of(), lore);
     }
 
     public static double attribute(Multimap<Attribute, AttributeModifier> attributes, Attribute key, double baseline) {
