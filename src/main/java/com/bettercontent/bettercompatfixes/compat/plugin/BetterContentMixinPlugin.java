@@ -145,6 +145,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.tconstruct.ArmoredSlimeCausalMixin")) {
             return hasMods(mods, "tconstruct");
         }
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.tconstruct.MaterialRecipeCacheDietMixin")) {
+            return hasVersion(mods, "tconstruct", "3.11.2.166")
+                    && hasVersion(mods, "diet", "2.1.1+1.20.1");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.aetherepicfight.")) {
             return hasVersion(mods, "aether", "1.20.1-1.5.2-neoforge")
                     && hasVersion(mods, "curios", "5.14.1+1.20.1")

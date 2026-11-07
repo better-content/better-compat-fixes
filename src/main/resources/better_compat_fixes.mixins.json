@@ -38,6 +38,7 @@
     "adpother.littlelogistics.SteamTugEntityMixin",
     "tconstruct.CraftingStationPolymorphMixin",
     "tconstruct.ArmoredSlimeCausalMixin",
+    "tconstruct.MaterialRecipeCacheDietMixin",
     "tconstruct.PartBuilderBlockEntityMixin",
     "tconstruct.PartBuilderContainerWrapperMixin",
     "tconstruct.PartBuilderPatternSlotPlacementMixin",
