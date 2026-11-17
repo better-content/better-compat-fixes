@@ -5,6 +5,8 @@
   "plugin": "com.bettercontent.bettercompatfixes.compat.plugin.BetterContentMixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "malum.SpectatorNaturalSpiritCollectionMixin",
+    "sophisticatedbackpacks.SpectatorWornMagnetMixin",
     "rbp.BlockOperationSchedulerMixin",
     "prettypipes.PressurizerBlockEntityMixin",
     "prettypipes.PressurizerContainerMixin",
@@ -109,6 +111,7 @@
     "weather2.CoroUtilCompatibilityMixin"
   ],
   "client": [
+    "minecraft.WorldSelectionContrastMixin",
     "emi.RecipeScreenMixin",
     "emi.EmiApiMixin",
     "minecraft.DeepVoidCompassMixin",
@@ -137,6 +140,7 @@
     "epicfight.FirstPersonRendererMixin",
     "epicfight.EpicParCoolLedgeCameraMixin",
     "epicfight.EpicParCoolDodgeKeyConflictMixin",
+    "epicfight.EpicParCoolFastRunStowMixin",
     "epicfight.EpicFightClimbCameraMixin",
     "epicfight.LocalPlayerPatchMixin",
     "epicfight.LocalPlayerAttackPovMixin",

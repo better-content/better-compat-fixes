@@ -27,6 +27,9 @@ public final class ButcherKnifeDurability {
         final Player player = event.getPlayer();
         final ItemStack tool = player.getMainHandItem();
         if (!BUTCHER_KNIFE.equals(ForgeRegistries.ITEMS.getKey(tool.getItem()))) return;
-        tool.hurtAndBreak(1, player, living -> living.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+        // TCon's native ToolHarvestLogic.mineBlock charges one for an actual shears cut;
+        // this BreakEvent runs once per physical grass/fern block, including swept cuts.
+        // Add two via the native ItemStack damage hook, not three on top of native damage.
+        tool.hurtAndBreak(2, player, living -> living.broadcastBreakEvent(InteractionHand.MAIN_HAND));
     }
 }
