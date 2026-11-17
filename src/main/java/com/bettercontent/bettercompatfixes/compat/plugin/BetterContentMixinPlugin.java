@@ -145,6 +145,9 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.tconstruct.ArmoredSlimeCausalMixin")) {
             return hasMods(mods, "tconstruct");
         }
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.tconstruct.ButcherKnifeSuccessfulCutWearMixin")) {
+            return hasVersion(mods, "tconstruct", "3.11.2.166");
+        }
         if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.tconstruct.MaterialRecipeCacheDietMixin")) {
             return hasVersion(mods, "tconstruct", "3.11.2.166")
                     && hasVersion(mods, "diet", "2.1.1+1.20.1");
@@ -230,7 +233,8 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
                     && mods.getModFileById("controlify") != null;
         }
         if (EPIC_PARCOOL_LEDGE_CAMERA_MIXIN.equals(mixinClassName)
-                || (EPIC_FIGHT_MIXIN_PREFIX + "EpicParCoolDodgeKeyConflictMixin").equals(mixinClassName)) {
+                || (EPIC_FIGHT_MIXIN_PREFIX + "EpicParCoolDodgeKeyConflictMixin").equals(mixinClassName)
+                || (EPIC_FIGHT_MIXIN_PREFIX + "EpicParCoolFastRunStowMixin").equals(mixinClassName)) {
             return hasVersion(mods, "epicfight", "20.14.17")
                     && hasVersion(mods, "epicparcool", "20.12.0.1")
                     && hasVersion(mods, "parcool", "3.4.3.3");
@@ -343,6 +347,13 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
         }
         if (mixinClassName.startsWith(SOPHISTICATED_STORAGE_MIXIN_PREFIX)) {
             return mods != null && mods.getModFileById("sophisticatedstorage") != null;
+        }
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.malum.SpectatorNaturalSpiritCollectionMixin")) {
+            return hasVersion(mods, "malum", "1.20.1-1.6.7");
+        }
+        if (mixinClassName.equals("com.bettercontent.bettercompatfixes.mixin.sophisticatedbackpacks.SpectatorWornMagnetMixin")) {
+            return hasVersion(mods, "sophisticatedcore", "1.3.21.1676")
+                    && hasVersion(mods, "sophisticatedbackpacks", "3.24.35.1675");
         }
         if (mixinClassName.startsWith(SOPHISTICATED_BACKPACKS_MIXIN_PREFIX)) {
             return mods != null && mods.getModFileById("sophisticatedbackpacks") != null;

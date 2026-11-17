@@ -2,7 +2,6 @@ package com.bettercontent.bettercompatfixes;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.bettercontent.bettercompatfixes.compat.AmbientSurfaceSpawnControl;
-import com.bettercontent.bettercompatfixes.compat.ButcherKnifeDurability;
 import com.bettercontent.bettercompatfixes.compat.CuriosSlotPolicy;
 import com.bettercontent.bettercompatfixes.compat.FarmlandTrampleProtection;
 import com.bettercontent.bettercompatfixes.compat.ExtendedItemPickup;
@@ -86,7 +85,6 @@ public final class BetterContentFixes {
             MinecraftForge.EVENT_BUS.register(DynamicTreesUnsupportedTreeFallover.class);
             MinecraftForge.EVENT_BUS.register(DynamicTreesSupportSweepCommand.class);
         }
-        MinecraftForge.EVENT_BUS.register(ButcherKnifeDurability.class);
         if (ModList.get().isLoaded("sophisticatedbackpacks")) {
             MinecraftForge.EVENT_BUS.register(com.bettercontent.bettercompatfixes.compat.BackpackArmorPolicy.class);
         }
