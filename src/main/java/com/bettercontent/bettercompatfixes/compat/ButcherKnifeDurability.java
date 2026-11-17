@@ -1,13 +1,10 @@
 package com.bettercontent.bettercompatfixes.compat;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public final class ButcherKnifeDurability {
@@ -17,16 +14,13 @@ public final class ButcherKnifeDurability {
     private ButcherKnifeDurability() {
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onGrassCut(final BlockEvent.BreakEvent event) {
-        if (event.isCanceled() || event.getPlayer().isCreative()) return;
-        if (!event.getState().is(Blocks.GRASS)
-                && !event.getState().is(Blocks.TALL_GRASS)
-                && !event.getState().is(Blocks.FERN)
-                && !event.getState().is(Blocks.LARGE_FERN)) return;
-        final Player player = event.getPlayer();
-        final ItemStack tool = player.getMainHandItem();
-        if (!BUTCHER_KNIFE.equals(ForgeRegistries.ITEMS.getKey(tool.getItem()))) return;
-        tool.hurtAndBreak(1, player, living -> living.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+    /** Called only at TCon's native damageAnimated invocation after a successful removal.
+     *  Adjust its one-point shears charge; native modifier/unbreaking and break signaling remain owned by TCon. */
+    public static int nativeCutDamage(int nativeDamage, ItemStack tool, BlockState cut, ServerPlayer player) {
+        if (nativeDamage != 1 || player == null || player.isCreative() || player.getMainHandItem() != tool
+                || !BUTCHER_KNIFE.equals(ForgeRegistries.ITEMS.getKey(tool.getItem()))) return nativeDamage;
+        if (cut.is(Blocks.GRASS) || cut.is(Blocks.TALL_GRASS)
+                || cut.is(Blocks.FERN) || cut.is(Blocks.LARGE_FERN)) return 3;
+        return nativeDamage;
     }
 }
