@@ -384,6 +384,9 @@ dependencies {
     else runtimeOnly(files(betterContentJar("better-gameplay-notices", "better-gameplay-notices-1.0.1.jar")))
     compileOnly(files(betterContentJar("better-survival-hud", "better-survival-hud-1.0.0.jar")))
     compileOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
+    // Typed client-only optional tooltip adapters; neither provider is packaged here.
+    compileOnly(fg.deobf("curse.maven:blood-magic-224791:7956981"))
+    compileOnly(fg.deobf("curse.maven:ars-nouveau-401955:6688854"))
     runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
     runtimeOnly(fg.deobf(project.extra["bcFuelSdkAdpotherCoordinate"] as String))
     compileOnly(fg.deobf("curse.maven:forgeendertech-244844:8554308"))
@@ -488,6 +491,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("com.google.code.gson:gson:2.10.1")
     testImplementation(fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:7307654"))
+    testImplementation(fg.deobf("curse.maven:blood-magic-224791:7956981"))
+    testImplementation(fg.deobf("curse.maven:ars-nouveau-401955:6688854"))
     // Pretty Pipes embeds this exact graph API via JarJar; compile-only avoids a second runtime copy.
     compileOnly("org.jgrapht:jgrapht-core:1.5.2")
     compileOnly(fg.deobf("curse.maven:pretty-pipes-376737:4769646"))
@@ -1114,8 +1119,11 @@ val verifyRuntimeDeepVoidFallBoundary by tasks.registering {
                 "Client compass target selectors must include pinned development and production names"
             }
             val manager = bytecode("com/bettercontent/bettercompatfixes/mixin/minecraft/DeepVoidStructureManagerMixin.class")
-            check(manager.contains("f_220460_") && !manager.contains("aliases")) {
-                "Dimension bridge must shadow the exact private production field without a Mixin alias"
+            check(manager.contains("better_compat_fixes\$captureLevel")
+                    && manager.contains("better_compat_fixes\$level")
+                    && manager.contains("<init>") && manager.contains("RETURN")
+                    && !manager.contains("f_220460_") && !manager.contains("aliases")) {
+                "Dimension bridge must capture the constructor level across named and production field mappings"
             }
             val search = bytecode("com/bettercontent/bettercompatfixes/deepvoid/DeepVoidCompassSearch.class")
             check(search.contains("m_8431_") && search.contains("f_62315_")) {
@@ -1504,7 +1512,7 @@ apply(from = "gradle/native-clean-retention.gradle")
 apply(from = "gradle/native-gametest-fixture.gradle")
 apply(from = "gradle/treasure-urn-contract.gradle")
 apply(from = "gradle/registrate-contract.gradle")
-apply(from = "gradle/upstream-runtime-v2-contract.gradle")
+apply(from = "gradle/upstream-runtime-v3-contract.gradle")
 apply(from = "gradle/upstream-startup-contract.gradle")
 apply(from = "gradle/upstream-interface-contract.gradle")
 apply(from = "gradle/mixin-namespace-contract.gradle")

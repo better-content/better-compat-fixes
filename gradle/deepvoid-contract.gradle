@@ -29,13 +29,15 @@ def abiCheck = tasks.register('verifyDeepVoidPlacementAbi', JavaExec) {
         def roots = sourceSets.main.output.classesDirs.files.findAll {
             new File(it, 'com/bettercontent/bettercompatfixes/mixin/deepvoid/FleshStructureFeatureMixin.class').isFile()
         }
+        def forgeVersion = project.property('forge_version')
+        def minecraftVersion = project.property('minecraft_version')
         def sdk = sourceSets.main.compileClasspath.files.findAll {
-            it.name == 'forge-1.20.1-47.4.13_mapped_official_1.20.1.jar'
+            it.name == "forge-${minecraftVersion}-${forgeVersion}_mapped_official_${minecraftVersion}.jar"
         }
         if (roots.size() != 1 || sdk.size() != 1) throw new GradleException('Missing/ambiguous actual DeepVoid compiled/SDK role')
         def named = sdk.iterator().next()
         // FG's original SRG producer is a required sibling of the actual mapped SDK artifact.
-        def srg = new File(named.parentFile.parentFile, '1.20.1-47.4.13/forge-1.20.1-47.4.13-srg.jar')
+        def srg = new File(named.parentFile.parentFile, "${minecraftVersion}-${forgeVersion}/forge-${minecraftVersion}-${forgeVersion}-srg.jar")
         if (!srg.isFile()) throw new GradleException('Missing actual pre-mapped Forge SDK producer: ' + srg)
         setArgs([file('scripts/verify-deepvoid-abi.groovy').absolutePath,
                  file('gradle/deepvoid-abi-pins.json').absolutePath,

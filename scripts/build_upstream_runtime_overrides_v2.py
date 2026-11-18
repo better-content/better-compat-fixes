@@ -24,6 +24,8 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / 'src/upstreamRuntime/overrides-v2.json'
+SUCCESSOR_SPEC = ROOT / 'src/upstreamRuntime/overrides-v3.json'
+FROZEN_V2_SHA256 = '866290e292ad194f523cce0e66b7087d9ddb91216dc5180cc85e84bc11a7dc34'
 MAX_ARCHIVE = 256 * 1024 * 1024
 MAX_ENTRY = 128 * 1024 * 1024
 MAX_EXPANDED = 1024 * 1024 * 1024
@@ -343,8 +345,22 @@ def check_compat(data, contract):
 
 def load_spec(path=SPEC):
     spec = parse_json(read_file(path, MAX_JSON))
-    require(isinstance(spec, dict) and spec.get('schema') == 'bc.upstream_runtime_overrides.v2' and
-            spec.get('revision') == 'bc-runtime.2', 'unsupported spec')
+    if path == SUCCESSOR_SPEC:
+        require(isinstance(spec, dict) and set(spec) ==
+                {'schema', 'revision', 'parent_sha256', 'plugin_sha256'}, 'unsupported successor fields')
+        require(spec['schema'] == 'bc.upstream_runtime_overrides.v3' and
+                spec['revision'] == 'bc-runtime.3', 'unsupported successor spec')
+        require(spec['parent_sha256'] == FROZEN_V2_SHA256 and
+                sha(read_file(SPEC, MAX_JSON)) == FROZEN_V2_SHA256, 'historical v2 contract changed')
+        require(isinstance(spec['plugin_sha256'], str) and len(spec['plugin_sha256']) == 64 and
+                all(c in '0123456789abcdef' for c in spec['plugin_sha256']), 'invalid successor plugin digest')
+        parent = load_spec(SPEC)
+        parent['schema'], parent['revision'] = spec['schema'], spec['revision']
+        parent['required_compat']['plugin_sha256'] = spec['plugin_sha256']
+        spec = parent
+    else:
+        require(isinstance(spec, dict) and spec.get('schema') == 'bc.upstream_runtime_overrides.v2' and
+                spec.get('revision') == 'bc-runtime.2', 'unsupported spec')
     artifacts = spec.get('artifacts')
     require(isinstance(artifacts, list) and len(artifacts) == 5, 'expected five reviewed artifacts')
     for field in ('input', 'output'):
@@ -431,6 +447,8 @@ def main():
     parser.add_argument('--inputs', type=Path, help='explicit original archive directory (offline)')
     parser.add_argument('--output', type=Path, help='fresh disjoint directory; never overwritten')
     parser.add_argument('--compat-jar', type=Path, help='required production pollution replacement provider')
+    parser.add_argument('--spec', type=Path, choices=(SPEC, SUCCESSOR_SPEC), default=SPEC,
+                        help='explicit frozen v2 or provider-only v3 successor contract')
     parser.add_argument('--fetch-originals', type=Path, help='separate opt-in: fetch pinned originals to NEW directory only')
     args = parser.parse_args()
     if args.fetch_originals:
@@ -439,8 +457,8 @@ def main():
     elif not all((args.inputs, args.output, args.compat_jar)):
         parser.error('--inputs, --output and --compat-jar are required for an offline build')
     try:
-        receipt = (fetch_originals(args.fetch_originals) if args.fetch_originals else
-                   build(args.inputs, args.output, args.compat_jar))
+        receipt = (fetch_originals(args.fetch_originals, args.spec) if args.fetch_originals else
+                   build(args.inputs, args.output, args.compat_jar, args.spec))
     except (Rejected, OSError, KeyError, TypeError, struct.error) as exc:
         parser.exit(1, 'REJECTED: ' + str(exc) + '\n')
     print(json.dumps(receipt, sort_keys=True))

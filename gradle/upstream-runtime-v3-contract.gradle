@@ -1,0 +1,65 @@
+// Provider-only successor: v2 spec and original resource patches remain frozen.
+// Requalify the changed production plugin against precisely the same five pinned originals.
+import groovy.json.JsonSlurper
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
+import java.util.UUID
+
+def upstreamSpec = file('src/upstreamRuntime/overrides-v3.json')
+def frozenSpec = file('src/upstreamRuntime/overrides-v2.json')
+def upstreamBuilder = file('scripts/build_upstream_runtime_overrides_v2.py')
+def historicalControls = file('scripts/test_upstream_runtime_overrides_v2.py')
+def successorControls = file('scripts/test_upstream_runtime_overrides_v3.py')
+def stagedRuntime = layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar")
+def upstreamSupport = layout.buildDirectory.dir('upstream-runtime-overrides-v3')
+def digest = { File path -> MessageDigest.getInstance('SHA-256').digest(path.bytes).encodeHex().toString() }
+
+def qualifyUpstreamRuntimeOverrides = tasks.register('qualifyUpstreamRuntimeOverridesV3') {
+    group = 'verification'
+    description = 'Qualifies the current provider plugin with immutable v2 upstream resource corrections.'
+    dependsOn('stageRuntimeJar')
+    inputs.files(upstreamSpec, frozenSpec, upstreamBuilder, historicalControls, successorControls, stagedRuntime)
+    outputs.upToDateWhen { false }
+    doLast {
+        def specSha = digest(frozenSpec)
+        def retained = layout.buildDirectory.dir('upstream-runtime-v3-evidence').get().asFile
+        retained.mkdirs()
+        def originals = new File(retained, "originals-${specSha}")
+        if (!originals.exists()) {
+            exec {
+                commandLine('python3', '-B', upstreamBuilder.absolutePath,
+                    '--spec', upstreamSpec.absolutePath, '--fetch-originals', originals.absolutePath)
+            }
+        }
+        def attempt = new File(retained, "attempt-${UUID.randomUUID()}")
+        if (!attempt.mkdir()) throw new GradleException('Fresh successor evidence required')
+        // Retain all historical pure controls, including frozen v1/v2 delta and rejection tests.
+        exec {
+            commandLine('python3', '-B', historicalControls.absolutePath,
+                '--output-root', attempt.absolutePath)
+        }
+        exec {
+            commandLine('python3', '-B', successorControls.absolutePath,
+                '--originals', originals.absolutePath, '--compat-jar', stagedRuntime.get().asFile.absolutePath,
+                '--output-root', attempt.absolutePath)
+        }
+        def output = new File(attempt, 'qualified')
+        exec {
+            commandLine('python3', '-B', upstreamBuilder.absolutePath,
+                '--spec', upstreamSpec.absolutePath, '--inputs', originals.absolutePath,
+                '--output', output.absolutePath, '--compat-jar', stagedRuntime.get().asFile.absolutePath)
+        }
+        def destination = upstreamSupport.get().asFile
+        destination.mkdirs()
+        // Snapshot only after independent controls and fresh builder have succeeded.
+        def receipt = new JsonSlurper().parse(new File(output, 'receipt.json'))
+        def names = receipt.artifacts.collect { it.output } + ['receipt.json']
+        names.each { name ->
+            Files.copy(new File(output, name).toPath(), new File(destination, name).toPath(),
+                StandardCopyOption.REPLACE_EXISTING)
+        }
+        logger.lifecycle("Qualified successor upstream support; runtime acceptance NOT_EVALUATED; evidence ${attempt}")
+    }
+}
+tasks.named('verifyFast') { dependsOn(qualifyUpstreamRuntimeOverrides) }

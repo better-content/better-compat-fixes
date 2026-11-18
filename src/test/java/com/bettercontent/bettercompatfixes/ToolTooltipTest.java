@@ -98,6 +98,31 @@ public class ToolTooltipTest {
         assertFalse(helper.contains("TinkerTags"));
     }
 
+    @Test void optionalToolSummaryUsesIsolatedTypedAdaptersAndKeepsDetachedStack() throws Exception {
+        String dispatcher = Files.readString(JAVA.resolve("client/tooltip/ExternalToolTooltipSummary.java"));
+        String blood = Files.readString(JAVA.resolve("client/tooltip/BloodMagicTooltipAdapter.java"));
+        String ars = Files.readString(JAVA.resolve("client/tooltip/ArsReactiveTooltipAdapter.java"));
+        assertTrue(dispatcher.contains("BloodMagicTooltipAdapter.contribute(detached, capabilities, effects)"));
+        assertTrue(dispatcher.contains("ArsReactiveTooltipAdapter.contribute(detached, effects)"));
+        assertTrue(dispatcher.contains("ModList.get().isLoaded(\"bloodmagic\")"));
+        assertTrue(dispatcher.contains("ModList.get().isLoaded(\"ars_nouveau\")"));
+        assertFalse(dispatcher.contains("Class.forName("));
+        assertFalse(dispatcher.contains("getDeclaredMethod("));
+        assertFalse(dispatcher.contains("getMethod("));
+        assertFalse(dispatcher.contains("import wayoftime."));
+        assertFalse(dispatcher.contains("import com.hollingsworth."));
+        assertTrue(blood.contains("AnointmentRegistrar.ANOINTMENT_MAP.get(id)"));
+        assertTrue(blood.contains("anointment.consumeOnHarvest()"));
+        assertTrue(blood.contains("anointment.consumeOnAttack()"));
+        assertTrue(blood.contains("anointment.consumeOnUseFinish()"));
+        assertTrue(blood.contains("remainingUses(tag.getInt(\"max_damage\"), tag.getInt(\"damage\"))"));
+        assertTrue(ars.contains("new ReactiveCaster(detached).getSpell()"));
+        assertTrue(ars.contains("spell.isValid()"));
+        assertTrue(ars.contains("spell.getDisplayString()"));
+        assertFalse(blood.contains("Class.forName("));
+        assertFalse(ars.contains("Class.forName("));
+    }
+
     private static ToolTooltipEffect effect(String key, Set<String> capabilities, String text) {
         return new ToolTooltipEffect(key, capabilities, ToolTooltipEffect.Category.BEHAVIOR, Component.literal(text), false);
     }
