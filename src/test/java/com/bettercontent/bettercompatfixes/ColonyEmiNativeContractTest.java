@@ -6,6 +6,7 @@ import org.objectweb.asm.tree.*;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.zip.ZipFile;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,6 +43,21 @@ class ColonyEmiNativeContractTest {
             var screen = type(zip, root + "screen/RecipeScreen");
             assertTrue(screen.fields.stream().anyMatch(f -> f.name.equals("recipes") && f.desc.equals("Ljava/util/Map;")));
             var init = method(screen, "m_7856_");
+            // This production class has no render-named method: the client mixin must
+            // target its SRG alias as well as the mapped development name.
+            assertFalse(screen.methods.stream().anyMatch(m -> m.name.equals("render")));
+            assertEquals("(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", method(screen, "m_88315_").desc);
+            ClassNode mixin = new ClassNode();
+            try (var in = getClass().getClassLoader().getResourceAsStream(
+                    "com/bettercontent/bettercompatfixes/mixin/emi/RecipeScreenMixin.class")) {
+                assertNotNull(in, "compiled EMI recipe screen mixin missing");
+                new ClassReader(in).accept(mixin, 0);
+            }
+            var renderInjector = method(mixin, "betterCompat$refreshAfterTransfer");
+            assertTrue(renderInjector.visibleAnnotations.stream().filter(a -> a.desc.endsWith("/Inject;"))
+                    .flatMap(a -> a.values.stream()).anyMatch(v -> v instanceof List<?> targets
+                        && targets.contains("render") && targets.contains("m_88315_")),
+                    "the compiled mixin must target both mapped and pinned production EMI render names");
             assertTrue(calls(init, "java/util/stream/Stream", "sorted"));
             assertTrue(calls(init, root + "screen/RecipeTab", "bakePages"));
             method(screen, "focusRecipe");

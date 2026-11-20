@@ -57,7 +57,8 @@ public abstract class RecipeScreenMixin implements IngredientOrderSnapshot {
         betterCompat$refresh(EmiPlayerInventory.of(Minecraft.getInstance().player));
     }
 
-    @Inject(method = "render", at = @At("HEAD"), require = 1)
+    // Production EMI ships the Forge/SRG name; the development workspace uses render.
+    @Inject(method = {"render", "m_88315_"}, at = @At("HEAD"), require = 1)
     private void betterCompat$refreshAfterTransfer(GuiGraphics graphics, int mouseX, int mouseY,
             float partialTick, CallbackInfo ci) {
         Minecraft client = Minecraft.getInstance();
