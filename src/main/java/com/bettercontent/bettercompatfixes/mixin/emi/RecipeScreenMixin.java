@@ -8,12 +8,16 @@ import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
+import dev.emi.emi.api.recipe.handler.EmiCraftContext;
+import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
+import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.screen.RecipeScreen;
 import dev.emi.emi.screen.RecipeTab;
 import dev.emi.emi.screen.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -95,11 +99,25 @@ public abstract class RecipeScreenMixin implements IngredientOrderSnapshot {
             }
             List<EmiRecipe> partition = IngredientOrder.availableFirst(list, recipe ->
                     betterCompat$available.computeIfAbsent(recipe,
-                        r -> betterCompat$promotableRecipe(r) && inventory.canCraft(r, 1)));
+                        r -> betterCompat$promotableRecipe(r) && betterCompat$craftableHere(r, inventory)));
             ordered.put(category, partition);
             betterCompat$categories.put(category, partition.stream().anyMatch(this::betterCompat$ingredientsAvailable));
         });
         recipes = ordered;
+    }
+
+    @Unique private boolean betterCompat$craftableHere(EmiRecipe recipe, EmiPlayerInventory inventory) {
+        // Ingredients alone do not make a 3x3 recipe available from a 2x2 inventory grid,
+        // or a machine recipe available at a crafting table. Use EMI's selected handler
+        // for the actual open menu, including modded crafting surfaces and grid sizes.
+        return old != null && betterCompat$craftableOnScreen(recipe, inventory, old);
+    }
+
+    @Unique private static <T extends AbstractContainerMenu> boolean betterCompat$craftableOnScreen(
+            EmiRecipe recipe, EmiPlayerInventory inventory, AbstractContainerScreen<T> screen) {
+        EmiRecipeHandler<T> handler = EmiRecipeFiller.getFirstValidHandler(recipe, screen);
+        return handler != null && handler.supportsRecipe(recipe)
+                && handler.canCraft(recipe, new EmiCraftContext<>(screen, inventory, EmiCraftContext.Type.CRAFTABLE));
     }
 
     @Unique private static boolean betterCompat$promotableCategory(EmiRecipeCategory category) {

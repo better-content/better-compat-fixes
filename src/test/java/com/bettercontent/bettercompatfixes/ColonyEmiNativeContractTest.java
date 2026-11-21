@@ -40,6 +40,13 @@ class ColonyEmiNativeContractTest {
             assertTrue(calls(matcher, root + "api/recipe/EmiRecipe", "getInputs"));
             assertTrue(calls(matcher, root + "api/stack/EmiIngredient", "getEmiStacks"));
             assertTrue(calls(matcher, "it/unimi/dsi/fastutil/objects/Object2LongMap", "put"), "Native greedy matcher accounts for already-used identity quantities");
+            var inventoryHandler = type(zip, root + "handler/InventoryRecipeHandler");
+            assertTrue(calls(method(inventoryHandler, "supportsRecipe"), root + "api/recipe/EmiCraftingRecipe", "canFit"),
+                    "Inventory crafting must reject recipes too large for its 2x2 grid");
+            assertTrue(calls(method(inventoryHandler, "canCraft"), "net/minecraft/world/inventory/RecipeBookMenu", "m_6635_"));
+            assertTrue(calls(method(inventoryHandler, "canCraft"), "net/minecraft/world/inventory/RecipeBookMenu", "m_6656_"));
+            var craftingHandler = type(zip, root + "handler/CraftingRecipeHandler");
+            assertTrue(calls(method(craftingHandler, "supportsRecipe"), root + "api/recipe/EmiRecipe", "getCategory"));
             var screen = type(zip, root + "screen/RecipeScreen");
             assertTrue(screen.fields.stream().anyMatch(f -> f.name.equals("recipes") && f.desc.equals("Ljava/util/Map;")));
             var init = method(screen, "m_7856_");
@@ -53,6 +60,10 @@ class ColonyEmiNativeContractTest {
                 assertNotNull(in, "compiled EMI recipe screen mixin missing");
                 new ClassReader(in).accept(mixin, 0);
             }
+            var surfaceCheck = method(mixin, "betterCompat$craftableOnScreen");
+            assertTrue(calls(surfaceCheck, root + "registry/EmiRecipeFiller", "getFirstValidHandler"));
+            assertTrue(calls(surfaceCheck, root + "api/recipe/handler/EmiRecipeHandler", "supportsRecipe"));
+            assertTrue(calls(surfaceCheck, root + "api/recipe/handler/EmiRecipeHandler", "canCraft"));
             var renderInjector = method(mixin, "betterCompat$refreshAfterTransfer");
             assertTrue(renderInjector.visibleAnnotations.stream().filter(a -> a.desc.endsWith("/Inject;"))
                     .flatMap(a -> a.values.stream()).anyMatch(v -> v instanceof List<?> targets
