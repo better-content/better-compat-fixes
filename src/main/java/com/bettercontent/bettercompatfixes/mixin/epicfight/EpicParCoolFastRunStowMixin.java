@@ -13,10 +13,10 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 @Pseudo
 @Mixin(targets = "com.yesman.epicparcool.animations.ParCoolAnimations", remap = false)
 public abstract class EpicParCoolFastRunStowMixin {
-    // In the pinned biped/fast_run builder lambda this is the sole ON_BEGIN_EVENTS
-    // entry, SET_TOOLS_BACK. Keep ON_END_EVENTS/REVERT_TO_HANDS and all other
-    // animation builders unchanged. Guard the property as well as the ordinal.
-    @WrapOperation(method = "lambda$build$17", at = @At(value = "INVOKE", ordinal = 0, remap = false,
+    // The pinned biped/fast_run accessor invokes lambda$build$32, not lambda$build$17
+    // (which builds cliff-look-left). Skip only its ON_BEGIN_EVENTS/SET_TOOLS_BACK;
+    // preserve ON_END_EVENTS/REVERT_TO_HANDS and every other builder.
+    @WrapOperation(method = "lambda$build$32", at = @At(value = "INVOKE", ordinal = 0, remap = false,
             target = "Lyesman/epicfight/api/animation/types/StaticAnimation;addEvents(Lyesman/epicfight/api/animation/property/AnimationProperty$StaticAnimationProperty;[Lyesman/epicfight/api/animation/property/AnimationEvent;)Lyesman/epicfight/api/animation/types/StaticAnimation;"),
             require = 1, expect = 1, allow = 1, remap = false)
     private static StaticAnimation betterContentFixes$keepFastRunHeldItem(
@@ -26,9 +26,9 @@ public abstract class EpicParCoolFastRunStowMixin {
                 ? animation : original.call(animation, property, events);
     }
 
-    // The same builder's first addProperty installs SET_TOOLS_BACK_WHEN_ITEM_CHANGED.
-    // Preserve head rotation, pose modifier, action states and the end event.
-    @WrapOperation(method = "lambda$build$17", at = @At(value = "INVOKE", ordinal = 0, remap = false,
+    // The same builder's only addProperty installs SET_TOOLS_BACK_WHEN_ITEM_CHANGED.
+    // Preserve action state and the end event.
+    @WrapOperation(method = "lambda$build$32", at = @At(value = "INVOKE", ordinal = 0, remap = false,
             target = "Lyesman/epicfight/api/animation/types/StaticAnimation;addProperty(Lyesman/epicfight/api/animation/property/AnimationProperty$StaticAnimationProperty;Ljava/lang/Object;)Lyesman/epicfight/api/animation/types/StaticAnimation;"),
             require = 1, expect = 1, allow = 1, remap = false)
     private static StaticAnimation betterContentFixes$keepChangedFastRunItem(
