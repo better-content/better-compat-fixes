@@ -101,7 +101,7 @@ public final class BcFixesConfig {
                 .define("seasonContextConcurrentMap", true);
         DYNAMIC_TREES_UNEARTHED_REGOLITH_SOILS = builder
                 .comment(
-                        "Registers Unearthed/Hyle regolith and overgrown stone surface blocks as Dynamic Trees dirt-like soils.",
+                        "Registers Unearthed/Hyle regolith, overgrown stone, and Better Regolith Farming tilled regolith as Dynamic Trees dirt-like soils.",
                         "Keeps Unearthed dirt replacement enabled while allowing Dynamic Trees worldgen to place forest trees on replaced forest surfaces.",
                         "Disable only when diagnosing Dynamic Trees soil registration behavior.")
                 .define("unearthedRegolithSoils", true);

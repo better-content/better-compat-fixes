@@ -115,6 +115,8 @@
     "minecraft.WorldSelectionContrastMixin",
     "emi.RecipeScreenMixin",
     "emi.EmiApiMixin",
+    "emi.JemiRecipeSlotViewMixin",
+    "emi.JemiRecipeSlotDrawableViewMixin",
     "minecraft.DeepVoidCompassMixin",
     "aetherepicfight.GlovesRendererMixin",
     "aetherepicfight.PendantRendererMixin",

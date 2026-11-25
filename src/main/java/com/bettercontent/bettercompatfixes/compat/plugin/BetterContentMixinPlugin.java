@@ -126,6 +126,10 @@ public final class BetterContentMixinPlugin implements IMixinConfigPlugin {
             }
             return true;
         }
+        if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.emi.JemiRecipeSlot")) {
+            return hasVersion(mods, "emi", "1.1.24+1.20.1+forge")
+                    && hasVersion(mods, "jei", "15.74.0.234");
+        }
         if (mixinClassName.startsWith("com.bettercontent.bettercompatfixes.mixin.emi.")) {
             if (!hasMods(mods, "emi")) return false;
             if (!hasVersion(mods, "emi", "1.1.24+1.20.1+forge")) {

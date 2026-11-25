@@ -8,7 +8,7 @@ import com.bettercontent.bettercompatfixes.compat.ExtendedItemPickup;
 import com.bettercontent.bettercompatfixes.compat.FluidMixBlocker;
 import com.bettercontent.bettercompatfixes.compat.DynamicTreesUnsupportedTreeFallover;
 import com.bettercontent.bettercompatfixes.compat.DecorativeVegetationTrample;
-import com.bettercontent.bettercompatfixes.compat.DynamicTreesUnearthedSoils;
+import com.bettercontent.bettercompatfixes.compat.DynamicTreesSoilAliases;
 import com.bettercontent.bettercompatfixes.compat.DynamicTreesSupportSweepCommand;
 import com.bettercontent.bettercompatfixes.compat.VoidWormSpawnRemoval;
 import com.bettercontent.bettercompatfixes.compat.ThirstLootModifierCompat;
@@ -71,7 +71,7 @@ public final class BetterContentFixes {
             MinecraftForge.EVENT_BUS.register(com.bettercontent.bettercompatfixes.deepvoid.DeepVoidCompassSearch.class);
         }
         if (ModList.get().isLoaded("dynamictrees")) {
-            modEventBus.addListener(DynamicTreesUnearthedSoils::onCommonSetup);
+            modEventBus.addListener(DynamicTreesSoilAliases::onCommonSetup);
         }
         modEventBus.addListener(com.bettercontent.bettercompatfixes.compat.SpoilageReuse::setup);
         modEventBus.addListener(this::onRegisterGameTests);

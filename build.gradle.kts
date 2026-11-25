@@ -337,8 +337,10 @@ dependencies {
     add(backpackEquipmentNativePins.name, "curse.maven:curios-api-309927:6418456")
     add(backpackEquipmentNativePins.name, "curse.maven:sophisticated-backpacks-422301:7916619")
     add(colonyEmiNativePins.name, "curse.maven:emi-580555:8081375")
+    add(colonyEmiNativePins.name, "curse.maven:jei-238222:9394360")
     add(colonyEmiNativePins.name, "curse.maven:complicated-bees-1100137:8277762")
     compileOnly(fg.deobf("curse.maven:emi-580555:8081375"))
+    compileOnly(fg.deobf("curse.maven:jei-238222:9394360")) // Pinned JEMI slot-view ABI; no bundled JEI.
     compileOnly(fg.deobf("curse.maven:amendments-896746:7470401"))
     testImplementation(fg.deobf("curse.maven:emi-580555:8081375"))
     if (withTooltipFixture && providers.gradleProperty("withTooltipPanels").map(String::toBooleanStrict).getOrElse(false)) {
@@ -1163,8 +1165,9 @@ tasks.test {
         file("src/nativeFixture/resources/data/minecraft/tags/blocks/needs_diamond_tool.json"), authoredRespiteOverrides.values)
     dependsOn(tasks.named(nativeFixture.classesTaskName))
     doFirst {
-        for (native in colonyEmiNativePins.resolve()) {
-            systemProperty(if (native.name.contains("8081375")) "bc.colonyEmi.emi" else "bc.colonyEmi.bees", native.absolutePath)
+        val colonyEmiNatives = colonyEmiNativePins.resolve()
+        for ((key, id) in mapOf("emi" to "8081375", "jei" to "9394360", "bees" to "8277762")) {
+            systemProperty("bc.colonyEmi.$key", colonyEmiNatives.single { it.name.contains(id) }.absolutePath)
         }
         systemProperty("bc.parcool.native", parCoolNativePins.resolve().single().absolutePath)
         systemProperty("bc.epicparcool.native", epicParCoolNativePins.resolve().single().absolutePath)
