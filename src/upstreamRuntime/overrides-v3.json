@@ -2,5 +2,5 @@
   "schema": "bc.upstream_runtime_overrides.v3",
   "revision": "bc-runtime.3",
   "parent_sha256": "866290e292ad194f523cce0e66b7087d9ddb91216dc5180cc85e84bc11a7dc34",
-  "plugin_sha256": "726ec213ffee1044e8997bdbd33a9de3f62c7e5b88d7c012ad847d28a3ad9e1e"
+  "plugin_sha256": "cd7e0bc2b217a2ceac1139bea772aa961b6449e66fe08fb8bd586e3cde39e40a"
 }
